@@ -1,14 +1,12 @@
 package mizuki.project.core.restserver.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by ycj on 2017/2/11.
  * 对应 application.yml中spring的配置
  */
-@Component
-@ConfigurationProperties(locations = "classpath:application.yml",prefix = "spring")
+@ConfigurationProperties("spring")
 public class SpringConfBean {
 
     public static final String PROFILE_PRO = "pro";
@@ -25,4 +23,5 @@ public class SpringConfBean {
         this.profiles = profiles;
         return this;
     }
+
 }

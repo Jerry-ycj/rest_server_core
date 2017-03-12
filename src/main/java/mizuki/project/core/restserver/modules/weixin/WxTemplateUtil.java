@@ -5,7 +5,6 @@ import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,18 +15,18 @@ import java.util.List;
  * Created by ycj on 2016/11/14.
  * 模板消息
  */
-@Component
 public class WxTemplateUtil {
 
-    private final WxMpService wxMpService;
+    private WxMpService wxMpService;
 
     public static final String COLOR_BLUE = "#0000FF";
     public static final String COLOR_ORANGE = "#FF7F00";
     public static final String COLOR_FGREEN = "#238E23";
 
     @Autowired
-    public WxTemplateUtil(WxMpService wxMpService) {
+    public WxTemplateUtil setWxMpService(WxMpService wxMpService) {
         this.wxMpService = wxMpService;
+        return this;
     }
 
     /**

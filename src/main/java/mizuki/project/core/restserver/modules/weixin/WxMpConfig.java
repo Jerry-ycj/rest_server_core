@@ -7,15 +7,15 @@ import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Created by ycj on 16/5/9.
  *
  */
-@Component
+@Configuration
 @ConditionalOnClass(WxMpService.class)
-@ConfigurationProperties(locations = "classpath:server.yml",prefix = "mod.weixin.mp")
+@ConfigurationProperties("mod.weixin.mp")
 public class WxMpConfig {
 
     private String appid;
@@ -43,6 +43,10 @@ public class WxMpConfig {
         return wxMpService;
     }
 
+    @Bean
+    public WxTemplateUtil wxTemplateUtil(){
+        return new WxTemplateUtil();
+    }
 
     /*
     @Bean

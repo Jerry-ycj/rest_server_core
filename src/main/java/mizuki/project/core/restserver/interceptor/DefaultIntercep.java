@@ -1,7 +1,6 @@
 package mizuki.project.core.restserver.interceptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import mizuki.project.core.restserver.config.WebConfBean;
 
@@ -15,14 +14,14 @@ import java.util.Enumeration;
  * Created by ycj on 16/4/15.
  *
  */
-@Component
 public class DefaultIntercep extends HandlerInterceptorAdapter {
 
-    private final WebConfBean wcb;
+    private WebConfBean wcb;
 
     @Autowired
-    public DefaultIntercep(WebConfBean wcb) {
+    public DefaultIntercep setWcb(WebConfBean wcb) {
         this.wcb = wcb;
+        return this;
     }
 
     @Override

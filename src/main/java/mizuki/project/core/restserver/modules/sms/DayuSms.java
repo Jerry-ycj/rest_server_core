@@ -8,14 +8,14 @@ import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.PostConstruct;
 import java.util.Random;
 
 /**
  * Created by ycj on 16/8/7.
  * 阿里大于  sms
  */
-@Configuration
-@ConfigurationProperties(locations = "classpath:server.yml",prefix = "mod.sms_dayu")
+@ConfigurationProperties("mod.sms_dayu")
 public class DayuSms {
 
     private String appkey;
@@ -35,9 +35,25 @@ public class DayuSms {
         req.setRecNum(phone);
         req.setSmsTemplateCode(template_reg);
         AlibabaAliqinFcSmsNumSendResponse rsp = client.execute(req);
-        System.out.println(rsp.getBody());
+        String ret = rsp.getBody();
+        System.out.println(ret);
+        if(ret.contains("\"success\":true")){
+            return code;
+        }
+//        else{
+//            int i=5;
+//            while (i>0){
+//                rsp = client.execute(req);
+//                ret = rsp.getBody();
+//                System.out.println(ret);
+//                i--;
+//                if(ret.contains("\"success\":true")){
+//                    return code;
+//                }
+//            }
+//        }
 //			System.out.println(rsp.getBody());  TODO json 判断success
-        return code;
+        return null;
     }
 
     private String genCode(){

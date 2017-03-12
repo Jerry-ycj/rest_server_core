@@ -3,7 +3,6 @@ package mizuki.project.core.restserver.modules.message.websocket;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
@@ -14,7 +13,6 @@ import java.util.Map;
  * Created by ycj on 2017/2/25.
  *
  */
-@Component
 public class SessionAuthHandshakeInterceptor implements HandshakeInterceptor {
 
     @Override

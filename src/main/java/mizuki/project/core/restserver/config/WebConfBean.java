@@ -1,8 +1,9 @@
 package mizuki.project.core.restserver.config;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -11,8 +12,7 @@ import java.io.File;
  * Created by ycj on 16/5/19.
  * 用于web server的相关私有配置
  */
-@Component
-@ConfigurationProperties(locations = "classpath:server.yml",prefix = "project")
+@ConfigurationProperties("project")
 public class WebConfBean {
 
     private String projectDomain;
@@ -21,8 +21,16 @@ public class WebConfBean {
     private String projectDomainMain;
     private String iconfontPath;
     private String staticResVersion;
+    @Value("${server.context-path}")
+    private String contextPath;
 
-    public WebConfBean() {}
+    private SpringConfBean springConfBean;
+
+    @Autowired
+    public WebConfBean setSpringConfBean(SpringConfBean springConfBean) {
+        this.springConfBean = springConfBean;
+        return this;
+    }
 
     @PostConstruct
     public void init(){
@@ -87,6 +95,19 @@ public class WebConfBean {
 
     public WebConfBean setStaticResVersion(String staticResVersion) {
         this.staticResVersion = staticResVersion;
+        return this;
+    }
+
+    public SpringConfBean getSpringConfBean() {
+        return springConfBean;
+    }
+
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    public WebConfBean setContextPath(String contextPath) {
+        this.contextPath = contextPath;
         return this;
     }
 }
