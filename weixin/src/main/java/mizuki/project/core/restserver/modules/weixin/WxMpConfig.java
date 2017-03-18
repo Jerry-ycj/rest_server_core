@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Created by ycj on 16/5/9.
- *
+ * 外部采用 @Import 方式导入
  */
 @Configuration
 @ConditionalOnClass(WxMpService.class)
