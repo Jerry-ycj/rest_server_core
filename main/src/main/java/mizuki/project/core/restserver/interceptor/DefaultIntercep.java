@@ -45,10 +45,10 @@ public class DefaultIntercep extends HandlerInterceptorAdapter {
         sb.append("^^^^|");
         System.out.println(sb.toString());
         // server配置对象
-        HttpSession session = request.getSession();
-        if(session.getAttribute("confBean")==null){
-            request.getSession().setAttribute("confBean",wcb);
-        }
+//        HttpSession session = request.getSession();
+//        if(session.getAttribute("confBean")==null){
+//            request.getSession().setAttribute("confBean",wcb);
+//        }
         return true;
     }
 }
