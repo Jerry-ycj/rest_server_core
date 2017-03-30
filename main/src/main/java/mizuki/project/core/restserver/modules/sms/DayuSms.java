@@ -5,6 +5,8 @@ import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
 import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Random;
@@ -16,6 +18,7 @@ import java.util.Random;
 @ConfigurationProperties("mod.sms_dayu")
 public class DayuSms {
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     private String appkey;
     private String appSecret;
     private String template_reg;
@@ -34,7 +37,7 @@ public class DayuSms {
         req.setSmsTemplateCode(template_reg);
         AlibabaAliqinFcSmsNumSendResponse rsp = client.execute(req);
         String ret = rsp.getBody();
-        System.out.println(ret);
+        logger.info(ret);
         if(ret.contains("\"success\":true")){
             return code;
         }

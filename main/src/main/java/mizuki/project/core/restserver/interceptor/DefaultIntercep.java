@@ -1,5 +1,7 @@
 package mizuki.project.core.restserver.interceptor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import mizuki.project.core.restserver.config.WebConfBean;
@@ -17,6 +19,7 @@ import java.util.Enumeration;
 public class DefaultIntercep extends HandlerInterceptorAdapter {
 
     private WebConfBean wcb;
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     public DefaultIntercep setWcb(WebConfBean wcb) {
@@ -28,7 +31,7 @@ public class DefaultIntercep extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
         StringBuilder sb = new StringBuilder();
-        sb.append("|--patientcare ----------- request: \n");
+        sb.append("|--"+wcb.getContextPath()+" ----------- request: \n");
         sb.append(LocalTime.now())
                 .append(", ").append(request.getRequestURI())
                 .append(" ").append(request.getHeader("X-Real-IP"))
@@ -43,12 +46,7 @@ public class DefaultIntercep extends HandlerInterceptorAdapter {
                     .append(request.getParameter(param)).append("\n");
         }
         sb.append("^^^^|");
-        System.out.println(sb.toString());
-        // server配置对象
-//        HttpSession session = request.getSession();
-//        if(session.getAttribute("confBean")==null){
-//            request.getSession().setAttribute("confBean",wcb);
-//        }
+        logger.info(sb.toString());
         return true;
     }
 }
