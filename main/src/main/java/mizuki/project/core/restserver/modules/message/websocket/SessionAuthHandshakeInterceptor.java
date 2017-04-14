@@ -1,5 +1,7 @@
 package mizuki.project.core.restserver.modules.message.websocket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -15,15 +17,16 @@ import java.util.Map;
  */
 public class SessionAuthHandshakeInterceptor implements HandshakeInterceptor {
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         HttpSession session = getSession(request);
         if(session==null || session.getAttribute("user")==null){
-            System.out.println("websocket权限拒绝");
+            logger.error("websocket权限拒绝");
             return false;
         }
         attributes.put("user",session.getAttribute("user"));
-        // todo
         return true;
     }
 
