@@ -2,6 +2,8 @@ package mizuki.project.core.restserver.config.mybatis.typeHandler;
 
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -17,6 +19,8 @@ import java.util.List;
  *
  */
 public class StringArrayHandler implements TypeHandler<List<String>>{
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public void setParameter(PreparedStatement ps, int i, List<String> parameter, JdbcType jdbcType) throws SQLException {
@@ -39,6 +43,11 @@ public class StringArrayHandler implements TypeHandler<List<String>>{
     }
 
     private List<String> transfer(String s){
+//        System.out.println("---- "+s);
+        // 可能出现 {"key"}这种情况？？
+        s = s.replace("{\"","{")
+                .replace("\",\"",",")
+                .replace("\"}","}");
         List<String> list = new ArrayList<>();
         if(s==null || s.length()==2){
             return list;
