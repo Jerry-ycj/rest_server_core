@@ -46,18 +46,17 @@ public class JsonArrayHandler implements TypeHandler<List<Map>>{
     }
 
     private List<Map> transfer(String s){
-//        System.out.println("---- "+s);
-        // 可能出现 {"key"}这种情况？？
-//        s = s.replace("{\"","{")
-//                .replace("\",\"",",")
-//                .replace("\"}","}");
+        // {"{\"test\": 2,\"key\": 12}","{\"txt\": 2}"}
         List<Map> list = new ArrayList<>();
         if(s==null || s.length()==2){
             return list;
         }
         ObjectMapper objectMapper = new ObjectMapper();
-        String tmp = s.substring(1,s.length()-1);
-        Arrays.asList(tmp.split(",")).forEach(n -> {
+        // {"{"test": 2,"key": 12}","{"txt": 2}"}
+        s = s.replace("\\\"","\"");
+        // {"test": 2,"key": 12}","{"txt": 2}
+        String tmp = s.substring(2,s.length()-2);
+        Arrays.asList(tmp.split("\",\"")).forEach(n -> {
             try {
                 list.add(objectMapper.readValue(n,Map.class));
             } catch (IOException e) {

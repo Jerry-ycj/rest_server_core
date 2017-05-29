@@ -8,6 +8,9 @@ import java.util.List;
  */
 public class StringUtil {
 
+    /***
+     * list to e,e,e
+     */
     public static String join(List list,String separator){
         if(list==null){
             return "";
