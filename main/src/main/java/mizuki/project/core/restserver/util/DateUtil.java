@@ -8,52 +8,13 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DateUtil {
-	private final static SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy");
-
-	private final static SimpleDateFormat sdfDay = new SimpleDateFormat("yyyy-MM-dd");
-
-	private final static SimpleDateFormat sdfDays = new SimpleDateFormat("yyyyMMdd");
-
 	private final static SimpleDateFormat sdfTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-	/**
-	 * 获取YYYY格式
-	 * @return
-	 */
-	public static String getYear() {
-		return sdfYear.format(new Date());
-	}
-
-	/**
-	 * 获取YYYY-MM-DD格式
-	 * @return
-	 */
-	public static String getDay() {
-		return sdfDay.format(new Date());
-	}
-
-	/**
-	 * 获取YYYYMMDD格式
-	 * @return
-	 */
-	public static String getDays() {
-		return sdfDays.format(new Date());
-	}
-
-	/**
-	 * 获取YYYY-MM-DD HH:mm:ss格式
-	 * @return
-	 */
-	public static String getTime() {
-		return sdfTime.format(new Date());
-	}
-
 
 	/**
 	 * 格式化日期
 	 * @return
 	 */
-	public static Date fomatDate(String date) {
+	public static Date formatDate(String date) {
 		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			return fmt.parse(date);
@@ -63,7 +24,11 @@ public class DateUtil {
 		}
 	}
 
-	public static Timestamp fomatTimestamp(String date) {
+	public static String formatSdfTimeFromTimes(long times){
+		return sdfTime.format(new Date(times));
+	}
+
+	public static Timestamp formatTimestamp(String date) {
 		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			return new Timestamp(fmt.parse(date).getTime());

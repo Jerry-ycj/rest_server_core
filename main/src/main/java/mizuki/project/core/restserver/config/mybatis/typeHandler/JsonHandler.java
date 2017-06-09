@@ -15,47 +15,46 @@ import java.util.*;
 
 /**
  * Created by ycj on 2017/4/13.
- *  [{}] - list<Map>
+ *  {} - Map
  *
  */
-public class JsonArrayHandler implements TypeHandler<List<Map>>{
+public class JsonHandler implements TypeHandler<Map>{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public void setParameter(PreparedStatement ps, int i, List<Map> parameter, JdbcType jdbcType) throws SQLException {
+    public void setParameter(PreparedStatement ps, int i, Map parameter, JdbcType jdbcType) throws SQLException {
         //todo list->sql_param
     }
 
     @Override
-    public List<Map> getResult(ResultSet rs, String columnName) throws SQLException {
+    public Map getResult(ResultSet rs, String columnName) throws SQLException {
         return transfer(rs.getString(columnName));
     }
 
     @Override
-    public List<Map> getResult(ResultSet rs, int columnIndex) throws SQLException {
+    public Map getResult(ResultSet rs, int columnIndex) throws SQLException {
         return transfer(rs.getString(columnIndex));
     }
 
     @Override
-    public List<Map> getResult(CallableStatement cs, int columnIndex) throws SQLException {
+    public Map getResult(CallableStatement cs, int columnIndex) throws SQLException {
         return transfer(cs.getString(columnIndex));
     }
 
-    private List<Map> transfer(String s){
-        // "[{\"test\": 2,\"key\": 12},{}]"
-        List<Map> list = new ArrayList<>();
+    private Map transfer(String s){
+        // "{\"test\": 2,\"key\": 12}"
         Map<String,Object> map = new HashMap<>();
         if(s==null || s.length()==2){
-            return list;
+            return map;
         }
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            list = objectMapper.readValue(s,List.class);
+            map = objectMapper.readValue(s,Map.class);
         } catch (IOException e) {
             e.printStackTrace();
             logger.error("err：",e);
         }
-        return list;
+        return map;
     }
 }

@@ -11,14 +11,17 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ycj on 2017/4/13.
- *  [{}] - list<Map>
+ * pgsql中jsonb[]: {{},{}} - list
  *
  */
-public class JsonArrayHandler implements TypeHandler<List<Map>>{
+public class ArrayJsonHandler implements TypeHandler<List<Map>>{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -43,19 +46,23 @@ public class JsonArrayHandler implements TypeHandler<List<Map>>{
     }
 
     private List<Map> transfer(String s){
-        // "[{\"test\": 2,\"key\": 12},{}]"
+        // {"{\"test\": 2,\"key\": 12}","{\"txt\": 2}"}
         List<Map> list = new ArrayList<>();
-        Map<String,Object> map = new HashMap<>();
         if(s==null || s.length()==2){
             return list;
         }
         ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            list = objectMapper.readValue(s,List.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.error("err：",e);
-        }
+        // {"{"test": 2,"key": 12}","{"txt": 2}"}
+        s = s.replace("\\\"","\"");
+        // {"test": 2,"key": 12}","{"txt": 2}
+        String tmp = s.substring(2,s.length()-2);
+        Arrays.asList(tmp.split("\",\"")).forEach(n -> {
+            try {
+                list.add(objectMapper.readValue(n,Map.class));
+            } catch (IOException e) {
+                logger.error("err：",e);
+            }
+        });
         return list;
     }
 }
