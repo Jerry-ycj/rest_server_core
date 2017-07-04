@@ -1,5 +1,5 @@
 rootProject.name = 'RestServerCore'
 include 'main'
 include 'weixin'
-
+include 'common'
 

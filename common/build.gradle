@@ -1,0 +1,28 @@
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile fileTree(dir: 'exlibs', include: ['*.jar'])
+
+    compile "org.springframework.boot:spring-boot-starter"
+    // json
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.5',
+            'com.fasterxml.jackson.core:jackson-core:2.8.5',
+            'com.fasterxml.jackson.core:jackson-annotations:2.8.5'
+
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
+
+    // databases
+    compile 'org.mybatis:mybatis:3.4.2'
+    compile group: 'com.alibaba', name: 'druid', version: '1.0.26'
+    compile group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '1.2.0'
+}
