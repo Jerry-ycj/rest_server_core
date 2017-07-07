@@ -1,4 +1,4 @@
 rootProject.name = 'core.main'
 include 'common'
-project(':common').projectDir = new File("/Users/ycj/IdeaProjects/opensource/RestServerCore/common")
+project(':common').projectDir = new File(settingsDir,"../common")
 
