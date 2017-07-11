@@ -21,8 +21,11 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
     compile group: 'commons-io', name: 'commons-io', version: '2.5'
 
-    // databases
+    // databases orm
     compile 'org.mybatis:mybatis:3.4.2'
     compile group: 'com.alibaba', name: 'druid', version: '1.0.26'
     compile group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '1.2.0'
+
+    // kafka
+    compile 'org.springframework.kafka:spring-kafka:1.2.2.RELEASE'
 }
