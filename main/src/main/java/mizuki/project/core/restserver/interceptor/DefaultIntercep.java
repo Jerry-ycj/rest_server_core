@@ -17,20 +17,15 @@ import java.util.Enumeration;
  */
 public class DefaultIntercep extends HandlerInterceptorAdapter {
 
+    @Autowired
     private WebConfBean wcb;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    @Autowired
-    public DefaultIntercep setWcb(WebConfBean wcb) {
-        this.wcb = wcb;
-        return this;
-    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
         StringBuilder sb = new StringBuilder();
-        sb.append("|--"+wcb.getContextPath()+" ----------- request: \n");
+        sb.append(wcb.getContextPath()).append(" -------- request: \n");
         sb.append(LocalTime.now())
                 .append(", ").append(request.getRequestURI())
                 .append(" ").append(request.getHeader("X-Real-IP"))
@@ -44,8 +39,17 @@ public class DefaultIntercep extends HandlerInterceptorAdapter {
             sb.append(param).append(":")
                     .append(request.getParameter(param)).append("\n");
         }
-        sb.append("^^^^|");
         logger.info(sb.toString());
+
+        // check nginx https
+        if(wcb.isForceNginxHttps()){
+            if("https".equals(request.getHeader("X-Forwarded-Proto"))){
+                return true;
+            }else{
+                logger.error("not https request forwarded from web server");
+                return false;
+            }
+        }
         return true;
     }
 }

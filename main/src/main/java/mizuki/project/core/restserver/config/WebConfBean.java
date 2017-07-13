@@ -23,6 +23,8 @@ public class WebConfBean {
     private String staticResVersion;
     @Value("${server.context-path}")
     private String contextPath;
+    // nginx https限制
+    private boolean forceNginxHttps;
 
     private SpringConfBean springConfBean;
 
@@ -108,6 +110,15 @@ public class WebConfBean {
 
     public WebConfBean setContextPath(String contextPath) {
         this.contextPath = contextPath;
+        return this;
+    }
+
+    public boolean isForceNginxHttps() {
+        return forceNginxHttps;
+    }
+
+    public WebConfBean setForceNginxHttps(boolean forceNginxHttps) {
+        this.forceNginxHttps = forceNginxHttps;
         return this;
     }
 }
