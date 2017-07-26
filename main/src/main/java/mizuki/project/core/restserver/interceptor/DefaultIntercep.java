@@ -25,12 +25,11 @@ public class DefaultIntercep extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
         StringBuilder sb = new StringBuilder();
-        sb.append(wcb.getContextPath()).append(" -------- request: \n");
-        sb.append(LocalTime.now())
-                .append(", ").append(request.getRequestURI())
-                .append(" ").append(request.getHeader("X-Real-IP"))
-                .append(" X-Forwarded-Proto:")
-                .append(request.getHeader("X-Forwarded-Proto")).append("\n");
+        sb.append(" -------- request: \n");
+        sb.append(request.getRequestURI())
+            .append(" ").append(request.getHeader("X-Real-IP"))
+            .append(" X-Forwarded-Proto:")
+            .append(request.getHeader("X-Forwarded-Proto")).append("\n");
         sb.append("sessionid: ")
                 .append(request.getSession().getId()).append(" \n");
         Enumeration<String> e = request.getParameterNames();

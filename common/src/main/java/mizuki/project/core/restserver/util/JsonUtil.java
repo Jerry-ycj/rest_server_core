@@ -5,10 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-/**
- * @author Binary Wang
- */
 public class JsonUtil {
+
     private static final ObjectMapper JSON = new ObjectMapper();
     static {
         JSON.setSerializationInclusion(Include.NON_NULL);
