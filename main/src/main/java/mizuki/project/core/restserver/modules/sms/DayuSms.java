@@ -4,12 +4,14 @@ import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
+import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import javax.annotation.PostConstruct;
 import java.util.Random;
 
 /**
@@ -27,15 +29,20 @@ public class DayuSms {
     private String signName;
     private String templateCode;
 
+    private IAcsClient acsClient;
+
+    @PostConstruct
+    private void init() throws ClientException {
+        //初始化acsClient,暂不支持region化
+        IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKey, accessKeySecret);
+        DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
+        acsClient = new DefaultAcsClient(profile);
+    }
+
     public String send(String phone) {
         String code = genCode();
 
         try {
-            //初始化acsClient,暂不支持region化
-            IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKey, accessKeySecret);
-            DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
-            IAcsClient acsClient = new DefaultAcsClient(profile);
-
             //组装请求对象-具体描述见控制台-文档部分内容
             SendSmsRequest request = new SendSmsRequest();
             //必填:待发送手机号
