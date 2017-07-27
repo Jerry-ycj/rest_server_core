@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  * Created by ycj on 2017/3/22.
  * 用于所有的Action
  */
+@Deprecated
 public abstract class AbstractAction {
 
     private WebConfBean webConfBean;
