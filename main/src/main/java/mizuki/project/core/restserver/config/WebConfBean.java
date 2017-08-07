@@ -1,6 +1,7 @@
 package mizuki.project.core.restserver.config;
 
 
+import mizuki.project.core.restserver.config.mybatis.SpringConfBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;

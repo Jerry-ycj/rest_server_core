@@ -1,5 +1,6 @@
 package mizuki.project.core.restserver.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -14,6 +15,10 @@ public class SpringConfBean {
 
     // 不用那个active
     private String profiles;
+    @Value("${var.server}")
+    private String ip;
+    @Value("${server.port}")
+    private int port;
 
     public String getProfiles() {
         return profiles;
@@ -24,4 +29,21 @@ public class SpringConfBean {
         return this;
     }
 
+    public String getIp() {
+        return ip;
+    }
+
+    public SpringConfBean setIp(String ip) {
+        this.ip = ip;
+        return this;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public SpringConfBean setPort(int port) {
+        this.port = port;
+        return this;
+    }
 }

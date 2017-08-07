@@ -17,6 +17,7 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.5',
             'com.fasterxml.jackson.core:jackson-core:2.8.5',
             'com.fasterxml.jackson.core:jackson-annotations:2.8.5'
+//    compile "org.springframework.boot:spring-boot-starter-json"
 
     compile group: 'org.msgpack', name: 'jackson-dataformat-msgpack', version: '0.8.13'
 

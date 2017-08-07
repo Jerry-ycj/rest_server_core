@@ -5,6 +5,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import java.io.IOException;
+import java.util.Map;
+
 public class JsonUtil {
 
     private static final ObjectMapper JSON = new ObjectMapper();
@@ -19,7 +22,15 @@ public class JsonUtil {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+        return null;
+    }
 
+    public static Map toMap(String str){
+        try {
+            return JSON.readValue(str,Map.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 }
