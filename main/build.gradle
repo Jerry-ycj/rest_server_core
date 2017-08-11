@@ -22,7 +22,11 @@ dependencies {
 
     compile group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3.2'
 
+    // kafka
+    compile 'org.springframework.kafka:spring-kafka:1.2.2.RELEASE'
+
     // ali oss
     compile group: 'com.aliyun.oss', name: 'aliyun-sdk-oss', version: '2.8.1'
+
 }
 
