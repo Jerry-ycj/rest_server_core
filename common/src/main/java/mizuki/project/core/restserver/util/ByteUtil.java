@@ -30,6 +30,15 @@ public class ByteUtil {
         return result;
     }
 
+    // byte - bits
+    public static int[] byte2bits(byte b){
+        int[] ret = new int[8];
+        for(int i=0;i<8;i++){
+            ret[i] = (b>>>(7-i))&0x1;
+        }
+        return ret;
+    }
+
     //高位在前，低位在后
     public static int bytes2intHL(byte[] bytes){
         int result = 0;

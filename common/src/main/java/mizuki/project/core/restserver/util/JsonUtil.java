@@ -33,4 +33,14 @@ public class JsonUtil {
         }
         return null;
     }
+
+    public static Object toObject(String str, Class clas){
+        try {
+            return JSON.readValue(str,clas);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

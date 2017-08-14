@@ -40,15 +40,15 @@ public class DefaultIntercep extends HandlerInterceptorAdapter {
         }
         logger.info(sb.toString());
 
-        // check nginx https
-        if(wcb.isForceNginxHttps()){
-            if("https".equals(request.getHeader("X-Forwarded-Proto"))){
-                return true;
-            }else{
-                logger.error("not https request forwarded from web server");
-                return false;
-            }
-        }
+//        // check nginx https
+//        if(wcb.isForceNginxHttps()){
+//            if("https".equals(request.getHeader("X-Forwarded-Proto"))){
+//                return true;
+//            }else{
+//                logger.error("not https request forwarded from web server");
+//                return false;
+//            }
+//        }
         return true;
     }
 }
