@@ -30,9 +30,6 @@ public class WxMpConfig {
         configStorage.setAppId(appid);
         configStorage.setSecret(secret);
         configStorage.setToken(token);
-//        configStorage.setAesKey(this.properties.getAesKey());
-        configStorage.setPartnerId(partnerid);
-        configStorage.setPartnerKey(partnerkey);
         return configStorage;
     }
 
@@ -48,54 +45,10 @@ public class WxMpConfig {
         return new WxTemplateUtil();
     }
 
-    /*
     @Bean
-    public WxMpMessageRouter router(WxMpService wxMpService) {
-        final WxMpMessageRouter newRouter = new WxMpMessageRouter(wxMpService);
-        // 记录所有事件的日志 （异步执行）
-        newRouter.rule().handler(this.logHandler).next();
-
-        // async(false) 同步执行,表示执行完再返回给微信
-
-        // 接收客服会话管理事件
-//        newRouter.rule().async(false).msgType(WxConsts.XML_MSG_EVENT)
-//                .event(WxConsts.EVT_KF_CREATE_SESSION)
-//                .handler(this.kfSessionHandler).end();
-//        newRouter.rule().async(false).msgType(WxConsts.XML_MSG_EVENT)
-//                .event(WxConsts.EVT_KF_CLOSE_SESSION).handler(this.kfSessionHandler)
-//                .end();
-//        newRouter.rule().async(false).msgType(WxConsts.XML_MSG_EVENT)
-//                .event(WxConsts.EVT_KF_SWITCH_SESSION)
-//                .handler(this.kfSessionHandler).end();
-
-        // 自定义菜单事件
-//        newRouter.rule().async(false).msgType(WxConsts.XML_MSG_EVENT)
-//                .event(WxConsts.BUTTON_CLICK).handler(this.getMenuHandler()).end();
-
-        // 点击菜单连接事件
-//        newRouter.rule().async(false).msgType(WxConsts.XML_MSG_EVENT)
-//                .event(WxConsts.BUTTON_VIEW).handler(this.nullHandler).end();
-
-        // 关注事件
-        newRouter.rule().async(false).msgType(WxConsts.XML_MSG_EVENT)
-                .event(WxConsts.EVT_SUBSCRIBE).handler(this.subscribeHandler)
-                .end();
-
-        // 取消关注事件
-        newRouter.rule().async(false).msgType(WxConsts.XML_MSG_EVENT)
-                .event(WxConsts.EVT_UNSUBSCRIBE)
-                .handler(this.unsubscribeHandler).end();
-
-        // 扫码事件
-        newRouter.rule().async(false).msgType(WxConsts.XML_MSG_EVENT)
-                .event(WxConsts.EVT_SCAN).handler(this.scanHandler).end();
-
-        // 默认
-        newRouter.rule().async(false).handler(this.msgHandler).end();
-
-        return newRouter;
+    public AccessAction accessAction(){
+        return new AccessAction();
     }
-     */
 
     public WxMpConfig setAppid(String appid) {
         this.appid = appid;

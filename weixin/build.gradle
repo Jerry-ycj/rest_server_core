@@ -12,5 +12,5 @@ repositories {
 dependencies {
     compile project(":main")
     // weixin
-    compile 'com.github.binarywang:weixin-java-mp:2.5.0'
+    compile 'com.github.binarywang:weixin-java-mp:2.7.7'
 }

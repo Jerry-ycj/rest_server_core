@@ -110,7 +110,7 @@ public class BasicSqlProvider {
 	/***
 	 * 如果没有@table, 那么按类名同名,首字母小写
 	 */
-	protected String getTableName(Class<?> beanClass) {
+	private String getTableName(Class<?> beanClass) {
 		String tableName;
 		Table table = beanClass.getAnnotation(Table.class);
 		if (table != null) {
@@ -122,7 +122,7 @@ public class BasicSqlProvider {
 		return tableName;
 	}
 
-	protected Field[] getFields(Class<?> beanClass) {
+	private Field[] getFields(Class<?> beanClass) {
 		Field[] beanFields = beanClass.getDeclaredFields();
 		Class<?> beanSuperClass = beanClass.getSuperclass();
 		Field[] beanSuperFields = beanSuperClass.getDeclaredFields();

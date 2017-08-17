@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
 
 public class JsonUtil {
 
+    private static Logger logger = LoggerFactory.getLogger(JsonUtil.class);
     private static final ObjectMapper JSON = new ObjectMapper();
     static {
         JSON.setSerializationInclusion(Include.NON_NULL);
@@ -20,6 +23,7 @@ public class JsonUtil {
         try {
             return JSON.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -29,6 +33,7 @@ public class JsonUtil {
         try {
             return JSON.readValue(str,Map.class);
         } catch (IOException e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -38,6 +43,7 @@ public class JsonUtil {
         try {
             return JSON.readValue(str,clas);
         } catch (IOException e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         }
         return null;
