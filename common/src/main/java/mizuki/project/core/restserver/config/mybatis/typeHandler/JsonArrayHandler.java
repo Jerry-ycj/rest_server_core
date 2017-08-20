@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * Created by ycj on 2017/4/13.
- *  [{}] - list<Map>
+ *  [{},{}] - list<Map>
  *
  */
 public class JsonArrayHandler implements TypeHandler<List<Map>>{
