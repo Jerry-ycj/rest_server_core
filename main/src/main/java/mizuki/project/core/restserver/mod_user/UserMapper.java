@@ -109,12 +109,12 @@ public interface UserMapper {
     @Select("select token from rest_token where uid=#{param1}")
     String findRestToken(int uid);
 
-    @Select("select u.* from user_ u,rest_token t where t.uid=u.id and t.token=#{param1} and now()<=t.createDt+'${param2} hour'")
+    @Select("select u.* from user_ u,rest_token t where t.uid=u.id and t.token=#{param1} and now()<=t.createDt+'${hours} hour'")
     @Results(value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole"))
     })
-    User findUserByToken(String token, int hours);
+    User findUserByToken(String token, @Param("hours") int hours);
 
     /**
      * 验证码 sms_code
