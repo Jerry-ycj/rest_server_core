@@ -1,6 +1,7 @@
 package mizuki.project.core.restserver.config.mybatis.typeHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import mizuki.project.core.restserver.util.JsonUtil;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.slf4j.Logger;
@@ -47,18 +48,16 @@ public class JsonArrayHandler implements TypeHandler<List<Map>>{
 
     private List<Map> transfer(String s){
         // "[{\"test\": 2,\"key\": 12},{}]"
-        List<Map> list = new ArrayList<>();
         Map<String,Object> map = new HashMap<>();
         if(s==null || s.length()==2){
+            return new ArrayList<>();
+        }
+        List list = (List) JsonUtil.toObject(s,List.class);
+        if(list==null){
+            return new ArrayList<>();
+        }else{
             return list;
         }
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            list = objectMapper.readValue(s,List.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.error("err：",e);
-        }
-        return list;
+
     }
 }

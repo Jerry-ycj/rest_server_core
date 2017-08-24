@@ -1,9 +1,7 @@
 package mizuki.project.core.restserver.util;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,9 +12,13 @@ public class JsonUtil {
 
     private static Logger logger = LoggerFactory.getLogger(JsonUtil.class);
     private static final ObjectMapper JSON = new ObjectMapper();
-    static {
-        JSON.setSerializationInclusion(Include.NON_NULL);
-        JSON.configure(SerializationFeature.INDENT_OUTPUT, Boolean.TRUE);
+//    static {
+//        JSON.setSerializationInclusion(Include.NON_NULL);
+//        JSON.configure(SerializationFeature.INDENT_OUTPUT, Boolean.TRUE);
+//    }
+
+    public static ObjectMapper getJSON() {
+        return JSON;
     }
 
     public static String toJson(Object obj) {
