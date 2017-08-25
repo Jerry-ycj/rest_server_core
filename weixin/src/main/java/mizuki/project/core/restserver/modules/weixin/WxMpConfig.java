@@ -24,6 +24,8 @@ public class WxMpConfig {
     private String partnerid;
     private String partnerkey;
 
+    private String templateIdNotice;
+
     @Bean
     public WxMpConfigStorage configStorage() {
         WxMpInMemoryConfigStorage configStorage = new WxMpInMemoryConfigStorage();
@@ -72,6 +74,15 @@ public class WxMpConfig {
 
     public WxMpConfig setPartnerkey(String partnerkey) {
         this.partnerkey = partnerkey;
+        return this;
+    }
+
+    public String getTemplateIdNotice() {
+        return templateIdNotice;
+    }
+
+    public WxMpConfig setTemplateIdNotice(String templateIdNotice) {
+        this.templateIdNotice = templateIdNotice;
         return this;
     }
 }

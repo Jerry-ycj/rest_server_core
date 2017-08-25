@@ -4,6 +4,8 @@ import me.chanjar.weixin.common.exception.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -18,6 +20,9 @@ import java.util.List;
 public class WxTemplateUtil {
 
     private WxMpService wxMpService;
+    @Autowired
+    private WxMpConfig config;
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public static final String COLOR_BLUE = "#0000FF";
     public static final String COLOR_ORANGE = "#FF7F00";
@@ -42,26 +47,22 @@ public class WxTemplateUtil {
      */
     public void notice(String content1,List<String> ids,String url,String color){
         String now = LocalDate.now().toString();
-        System.out.println(ids.size());
         for(String openid:ids){
             if(openid==null){
                 System.out.println("openid null");
                 continue;
             }
-//            String openid = "oz-IJw1s3zDCsj5iaLBrzOZwjbH4";
             WxMpTemplateMessage templateMessage = new WxMpTemplateMessage();
             templateMessage.setToUser(openid);
-            templateMessage.setTemplateId("qLHqzd1pRLpAkbOQO42vIbFBDaTKzEvOLHFtyGAJQyY");
+            templateMessage.setTemplateId(config.getTemplateIdNotice());
             templateMessage.setUrl(url);
 //        templateMessage.setTopColor();
             templateMessage.getData().add(new WxMpTemplateData("first", content1, color));
             templateMessage.getData().add(new WxMpTemplateData("keyword2", now, "#000000"));
-
             try {
                 wxMpService.getTemplateMsgService().sendTemplateMsg(templateMessage);
             } catch (WxErrorException e) {
-                e.printStackTrace();
-                System.out.println("err:"+openid);
+                logger.error(e.getMessage());
             }
         }
     }
