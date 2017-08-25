@@ -23,7 +23,7 @@ public class User implements Serializable{
 	private int gender;	// 1-nan,2-nv
 	private String image;// 头像
 	private String address;
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Timestamp createDt;
     private int off;    // 1-冻结, 2-等待审核
 	// 头像地址编码
