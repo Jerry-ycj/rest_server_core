@@ -27,6 +27,7 @@ public class WxTemplateUtil {
     public static final String COLOR_BLUE = "#0000FF";
     public static final String COLOR_ORANGE = "#FF7F00";
     public static final String COLOR_FGREEN = "#238E23";
+    public static final String COLOR_RED = "#EE2C2C";
 
     @Autowired
     public WxTemplateUtil setWxMpService(WxMpService wxMpService) {
@@ -35,35 +36,36 @@ public class WxTemplateUtil {
     }
 
     /**
-     * 模板信息
+     * 模板信息 - 订单消息通知 模板
      */
+    public void notice(String content,String openid,String url,String color){
+        String now = LocalDate.now().toString();
+        WxMpTemplateMessage templateMessage = new WxMpTemplateMessage();
+        templateMessage.setToUser(openid);
+        templateMessage.setTemplateId(config.getTemplateIdNotice());
+        templateMessage.setUrl(url);
+        templateMessage.getData().add(new WxMpTemplateData("first", content, color));
+        templateMessage.getData().add(new WxMpTemplateData("keyword2", now, "#000000"));
+        try {
+            wxMpService.getTemplateMsgService().sendTemplateMsg(templateMessage);
+        } catch (WxErrorException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
     public void notice(String content1,String[] ids,String url,String color){
         List<String> list = new ArrayList<>();
         Collections.addAll(list, ids);
         notice(content1,list,url,color);
     }
-    /**
-     * 模板信息 - 订单消息通知 模板
-     */
+
     public void notice(String content1,List<String> ids,String url,String color){
-        String now = LocalDate.now().toString();
         for(String openid:ids){
             if(openid==null){
                 System.out.println("openid null");
                 continue;
             }
-            WxMpTemplateMessage templateMessage = new WxMpTemplateMessage();
-            templateMessage.setToUser(openid);
-            templateMessage.setTemplateId(config.getTemplateIdNotice());
-            templateMessage.setUrl(url);
-//        templateMessage.setTopColor();
-            templateMessage.getData().add(new WxMpTemplateData("first", content1, color));
-            templateMessage.getData().add(new WxMpTemplateData("keyword2", now, "#000000"));
-            try {
-                wxMpService.getTemplateMsgService().sendTemplateMsg(templateMessage);
-            } catch (WxErrorException e) {
-                logger.error(e.getMessage());
-            }
+            notice(content1,openid,url,color);
         }
     }
 
