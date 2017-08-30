@@ -21,9 +21,6 @@ public class WxMpConfig {
     private String appid;
     private String secret;
     private String token;
-    private String partnerid;
-    private String partnerkey;
-
     private String templateIdNotice;
 
     @Bean
@@ -64,16 +61,6 @@ public class WxMpConfig {
 
     public WxMpConfig setToken(String token) {
         this.token = token;
-        return this;
-    }
-
-    public WxMpConfig setPartnerid(String partnerid) {
-        this.partnerid = partnerid;
-        return this;
-    }
-
-    public WxMpConfig setPartnerkey(String partnerkey) {
-        this.partnerkey = partnerkey;
         return this;
     }
 
