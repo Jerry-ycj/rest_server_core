@@ -1,13 +1,11 @@
 package mizuki.project.core.restserver.config.mybatis.typeHandler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import mizuki.project.core.restserver.util.JsonUtil;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -47,7 +45,7 @@ public class JsonHandler implements TypeHandler<Map>{
     private Map transfer(String s){
         // "{\"test\": 2,\"key\": 12}"
         if(s==null || s.length()==2){
-            return null;
+            return new HashMap();
         }
         return JsonUtil.toMap(s);
     }
