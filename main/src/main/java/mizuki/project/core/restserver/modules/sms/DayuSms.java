@@ -10,6 +10,7 @@ import com.aliyuncs.profile.IClientProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Random;
@@ -18,6 +19,7 @@ import java.util.Random;
  * Created by ycj on 16/8/7.
  * 阿里大于  sms
  */
+@Component
 @ConfigurationProperties("mod.sms_dayu")
 public class DayuSms {
 

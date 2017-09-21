@@ -323,34 +323,6 @@ public class UserRestAction{
     }
 
     /**
-     * sms todo
-     */
-    @RequestMapping(value="/smsCode")
-    public Map<String, Object> smsCode(
-            @RequestParam String phone
-    ) throws RestMainException {
-        Map<String,Object> data = new HashMap<>();
-        try{
-            data.put("result", 1);
-            String code = null;
-            if(userMapper.findSmsCode(phone)!=null){
-                userMapper.updateSmsCode(phone,code);
-            }else{
-                userMapper.saveSmsCode(phone,code);
-            }
-//            HashMap<String, Object> result = SDKTestSendTemplateSMS.sendVerifyCode(phone, code);
-//            if(!"000000".equals(result.get("statusCode"))){
-//                data.put("result", 0);
-//                data.put("message","验证码发送失败，请稍后再试！");
-//            }
-            return data;
-        }catch (Exception e){
-            throw new RestMainException(e);
-        }
-    }
-
-
-    /**
      * 忘记密码
      */
     @RequestMapping(value="/resetPassword")
