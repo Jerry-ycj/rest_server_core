@@ -23,7 +23,7 @@ public class JsonUtil {
 
     public static String toJson(Object obj) {
         try {
-            return JSON.writeValueAsString(obj);
+            return obj==null?null:JSON.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
@@ -33,7 +33,7 @@ public class JsonUtil {
 
     public static Map toMap(String str){
         try {
-            return JSON.readValue(str,Map.class);
+            return str==null?null:JSON.readValue(str,Map.class);
         } catch (IOException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
@@ -43,7 +43,7 @@ public class JsonUtil {
 
     public static Object toObject(String str, Class clas){
         try {
-            return JSON.readValue(str,clas);
+            return str==null?null:JSON.readValue(str,clas);
         } catch (IOException e) {
             logger.error(e.getMessage());
             e.printStackTrace();

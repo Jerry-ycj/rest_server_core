@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -90,36 +91,20 @@ public class AliOSS {
                 new Date(new Date().getTime() + time_second * 1000));
     }
 
-//    public void test1() throws UnsupportedEncodingException {
-//        String host = "http://" + bucketName + "." + endpoint;
-//        long expireEndTime = System.currentTimeMillis() + 3600 * 1000;
-//        Date expiration = new Date(expireEndTime);
-//        PolicyConditions policyConds = new PolicyConditions();
-//        policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 1048576000);
-//        policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, "Mazak_HCN6800.png");
-//        String postPolicy = ossClient().generatePostPolicy(expiration, policyConds);
-//        byte[] binaryData = postPolicy.getBytes("utf-8");
-//        String encodedPolicy = BinaryUtil.toBase64String(binaryData);
-//        String postSignature = ossClient().calculatePostSignature(postPolicy);
-//        Map<String, String> respMap = new LinkedHashMap<String, String>();
-//        respMap.put("accessid", accessKey);
-//        respMap.put("policy", encodedPolicy);
-//        respMap.put("signature", postSignature);
-//        respMap.put("dir", "Mazak_HCN6800.png");
-//        respMap.put("host", host);
-//        respMap.put("expire", String.valueOf(expireEndTime / 1000));
-//        System.out.println(JsonUtil.toJson(respMap));
-//    }
-
     /**
      * 返回 sts
      * 终端用sts 上传或构造url
      *  path: test/timg.jpg or test/12/*
      */
-    public Map<String,Object> stsGetPutForUser(int uid,String path) throws ClientException {
-        String roleSessionName = "user-"+uid;
+    public Map<String,Object> stsGetPutForUser(String roleSession,List<String> path) throws ClientException {
         // 如何定制你的policy?
         // https://github.com/rockuw/node-sts-app-server/blob/master/policy/bucket_read_write_policy.txt
+        StringBuilder resources= new StringBuilder();
+        if(path.size()==0) return null;
+        for(String r:path){
+            resources.append("\"acs:oss:*:*:").append(bucketName).append("/").append(path).append("\",");
+        }
+        resources.deleteCharAt(resources.length()-1);
         String policy = "{" +
                 "    \"Version\": \"1\", " +
                 "    \"Statement\": [" +
@@ -128,7 +113,7 @@ public class AliOSS {
                 "                \"oss:GetObject\",\"oss:PutObject\" " +
                 "            ], " +
                 "            \"Resource\": [" +
-                "                \"acs:oss:*:*:"+bucketName+"/"+path+"\"" +
+                resources.toString() +
                 "            ], " +
                 "            \"Effect\": \"Allow\"" +
                 "        }" +
@@ -137,7 +122,7 @@ public class AliOSS {
         // 此处必须为 HTTPS
         ProtocolType protocolType = ProtocolType.HTTPS;
         final AssumeRoleResponse response = assumeRole(accessKey, accessKeySecret,
-                arn, roleSessionName, policy, protocolType);
+                arn, roleSession, policy, protocolType);
         Map<String,Object> map = new HashMap<>();
         map.put("accessKeyId",response.getCredentials().getAccessKeyId());
         map.put("accessKeySecret",response.getCredentials().getAccessKeySecret());
@@ -166,6 +151,8 @@ public class AliOSS {
         request.setRoleArn(roleArn);
         request.setRoleSessionName(roleSessionName);
         request.setPolicy(policy);
+        // duration min/max 15min/1h  default max
+//        request.setDurationSeconds(180L);
         // 发起请求，并得到response
         final AssumeRoleResponse response = client.getAcsResponse(request);
         return response;
