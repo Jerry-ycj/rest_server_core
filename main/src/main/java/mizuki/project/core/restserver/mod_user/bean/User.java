@@ -2,6 +2,7 @@ package mizuki.project.core.restserver.mod_user.bean;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModelProperty;
 import mizuki.project.core.restserver.util.CodeUtil;
 
 import java.io.Serializable;
@@ -20,12 +21,14 @@ public class User implements Serializable{
 	private String phone;
     @JsonIgnore
 	private String pwd;
-	private int gender;	// 1-nan,2-nv
+    @ApiModelProperty(notes = "1-nan,2-nv")
+	private int gender;
 	private String image;// 头像
 	private String address;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Timestamp createDt;
-    private int off;    // 1-冻结, 2-等待审核
+	@ApiModelProperty(notes = "1-冻结, 2-等待审核")
+    private int off;
 	// 头像地址编码
 	private String imageCode;
 

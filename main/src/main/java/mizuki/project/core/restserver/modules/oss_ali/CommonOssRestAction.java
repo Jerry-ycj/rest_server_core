@@ -17,7 +17,7 @@ import java.util.Map;
  * 只是用于 user 的common oss
  * 如果其他类型的 如customer，需要自行添加action
  */
-@RestController
+//@RestController
 @RequestMapping("/rest/common/oss")
 @SessionAttributes({"user"})
 public class CommonOssRestAction {

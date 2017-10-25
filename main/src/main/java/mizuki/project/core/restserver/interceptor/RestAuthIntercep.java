@@ -1,8 +1,10 @@
 package mizuki.project.core.restserver.interceptor;
 
+import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.security.SecurityConfig;
 import mizuki.project.core.restserver.mod_user.UserMapper;
 import mizuki.project.core.restserver.mod_user.bean.User;
+import mizuki.project.core.restserver.util.JsonUtil;
 import mizuki.project.core.restserver.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,12 +39,12 @@ public class RestAuthIntercep extends HandlerInterceptorAdapter {
                     return true;
                 } else {
                     ResponseUtil.setCross(response,request);
-                    response.getWriter().print("{\"result\":2, \"message\":\"token error\"}");
+                    response.getWriter().print(JsonUtil.toJson(new BasicRet(BasicRet.TOKEN_ERR,"token error")));
                     return false;
                 }
             }else{
                 ResponseUtil.setCross(response,request);
-                response.getWriter().print("{\"result\":2, \"message\":\"token error\"}");
+                response.getWriter().print(JsonUtil.toJson(new BasicRet(BasicRet.TOKEN_ERR,"token error")));
                 return false;
             }
         }else{

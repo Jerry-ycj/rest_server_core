@@ -21,12 +21,9 @@ public class ExceptionProcess {
 
     @ExceptionHandler(RestMainException.class)
     public @ResponseBody
-    Map<String,Object> handle(RestMainException e){
-        Map<String,Object> data = new HashMap<>();
-        data.put("result",0);
-        data.put("message","服务器错误"+(e.getMessage()==null?"":": "+e.getMessage()));
+    BasicRet handle(RestMainException e){
         logger.error("err：",e);
         // todo deal model
-        return data;
+        return new BasicRet(BasicRet.ERR,"服务器错误"+(e.getMessage()==null?"":": "+e.getMessage()));
     }
 }

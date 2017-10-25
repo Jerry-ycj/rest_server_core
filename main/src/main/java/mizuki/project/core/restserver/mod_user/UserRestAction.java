@@ -1,5 +1,10 @@
 package mizuki.project.core.restserver.mod_user;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
+import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.WebConfBean;
 import mizuki.project.core.restserver.config.exception.RestMainException;
 import mizuki.project.core.restserver.mod_user.bean.Role;
@@ -30,6 +35,7 @@ import java.util.Map;
 @RequestMapping(value = "/rest/user")
 @SessionAttributes({"user"})
 @Transactional(rollbackFor = Exception.class)
+@Api(tags = "管理用户模块",description = "管理的用户")
 public class UserRestAction{
 
 	@Autowired
@@ -39,39 +45,41 @@ public class UserRestAction{
     /** 头像 */
     private static final String imgPath="/user/image";
 
-    /** 获取角色列表 */
-    @RequestMapping("/listRoles")
-    public Map listRoles() throws RestMainException{
-        Map<String,Object> data = new HashMap<>();
+    @RequestMapping(value = "/listRoles",method = RequestMethod.POST)
+    @ApiOperation(value = "获取角色列表")
+    public ListRolesRet listRoles() throws RestMainException{
+        ListRolesRet ret = new ListRolesRet();
         try{
-            List<Role> roles = userMapper.listRoles();
-            data.put("result",1);
-            data.put("roles",roles);
-            return data;
+            ret.roles= userMapper.listRoles();
+            ret.setResult(BasicRet.SUCCESS);
+            return ret;
         }catch (Exception e){
             throw new RestMainException(e);
         }
     }
+    @ApiModel(description = "返回结果实体")
+    private class ListRolesRet extends BasicRet{
+        private List<Role> roles;
+        public List<Role> getRoles() {
+            return roles;
+        }
+    }
 
-    @RequestMapping("/logout")
-    public Map logout(
+    @RequestMapping(value = "/logout",method = RequestMethod.POST)
+    @ApiOperation(value = "登出")
+    public BasicRet logout(
             Model model,
             HttpSession session
     ) throws RestMainException {
-        Map<String,Object> data = new HashMap<>();
         try{
             model.asMap().remove("user");
             session.removeAttribute("user");
-            data.put("result",1);
-            return data;
+            return new BasicRet(BasicRet.SUCCESS);
         }catch (Exception e){
             throw new RestMainException(e,model);
         }
     }
-	
-	/**
-	 * 用户注册
-	 */
+
 //	@RequestMapping(value="/register")
 	public Map<String, Object> userRegister(
             Model model,
@@ -117,79 +125,66 @@ public class UserRestAction{
         }
 	}
 	
-	/**
-     * 用户登录
-	 */
-	@RequestMapping(value="/loginByPhone")
-	public Map<String, Object> userLogin(
+
+	@RequestMapping(value="/loginByPhone",method = RequestMethod.POST)
+    @ApiOperation(value = "用户登录（手机）")
+	public LoginUserRet userLogin(
             @RequestParam String phone,
             @RequestParam String pwd,
             Model model
     ) throws RestMainException {
-        Map<String,Object> data = new HashMap<>();
+        LoginUserRet ret=new LoginUserRet();
         try{
             String passwd = CodeUtil.md5(pwd);
             User user = userMapper.loginByPhone(phone,passwd);
             if(user != null){
-                loginHandle(user,data,model);
+                return loginHandle(user,ret,model);
             }else{
-                data.put("result", 0);
-                data.put("message", "用户名或密码错误");
+                return (LoginUserRet)ret.setResult(BasicRet.ERR).setMessage("用户名或密码错误");
             }
-            return data;
         }catch (Exception e){
             throw new RestMainException(e,model);
         }
 	}
 
-    @RequestMapping("/loginByUsername")
-    public Map login(
+    @RequestMapping(value = "/loginByUsername",method = RequestMethod.POST)
+    @ApiOperation(value = "用户名登录")
+    public LoginUserRet login(
             Model model,
             @RequestParam String username,
             @RequestParam String pwd
     ) throws RestMainException{
-        Map<String,Object> data = new HashMap<>();
+        LoginUserRet ret=new LoginUserRet();
         try{
             String passwd = CodeUtil.md5(pwd);
             User user = userMapper.loginByUsername(username,passwd);
             if(user != null){
-                loginHandle(user,data,model);
+                return loginHandle(user,ret,model);
             }else{
-                data.put("result",0);
-                data.put("message","用户名或密码错误");
+                return (LoginUserRet)ret.setResult(BasicRet.ERR).setMessage("用户名或密码错误");
             }
-            return data;
         }catch (Exception e){
-            e.printStackTrace();
-            logger.error("err",e);
-            throw new RestMainException(e);
+            throw new RestMainException(e,model);
         }
     }
 
-    /**
-     * 用户登录 sms code
-     */
-    @RequestMapping(value="/loginSms")
-    public Map<String, Object> userLoginSms(
+    @RequestMapping(value="/loginSms",method = RequestMethod.POST)
+    @ApiOperation(value = "短信登录")
+    public LoginUserRet userLoginSms(
             @RequestParam String phone,
             @RequestParam String sms,
             Model model
     ) throws RestMainException {
-        Map<String,Object> data = new HashMap<>();
+        LoginUserRet ret=new LoginUserRet();
         try{
             if(!sms.equals(userMapper.findSmsCode(phone))){
-                data.put("result", 0);
-                data.put("message", "验证码错误");
-                return data;
+                return (LoginUserRet) ret.setResult(BasicRet.ERR).setMessage("验证码错误");
             }
             User user = userMapper.findUserByPhone(phone);
             if(user==null){
-                data.put("result", 0);
-                data.put("message", "用户不存在");
-                return data;
+                return (LoginUserRet) ret.setResult(BasicRet.ERR).setMessage("用户不存在");
             }
-            loginHandle(user,data,model);
-            return data;
+            return loginHandle(user,ret,model);
         }catch (Exception e){
             throw new RestMainException(e,model);
         }
@@ -198,15 +193,11 @@ public class UserRestAction{
     /***
      * 登录时  获取user 和 systems
      */
-    private void loginHandle(User user,Map<String,Object> data,Model model){
+    private LoginUserRet loginHandle(User user,LoginUserRet ret,Model model){
         if(user.getOff()==1){
-            data.put("result", 0);
-            data.put("message", "账户被冻结");
-            return ;
+            return (LoginUserRet) ret.setResult(BasicRet.ERR).setMessage("账户被冻结");
         }else if(user.getOff()==2){
-            data.put("result", 0);
-            data.put("message", "账户审核中");
-            return ;
+            return (LoginUserRet) ret.setResult(BasicRet.ERR).setMessage("账户审核中");
         }
         String token = OtherUtil.get32UUID();
         if(userMapper.findRestToken(user.getId())==null){
@@ -215,43 +206,47 @@ public class UserRestAction{
             userMapper.updateRestToken(user.getId(), token);
         }
         model.addAttribute("user",user);
-        data.put("result", 1);
-        data.put("token", token);
-        data.put("user", user);
-        data.put("message", "成功");
+        ret.token = token;
+        ret.user = user;
+        return (LoginUserRet) ret.setResult(BasicRet.SUCCESS);
+    }
+    private class LoginUserRet extends BasicRet{
+        private String token;
+        private User user;
+
+        public String getToken() {
+            return token;
+        }
+
+        public User getUser() {
+            return user;
+        }
     }
 
-    /**
-     * 密码修改
-     */
-    @RequestMapping(value="/updatePwd")
-    public Map<String, Object> updateUserPassword(
+
+    @RequestMapping(value="/updatePwd",method = RequestMethod.POST)
+    @ApiOperation(value = "密码修改")
+    public BasicRet updateUserPassword(
             Model model,
             @RequestParam String oldPwd,
             @RequestParam String newPwd
     ) throws RestMainException {
         User user = (User)model.asMap().get("user");
-        Map<String,Object> data = new HashMap<>();
         try{
-            data.put("result", 1);
             if(!user.getPwd().equals(CodeUtil.md5(oldPwd))){
-                data.put("result", 0);
-                data.put("message", "用户名或密码错误");
-                return data;
+                return new BasicRet(BasicRet.ERR,"用户名或密码错误");
             }
             user.setPwd(CodeUtil.md5(newPwd));
             userMapper.updateUserPassword(user);
-            return data;
+            return new BasicRet(BasicRet.SUCCESS);
         }catch (Exception e){
             throw new RestMainException(e,model);
         }
     }
 
-    /**
-     * 更新.
-     */
-    @RequestMapping(value="/updateUserInfo")
-    public Map<String, Object> updateUserInfo(
+    @RequestMapping(value="/updateUserInfo",method = RequestMethod.POST)
+    @ApiOperation(value = "更新用户信息")
+    public BasicRet updateUserInfo(
             Model model,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String phone,
@@ -260,32 +255,26 @@ public class UserRestAction{
             @RequestParam(required = false)String sms
     ) throws RestMainException {
         User user = (User)model.asMap().get("user");
-        Map<String,Object> data = new HashMap<>();
         try{
             if(phone!=null && !phone.equals(user.getPhone()) && sms==null){
-                data.put("result", 0);
-                data.put("message", "修改手机需要验证码");
-                return data;
+                return new BasicRet(BasicRet.ERR,"修改手机需要验证码");
             }
             if(sms!=null && phone!=null && !phone.equals(user.getPhone())
                     && !sms.equals(userMapper.findSmsCode(phone))){
-                data.put("result", 0);
-                data.put("message", "验证码错误");
-                return data;
+                return new BasicRet(BasicRet.ERR,"验证码错误");
             }
-            data.put("result", 1);
             if(name!=null) user.setName(name);
             if(gender!=0) user.setGender(gender);
             if(address!=null) user.setAddress(address);
             userMapper.updateUser(user);
-            return data;
+            return new BasicRet(BasicRet.SUCCESS);
         }catch (Exception e){
             throw new RestMainException(e,model);
         }
     }
 
 
-    @RequestMapping(value="/updateUserImage")
+//    @RequestMapping(value="/updateUserImage",method = RequestMethod.POST)
     public Map<String, Object> updateUserImage(
             Model model,
             @RequestParam MultipartFile image
@@ -308,10 +297,7 @@ public class UserRestAction{
         }
     }
 
-    /***
-     * 头像下载
-     */
-    @RequestMapping("/download/{code}")
+//    @RequestMapping(value = "/download/{code}",method = RequestMethod.GET)
     public ResponseEntity<InputStreamResource> downloadFile(
             Model model,
             @PathVariable String code)
@@ -322,33 +308,24 @@ public class UserRestAction{
                 imgPath);
     }
 
-    /**
-     * 忘记密码
-     */
-    @RequestMapping(value="/resetPassword")
-    public Map<String, Object> resetPassword(
+    @RequestMapping(value="/resetPassword",method = RequestMethod.POST)
+    @ApiOperation(value = "重置密码")
+    public BasicRet resetPassword(
             @RequestParam String sms,
             @RequestParam String phone,
             @RequestParam String newPwd
     ) throws RestMainException {
-//        User user = (User)model.asMap().get("user");
-        Map<String,Object> data = new HashMap<>();
         try{
-            data.put("result", 1);
             if(!sms.equals(userMapper.findSmsCode(phone))){
-                data.put("result", 0);
-                data.put("message","验证码错误");
-                return data;
+                return new BasicRet(BasicRet.ERR,"验证码错误");
             }
             User user = userMapper.findUserByPhone(phone);
             if(user==null){
-                data.put("result", 0);
-                data.put("message","用户不存在,请注册");
-                return data;
+                return new BasicRet(BasicRet.ERR,"用户不存在");
             }
             user.setPwd(CodeUtil.md5(newPwd));
             userMapper.updateUserPassword(user);
-            return data;
+            return new BasicRet(BasicRet.SUCCESS);
         }catch (Exception e){
             throw new RestMainException(e);
         }
