@@ -2,7 +2,7 @@ package mizuki.project.core.restserver.interceptor;
 
 import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.security.SecurityConfig;
-import mizuki.project.core.restserver.mod_user.UserMapper;
+import mizuki.project.core.restserver.mod_user.dao.UserMapper;
 import mizuki.project.core.restserver.mod_user.bean.User;
 import mizuki.project.core.restserver.util.JsonUtil;
 import mizuki.project.core.restserver.util.ResponseUtil;

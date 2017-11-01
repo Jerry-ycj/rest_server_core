@@ -1,4 +1,4 @@
-package mizuki.project.core.restserver.config.mybatis.typeHandler;
+package mizuki.project.core.restserver.config.mybatis.typeHandler.jsonb;
 
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
@@ -15,11 +15,10 @@ import java.util.List;
 
 /**
  * Created by ycj on 2017/4/13.
- *  {'',''} - list
+ *  ["", ""] - list
  *
  */
-@Deprecated
-public class StringArrayHandler implements TypeHandler<List<String>>{
+public class StringArrayInJsonHandler implements TypeHandler<List<String>>{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -44,17 +43,13 @@ public class StringArrayHandler implements TypeHandler<List<String>>{
     }
 
     private List<String> transfer(String s){
-//        System.out.println("---- "+s);
-        // 可能出现 {"key"}这种情况？？
-        s = s.replace("{\"","{")
-                .replace("\",\"",",")
-                .replace("\"}","}");
+        // ["卸载", "停止", "报警", "预警"]
         List<String> list = new ArrayList<>();
-        if(s==null || s.length()==2){
+        if(s==null || s.length()<4){
             return list;
         }
-        String tmp = s.substring(1,s.length()-1);
-        list.addAll(Arrays.asList(tmp.split(",")));
+        String tmp = s.substring(2,s.length()-2);
+        list.addAll(Arrays.asList(tmp.split("\", \"")));
         return list;
     }
 }

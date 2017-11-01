@@ -1,4 +1,4 @@
-package mizuki.project.core.restserver.config.mybatis.typeHandler;
+package mizuki.project.core.restserver.config.mybatis.typeHandler.jsonb;
 
 import mizuki.project.core.restserver.util.JsonUtil;
 import org.apache.ibatis.type.JdbcType;
@@ -18,7 +18,6 @@ import java.util.Map;
  *  {} - Map
  *
  */
-@Deprecated
 public class JsonHandler implements TypeHandler<Map>{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

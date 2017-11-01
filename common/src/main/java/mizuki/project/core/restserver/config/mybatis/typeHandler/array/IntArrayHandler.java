@@ -1,4 +1,4 @@
-package mizuki.project.core.restserver.config.mybatis.typeHandler;
+package mizuki.project.core.restserver.config.mybatis.typeHandler.array;
 
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
@@ -15,7 +15,6 @@ import java.util.List;
  *  {1,2,3} - list
  *
  */
-@Deprecated
 public class IntArrayHandler implements TypeHandler<List<Integer>>{
 
     @Override

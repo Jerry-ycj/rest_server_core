@@ -1,6 +1,6 @@
 package mizuki.project.core.restserver.config.security;
 
-import mizuki.project.core.restserver.mod_user.UserMapper;
+import mizuki.project.core.restserver.mod_user.dao.UserMapper;
 import mizuki.project.core.restserver.mod_user.bean.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

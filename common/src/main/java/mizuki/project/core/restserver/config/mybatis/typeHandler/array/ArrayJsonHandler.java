@@ -1,13 +1,11 @@
-package mizuki.project.core.restserver.config.mybatis.typeHandler;
+package mizuki.project.core.restserver.config.mybatis.typeHandler.array;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import mizuki.project.core.restserver.util.JsonUtil;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,7 +20,6 @@ import java.util.Map;
  * pgsql中jsonb[]: {{},{}} - list
  *
  */
-@Deprecated
 public class ArrayJsonHandler implements TypeHandler<List<Map>>{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

@@ -1,6 +1,7 @@
-package mizuki.project.core.restserver.mod_user;
+package mizuki.project.core.restserver.mod_user.dao;
 
-import mizuki.project.core.restserver.config.mybatis.typeHandler.StringArrayHandler;
+import mizuki.project.core.restserver.config.mybatis.provider.PGBaseSqlProvider;
+import mizuki.project.core.restserver.config.mybatis.typeHandler.array.StringArrayHandler;
 import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
 import org.apache.ibatis.annotations.*;
@@ -73,8 +74,7 @@ public interface UserMapper {
     User loginByUsername(String username, String pwd);
 
 
-    @Insert("insert into user_(pwd,phone,name,username,createDt,role) " +
-            "values(#{pwd},#{phone},#{name},#{username},now(),#{role.id})")
+    @InsertProvider(type = PGBaseSqlProvider.class,method = "insert")
     @Options(useGeneratedKeys = true)
     void saveUser(User user);
 
@@ -115,18 +115,5 @@ public interface UserMapper {
             @Result(property = "role", column = "role", one = @One(select = "findRole"))
     })
     User findUserByToken(String token, @Param("hours") int hours);
-
-    /**
-     * 验证码 sms_code
-     */
-
-    @Insert("insert into sms_code(phone,code) values(#{param1},#{param2})")
-    void saveSmsCode(String phone, String code);
-
-    @Update("update sms_code set code=#{param2} where phone=#{param1}")
-    void updateSmsCode(String phone, String code);
-
-    @Select("select code from sms_code where phone=#{param1}")
-    String findSmsCode(String phone);
 
 }

@@ -18,6 +18,7 @@ import java.util.List;
  *  ["", ""] - list
  *
  */
+@Deprecated
 public class StringArrayInJsonHandler implements TypeHandler<List<String>>{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

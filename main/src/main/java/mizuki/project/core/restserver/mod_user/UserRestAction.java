@@ -2,13 +2,14 @@ package mizuki.project.core.restserver.mod_user;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.WebConfBean;
 import mizuki.project.core.restserver.config.exception.RestMainException;
 import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
+import mizuki.project.core.restserver.mod_user.dao.UserMapper;
+import mizuki.project.core.restserver.modules.sms.SmsMapper;
 import mizuki.project.core.restserver.util.CodeUtil;
 import mizuki.project.core.restserver.util.IOUtil;
 import mizuki.project.core.restserver.util.OtherUtil;
@@ -40,6 +41,8 @@ public class UserRestAction{
 
 	@Autowired
 	private UserMapper userMapper;
+	@Autowired
+    private SmsMapper smsMapper;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /** 头像 */
@@ -101,7 +104,7 @@ public class UserRestAction{
                 data.put("message", "手机已注册");
                 return data;
             }
-            if(!sms.equals(userMapper.findSmsCode(phone))){
+            if(!sms.equals(smsMapper.findSmsCode(phone))){
                 data.put("result", 0);
                 data.put("message", "验证码错误");
                 return data;
@@ -177,7 +180,7 @@ public class UserRestAction{
     ) throws RestMainException {
         LoginUserRet ret=new LoginUserRet();
         try{
-            if(!sms.equals(userMapper.findSmsCode(phone))){
+            if(!sms.equals(smsMapper.findSmsCode(phone))){
                 return (LoginUserRet) ret.setResult(BasicRet.ERR).setMessage("验证码错误");
             }
             User user = userMapper.findUserByPhone(phone);
@@ -260,7 +263,7 @@ public class UserRestAction{
                 return new BasicRet(BasicRet.ERR,"修改手机需要验证码");
             }
             if(sms!=null && phone!=null && !phone.equals(user.getPhone())
-                    && !sms.equals(userMapper.findSmsCode(phone))){
+                    && !sms.equals(smsMapper.findSmsCode(phone))){
                 return new BasicRet(BasicRet.ERR,"验证码错误");
             }
             if(name!=null) user.setName(name);
@@ -316,7 +319,7 @@ public class UserRestAction{
             @RequestParam String newPwd
     ) throws RestMainException {
         try{
-            if(!sms.equals(userMapper.findSmsCode(phone))){
+            if(!sms.equals(smsMapper.findSmsCode(phone))){
                 return new BasicRet(BasicRet.ERR,"验证码错误");
             }
             User user = userMapper.findUserByPhone(phone);

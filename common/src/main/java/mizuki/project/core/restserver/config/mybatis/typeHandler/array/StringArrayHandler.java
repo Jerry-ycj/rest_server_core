@@ -1,4 +1,4 @@
-package mizuki.project.core.restserver.config.mybatis.typeHandler;
+package mizuki.project.core.restserver.config.mybatis.typeHandler.array;
 
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
@@ -18,7 +18,6 @@ import java.util.List;
  *  {'',''} - list
  *
  */
-@Deprecated
 public class StringArrayHandler implements TypeHandler<List<String>>{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

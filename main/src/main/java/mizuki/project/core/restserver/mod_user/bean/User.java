@@ -5,16 +5,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import mizuki.project.core.restserver.util.CodeUtil;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+@Table(name = "user_")
 public class User implements Serializable{
 
 	public static final int OFF_OK = 0;
     public static final int OFF_FREEZE = 1; // 冻结
     public static final int OFF_CHECK = 2;  // 审核中
 
+	@Id @GeneratedValue
 	private int id;
+	@OneToOne
+	@JoinColumn(name = "role", referencedColumnName = "id")
 	private Role role;
 	private String username;
 	private String name;
@@ -29,7 +34,8 @@ public class User implements Serializable{
 	private Timestamp createDt;
 	@ApiModelProperty(notes = "1-冻结, 2-等待审核")
     private int off;
-	// 头像地址编码
+	@ApiModelProperty(notes = "头像地址编码")
+	@Transient
 	private String imageCode;
 
     public String getImageCode() {

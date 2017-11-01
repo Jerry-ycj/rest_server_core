@@ -7,6 +7,7 @@ import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.exception.RestMainException;
 import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
+import mizuki.project.core.restserver.mod_user.dao.UserMapper;
 import mizuki.project.core.restserver.util.CodeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

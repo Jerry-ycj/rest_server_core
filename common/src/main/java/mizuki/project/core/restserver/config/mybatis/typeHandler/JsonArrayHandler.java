@@ -22,6 +22,7 @@ import java.util.Map;
  *  [{},{}] - list<Map>
  *
  */
+@Deprecated
 public class JsonArrayHandler implements TypeHandler<List<Map>>{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

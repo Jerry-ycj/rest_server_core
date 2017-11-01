@@ -1,6 +1,6 @@
 package mizuki.project.core.restserver.config.security;
 
-import mizuki.project.core.restserver.mod_user.UserMapper;
+import mizuki.project.core.restserver.mod_user.dao.UserMapper;
 import mizuki.project.core.restserver.mod_user.bean.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -4,21 +4,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.exception.RestMainException;
-import mizuki.project.core.restserver.mod_user.UserMapper;
-import mizuki.project.core.restserver.modules.oss_ali.AliOSS;
-import mizuki.project.core.restserver.modules.sms.DayuSms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 共用的一些 Controller
@@ -30,7 +22,7 @@ public class CommonSmsRestAction {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
-    private UserMapper userMapper;
+    private SmsMapper smsMapper;
     @Autowired
     private DayuSms dayuSms;
 
@@ -44,10 +36,10 @@ public class CommonSmsRestAction {
             if(code==null){
                 return new BasicRet(BasicRet.ERR,"短信发送失败");
             }
-            if(userMapper.findSmsCode(phone)!=null){
-                userMapper.updateSmsCode(phone,code);
+            if(smsMapper.findSmsCode(phone)!=null){
+                smsMapper.updateSmsCode(phone,code);
             }else{
-                userMapper.saveSmsCode(phone,code);
+                smsMapper.saveSmsCode(phone,code);
             }
             return new BasicRet(BasicRet.SUCCESS);
         }catch (Exception e){
