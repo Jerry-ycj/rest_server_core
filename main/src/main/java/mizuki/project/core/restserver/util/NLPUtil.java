@@ -7,7 +7,7 @@ import com.hankcs.hanlp.tokenizer.IndexTokenizer;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class nlpUtil {
+public class NLPUtil {
 
     private static List<String> ignoreNaturesHanLP;
     private static String[] ignoreNaturesHanLPArr = new String[]{
@@ -33,18 +33,25 @@ public class nlpUtil {
 //        System.out.println(tranlate2pg(set));
 //    }
 
-    public static String seqForPg(String... origin){
-        return tranlate2pg(seq_hanlp(origin));
+    public static String seqForPgVector(String... origin){
+        return tranlatePGVector(seq_hanlp(origin));
     }
 
-    private static Set seq_hanlp(String... origin){
+    /**
+     * seq for pgsql tsquery , or关系
+     */
+    public static String seqForPgQuery(String... origin){
+        return tranlatePGQuery(seq_hanlp(origin));
+    }
+
+    private static List seq_hanlp(String... origin){
         String strs = combine(origin);
         List<Term> list = IndexTokenizer.segment(strs);
-        Set<String> set = new HashSet<>();
+        List<String> ret = new ArrayList<>();
         list.forEach(term -> {
-            if(!ignoreNaturesHanLP.contains(term.nature.name())) set.add(term.word);
+            if(!ignoreNaturesHanLP.contains(term.nature.name())) ret.add(term.word);
         });
-        return set;
+        return ret;
     }
 
     private static String combine(String... strs){
@@ -56,12 +63,23 @@ public class nlpUtil {
         }
         return stringBuilder.deleteCharAt(stringBuilder.length()-1).toString();
     }
-    private static String tranlate2pg(Collection list){
+
+    /**
+     * translate for tsvector or tsquery
+     */
+    private static String tranlatePGVector(Collection list){
         if(list.size()==0) return "";
         StringBuilder stringBuilder = new StringBuilder();
-        list.stream().forEach(c->{
-            stringBuilder.append(c).append(" ");
-        });
+        list.forEach(c->stringBuilder.append(c).append(" "));
+        return stringBuilder.deleteCharAt(stringBuilder.length()-1).toString();
+    }
+    /**
+     * translate for tsquery
+     */
+    private static String tranlatePGQuery(Collection list){
+        if(list.size()==0) return "";
+        StringBuilder stringBuilder = new StringBuilder();
+        list.forEach(c->stringBuilder.append(c).append("|"));
         return stringBuilder.deleteCharAt(stringBuilder.length()-1).toString();
     }
 
