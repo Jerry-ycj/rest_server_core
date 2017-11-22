@@ -96,7 +96,7 @@ public class AliOSS {
      * 终端用sts 上传或构造url
      *  path: test/timg.jpg or test/12/*
      */
-    public Map<String,Object> stsGetPutForUser(String roleSession,List<String> path) throws ClientException {
+    public Map<String,String> stsGetPutForUser(String roleSession,List<String> path) throws ClientException {
         // 如何定制你的policy?
         // https://github.com/rockuw/node-sts-app-server/blob/master/policy/bucket_read_write_policy.txt
         StringBuilder resources= new StringBuilder();
@@ -123,7 +123,7 @@ public class AliOSS {
         ProtocolType protocolType = ProtocolType.HTTPS;
         final AssumeRoleResponse response = assumeRole(accessKey, accessKeySecret,
                 arn, roleSession, policy, protocolType);
-        Map<String,Object> map = new HashMap<>();
+        Map<String,String> map = new HashMap<>();
         map.put("accessKeyId",response.getCredentials().getAccessKeyId());
         map.put("accessKeySecret",response.getCredentials().getAccessKeySecret());
         map.put("stsToken",response.getCredentials().getSecurityToken());
