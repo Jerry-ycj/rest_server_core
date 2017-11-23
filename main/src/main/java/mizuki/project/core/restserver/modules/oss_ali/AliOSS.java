@@ -37,6 +37,7 @@ public class AliOSS {
     private String endpoint;
     private String bucketName;
     private String arn;
+    private String region;
 
     private OSSClient ossClient(){
         if(ossClient==null){
@@ -102,23 +103,21 @@ public class AliOSS {
         StringBuilder resources= new StringBuilder();
         if(path.size()==0) return null;
         for(String r:path){
-            resources.append("\"acs:oss:*:*:").append(bucketName).append("/").append(path).append("\",");
+            resources.append("\"acs:oss:*:*:").append(bucketName).append("/").append(r).append("/*\",");
         }
         resources.deleteCharAt(resources.length()-1);
         String policy = "{" +
-                "    \"Version\": \"1\", " +
-                "    \"Statement\": [" +
-                "        {" +
-                "            \"Action\": [" +
-                "                \"oss:GetObject\",\"oss:PutObject\" " +
-                "            ], " +
-                "            \"Resource\": [" +
-                resources.toString() +
-                "            ], " +
-                "            \"Effect\": \"Allow\"" +
-                "        }" +
-                "    ]" +
+                "\"Version\": \"1\", " +
+                "\"Statement\": [" +
+                " {" +
+                "  \"Action\": [" +
+                "\"oss:GetObject\",\"oss:PutObject\",\"oss:DeleteObject\",\"oss:PutObjectAcl\", \"oss:GetObjectAcl\"], " +
+                "  \"Resource\": [" + resources.toString() + "], " +
+                "  \"Effect\": \"Allow\"" +
+                " }" +
+                "]" +
                 "}";
+        System.out.println(policy);
         // 此处必须为 HTTPS
         ProtocolType protocolType = ProtocolType.HTTPS;
         final AssumeRoleResponse response = assumeRole(accessKey, accessKeySecret,
@@ -128,6 +127,8 @@ public class AliOSS {
         map.put("accessKeySecret",response.getCredentials().getAccessKeySecret());
         map.put("stsToken",response.getCredentials().getSecurityToken());
         map.put("expiration",response.getCredentials().getExpiration());
+        map.put("region",region);
+        map.put("bucket",bucketName);
         return map;
 //            OSSClient ossClient = new OSSClient(endpoint, response.getCredentials().getAccessKeyId(),
 //                    response.getCredentials().getAccessKeySecret(), response.getCredentials().getSecurityToken());
@@ -201,6 +202,15 @@ public class AliOSS {
 
     public AliOSS setArn(String arn) {
         this.arn = arn;
+        return this;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public AliOSS setRegion(String region) {
+        this.region = region;
         return this;
     }
 }
