@@ -107,7 +107,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      *  业务上 手动赋予user 权限
-     *  PreAuthorize("hasAuthority('" + Role.SALER+ "')")
+     *  PreAuthorize("hasAuthority('" + Role.SALER+"')")
+     *   PreAuthorize("hasAuthority('ADMIN') AND hasAuthority('DBA')")
      */
     public static void authStore(User u){
         /* 每次请求这里都要执行 每次都是新的 TODO */

@@ -37,6 +37,7 @@ public class AliOSS {
     private String endpoint;
     private String bucketName;
     private String arn;
+    private String region;
 
     private OSSClient ossClient(){
         if(ossClient==null){
@@ -96,38 +97,38 @@ public class AliOSS {
      * 终端用sts 上传或构造url
      *  path: test/timg.jpg or test/12/*
      */
-    public Map<String,Object> stsGetPutForUser(String roleSession,List<String> path) throws ClientException {
+    public Map<String,String> stsGetPutForUser(String roleSession,List<String> path) throws ClientException {
         // 如何定制你的policy?
         // https://github.com/rockuw/node-sts-app-server/blob/master/policy/bucket_read_write_policy.txt
         StringBuilder resources= new StringBuilder();
         if(path.size()==0) return null;
         for(String r:path){
-            resources.append("\"acs:oss:*:*:").append(bucketName).append("/").append(path).append("\",");
+            resources.append("\"acs:oss:*:*:").append(bucketName).append("/").append(r).append("/*\",");
         }
         resources.deleteCharAt(resources.length()-1);
         String policy = "{" +
-                "    \"Version\": \"1\", " +
-                "    \"Statement\": [" +
-                "        {" +
-                "            \"Action\": [" +
-                "                \"oss:GetObject\",\"oss:PutObject\" " +
-                "            ], " +
-                "            \"Resource\": [" +
-                resources.toString() +
-                "            ], " +
-                "            \"Effect\": \"Allow\"" +
-                "        }" +
-                "    ]" +
+                "\"Version\": \"1\", " +
+                "\"Statement\": [" +
+                " {" +
+                "  \"Action\": [" +
+                "\"oss:GetObject\",\"oss:PutObject\",\"oss:DeleteObject\",\"oss:PutObjectAcl\", \"oss:GetObjectAcl\"], " +
+                "  \"Resource\": [" + resources.toString() + "], " +
+                "  \"Effect\": \"Allow\"" +
+                " }" +
+                "]" +
                 "}";
+        System.out.println(policy);
         // 此处必须为 HTTPS
         ProtocolType protocolType = ProtocolType.HTTPS;
         final AssumeRoleResponse response = assumeRole(accessKey, accessKeySecret,
                 arn, roleSession, policy, protocolType);
-        Map<String,Object> map = new HashMap<>();
+        Map<String,String> map = new HashMap<>();
         map.put("accessKeyId",response.getCredentials().getAccessKeyId());
         map.put("accessKeySecret",response.getCredentials().getAccessKeySecret());
         map.put("stsToken",response.getCredentials().getSecurityToken());
         map.put("expiration",response.getCredentials().getExpiration());
+        map.put("region",region);
+        map.put("bucket",bucketName);
         return map;
 //            OSSClient ossClient = new OSSClient(endpoint, response.getCredentials().getAccessKeyId(),
 //                    response.getCredentials().getAccessKeySecret(), response.getCredentials().getSecurityToken());
@@ -201,6 +202,15 @@ public class AliOSS {
 
     public AliOSS setArn(String arn) {
         this.arn = arn;
+        return this;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public AliOSS setRegion(String region) {
+        this.region = region;
         return this;
     }
 }
