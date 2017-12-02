@@ -1,4 +1,0 @@
-rootProject.name = 'core.weixin'
-include 'main'
-project(':main').projectDir = new File(settingsDir,"../main")
-

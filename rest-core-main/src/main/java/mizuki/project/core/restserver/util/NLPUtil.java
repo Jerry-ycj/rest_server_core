@@ -1,9 +1,13 @@
 package mizuki.project.core.restserver.util;
 
 import com.hankcs.hanlp.HanLP;
+import com.hankcs.hanlp.dictionary.CoreSynonymDictionary;
+import com.hankcs.hanlp.dictionary.CustomDictionary;
+import com.hankcs.hanlp.dictionary.stopword.CoreStopWordDictionary;
 import com.hankcs.hanlp.seg.common.Term;
 import com.hankcs.hanlp.tokenizer.IndexTokenizer;
 
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,6 +24,18 @@ public class NLPUtil {
         IndexTokenizer.segment("初始化 init");
         HanLP.extractKeyword("初始化 init",1);
         ignoreNaturesHanLP= Arrays.stream(ignoreNaturesHanLPArr).collect(Collectors.toList());
+        // 同义词和词典加载
+        InputStream inputStream = NLPUtil.class.getClassLoader().getResourceAsStream("hanlp_custom_dictionary.txt");
+        System.out.println(inputStream);
+        if(inputStream!=null){
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            try {
+                System.out.println(reader.readLine());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
 //    public static void seq_ansj(String... origin){
@@ -33,12 +49,16 @@ public class NLPUtil {
 //        System.out.println(tranlate2pg(set));
 //    }
 
+    /**
+     * for 保存索引
+     */
     public static String seqForPgVector(String... origin){
+        // todo 处理同义词
         return tranlatePGVector(seq_hanlp(origin));
     }
 
     /**
-     * seq for pgsql tsquery , or关系
+     * seq for pgsql tsquery , or关系. for 查询字段
      */
     public static String seqForPgQuery(String... origin){
         return tranlatePGQuery(seq_hanlp(origin));
@@ -65,7 +85,7 @@ public class NLPUtil {
     }
 
     /**
-     * translate for tsvector or tsquery
+     * translate for tsvector
      */
     private static String tranlatePGVector(Collection list){
         if(list.size()==0) return "";
@@ -83,25 +103,19 @@ public class NLPUtil {
         return stringBuilder.deleteCharAt(stringBuilder.length()-1).toString();
     }
 
-//    public static void main(String[] args) {
-//        String[] str = new String[]{
-//                "太平鸟男装冬季新款黑色轻薄韩版短款保暖立领羽绒服外套男立领有型 超轻面料 嵌入式罗纹袖口",
-//                "PEACEBIRD/太平鸟",
-//        };
-//        String search_str = "不锈钢螺钉 王国强 嵌入式 控制板";
-//
+    public static void main(String[] args) {
+        String[] str = new String[]{
+                "一二三四五六 我的说的聚合军或无无无无所"
+        };
+        String search_str = "不锈钢螺钉 王国强 嵌入式 控制板";
+        CustomDictionary.add("军或无");
+        System.out.println(seqForPgVector(str));
+
+        // todo 自定义词典+同义词
 //        long a = System.currentTimeMillis();
 //        System.out.println(seqForPg(str));
 //        System.out.println(seqForPg(search_str));
 //        long b = System.currentTimeMillis();
 //        System.out.println("use: "+(b-a));
-//
-////        System.out.println("");
-////
-////        a = System.currentTimeMillis();
-////        seq_ansj(str);
-////        seq_ansj(search_str);
-////        b = System.currentTimeMillis();
-////        System.out.println("use: "+(b-a));
-//    }
+    }
 }

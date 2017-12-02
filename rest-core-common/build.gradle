@@ -1,10 +1,21 @@
+apply from: "../config.gradle"
+
+group "$groupId"
+version '0.0.2'
 
 apply plugin: 'java'
-apply plugin: 'idea'
+apply plugin: 'maven-publish'
 apply plugin: 'org.springframework.boot'
 
-sourceCompatibility = 1.8
-
+buildscript {
+    repositories {
+        maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootGradlePluginVerison")
+    }
+}
 repositories {
     maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
     mavenCentral()
@@ -33,5 +44,30 @@ dependencies {
     // 暂时，应用jpa注解，可能引起spring冲突
     compile group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
 
-
 }
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven{
+            url "$mavenUrl"
+            credentials {
+                username "$mavenName"
+                password "$mavenPwd"
+            }
+        }
+    }
+}
+
+jar {
+    from {
+        fileTree(dir: 'exlibs', include: ['*.jar']).collect{
+            zipTree(it)
+        }
+    }
+}
+

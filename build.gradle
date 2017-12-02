@@ -1,26 +1,16 @@
+apply from: "config.gradle"
 group 'mizuki.project.core.restserver'
-version '1.1.0'
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.2.RELEASE")
-    }
-}
+version '1.1.1'
 
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'org.springframework.boot'
 
 repositories {
+    maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+//    maven{ url 'http://127.0.0.1:8081/repository/maven-releases/'}
     mavenCentral()
 }
 
 dependencies {
-
-    compile project(":main")
-    compile project(":weixin")
 
 }

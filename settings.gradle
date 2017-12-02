@@ -1,5 +1,4 @@
 rootProject.name = 'RestServerCore'
-include 'main'
-include 'weixin'
-include 'common'
-
+include 'rest-core-main'
+include 'rest-core-weixin'
+include 'rest-core-common'
