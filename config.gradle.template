@@ -2,7 +2,7 @@ ext{
     groupId="mizuki.project.rest.core"
     springBootGradlePluginVerison="1.5.8.RELEASE"
 
-    mavenUrl="http://www.leadtotech.com:10001/repository/maven-releases/"
+    mavenUrl="http://127.0.0.1:8081/repository/maven-releases/"
     mavenName="admin"
-    mavenPwd="ltt503149"
+    mavenPwd="admin123"
 }

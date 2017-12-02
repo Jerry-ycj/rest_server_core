@@ -1,4 +1,4 @@
-apply from: "config.gradle"
+apply from: "configs.gradle"
 group 'mizuki.project.core.restserver'
 version '1.1.1'
 
