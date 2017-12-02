@@ -1,7 +1,7 @@
 apply from: "../configs.gradle"
 
 group "$groupId"
-version '0.0.2'
+version "$moduleMainVersion"
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'
@@ -24,7 +24,7 @@ repositories {
 }
 dependencies {
     compile fileTree(dir: 'exlibs', include: ['*.jar'])
-    compile group: 'mizuki.project.rest.core', name: 'rest-core-common', version: '0.0.2'
+    compile group: 'mizuki.project.rest.core', name: 'rest-core-common', version: "$moduleCommonVersion"
 
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-starter-security"
