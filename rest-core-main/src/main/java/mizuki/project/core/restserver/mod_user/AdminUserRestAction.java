@@ -7,6 +7,8 @@ import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.exception.RestMainException;
 import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
+import mizuki.project.core.restserver.mod_user.bean.ret.UserListRet;
+import mizuki.project.core.restserver.mod_user.bean.ret.UserRet;
 import mizuki.project.core.restserver.mod_user.dao.UserMapper;
 import mizuki.project.core.restserver.util.CodeUtil;
 import org.slf4j.Logger;
@@ -39,8 +41,8 @@ public class AdminUserRestAction{
     @RequestMapping(value = "/listUsers",method = RequestMethod.POST)
     @PreAuthorize("hasAuthority('" + Role.P_USERMNG+ "')")
     @ApiOperation(value = "用户列表")
-    public ListUsersRet listUsers(Model model) throws RestMainException {
-        ListUsersRet ret = new ListUsersRet();
+    public UserListRet listUsers(Model model) throws RestMainException {
+        UserListRet ret = new UserListRet();
         try{
             List<Role> roles = userMapper.listRoles();
             // 分批role 对应 users:  list: map{role,Role}{users,list}
@@ -52,24 +54,10 @@ public class AdminUserRestAction{
                 map.put("users",users);
                 user_roles.add(map);
             }
-            ret.roles=roles;
-            ret.userRoles=user_roles;
-            return (ListUsersRet)ret.setResult(BasicRet.SUCCESS);
+            ret.getData().setRoles(roles).setUserRoles(user_roles);
+            return (UserListRet) ret.setResult(BasicRet.SUCCESS);
         }catch (Exception e){
             throw new RestMainException(e,model);
-        }
-    }
-    private class ListUsersRet extends BasicRet{
-        private List<Role> roles;
-        @ApiModelProperty(notes = "role和user对应关系: [{role:{Role}, users:[{User}]}]")
-        private List<Map<String,Object>> userRoles;
-
-        public List<Role> getRoles() {
-            return roles;
-        }
-
-        public List<Map<String,Object>> getUserRoles() {
-            return userRoles;
         }
     }
 
@@ -107,27 +95,20 @@ public class AdminUserRestAction{
 
     @RequestMapping(value = "/info",method = RequestMethod.POST)
     @ApiOperation(value = "用户信息")
-    public UserInfoRet info(
+    public UserRet info(
             Model model,
             @RequestParam int uid
     )throws RestMainException{
         try{
-            UserInfoRet ret = new UserInfoRet();
+            UserRet ret = new UserRet();
             User user = userMapper.findById(uid);
             if(user==null){
-                return (UserInfoRet) ret.setResult(BasicRet.ERR).setMessage("无此用户");
+                return (UserRet) ret.setResult(BasicRet.ERR).setMessage("无此用户");
             }
-            ret.user = user;
-            return (UserInfoRet)ret.setResult(BasicRet.SUCCESS);
+            ret.getData().setUser(user);
+            return (UserRet)ret.setResult(BasicRet.SUCCESS);
         }catch (Exception e){
             throw new RestMainException(e,model);
-        }
-    }
-    private class UserInfoRet extends BasicRet{
-        private User user;
-
-        public User getUser() {
-            return user;
         }
     }
 }

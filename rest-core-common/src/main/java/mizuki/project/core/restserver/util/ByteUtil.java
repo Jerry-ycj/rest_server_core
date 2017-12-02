@@ -50,6 +50,11 @@ public class ByteUtil {
         }
         return result;
     }
+    public static int bytes2intHL(byte b){
+        byte[] bytes = new byte[1];
+        bytes[0]=b;
+        return bytes2intHL(bytes);
+    }
 
     /**
      * 低位在前
