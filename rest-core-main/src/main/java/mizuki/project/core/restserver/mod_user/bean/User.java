@@ -9,11 +9,14 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-@Table(name = "user_")
+@Table(name = "admin_user")
 public class User implements Serializable{
 
+	@Transient
 	public static final int OFF_OK = 0;
+	@Transient
     public static final int OFF_FREEZE = 1; // 冻结
+	@Transient
     public static final int OFF_CHECK = 2;  // 审核中
 
 	@Id @GeneratedValue
@@ -35,12 +38,6 @@ public class User implements Serializable{
 	@ApiModelProperty(notes = "1-冻结, 2-等待审核")
     private int off;
 	@ApiModelProperty(notes = "头像地址编码")
-	@Transient
-	private String imageCode;
-
-    public String getImageCode() {
-        return CodeUtil.base64UrlEncode(image);
-    }
 
     public int getId() {
 		return id;

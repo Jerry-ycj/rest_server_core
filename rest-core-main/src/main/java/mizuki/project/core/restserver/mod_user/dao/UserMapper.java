@@ -35,38 +35,38 @@ public interface UserMapper {
      * user
      */
 
-    @Select("select * from user_ where id=#{param1}")
+    @Select("select * from admin_user where id=#{param1}")
     @Results(value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole"))
     })
     User findById(int id);
 
-    @Select("select * from user_ where id=#{param1}")
+    @Select("select * from admin_user where id=#{param1}")
     User findInfoOnlyById(int id);
 
-    @Select("select * from user_ where username = #{param1}")
+    @Select("select * from admin_user where username = #{param1}")
     @Results(value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole"))
     })
     User findUserByUsername(String username);
 
-    @Select("select * from user_ where phone=#{param1}")
+    @Select("select * from admin_user where phone=#{param1}")
     @Results(value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole"))
     })
     User findUserByPhone(String phone);
 
-    @Select("select * from user_ where phone=#{param1} and pwd=#{param2}")
+    @Select("select * from admin_user where phone=#{param1} and pwd=#{param2}")
     @Results(value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole"))
     })
     User loginByPhone(String phone, String pwd);
 
-    @Select("select * from user_ where username=#{param1} and pwd=#{param2}")
+    @Select("select * from admin_user where username=#{param1} and pwd=#{param2}")
     @Results(value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole"))
@@ -78,21 +78,21 @@ public interface UserMapper {
     @Options(useGeneratedKeys = true)
     void saveUser(User user);
 
-    @Update("update user_ set pwd=#{pwd} where id=#{id}")
+    @Update("update admin_user set pwd=#{pwd} where id=#{id}")
     void updateUserPassword(User user);
 
-    @Update("update user_ set name=#{name},phone=#{phone}," +
+    @Update("update admin_user set name=#{name},phone=#{phone}," +
             "gender=#{gender},address=#{address} where id=#{id}")
     void updateUser(User user);
 
-    @Update("update user_ set image=#{param2} where id=#{param1}")
+    @Update("update admin_user set image=#{param2} where id=#{param1}")
     void updateUserImage(int uid, String image);
 
-    @Select("select * from user_ where role=#{param1}")
+    @Select("select * from admin_user where role=#{param1}")
     List<User> listUserByRole(int role);
 
     /** 用户冻结等等 */
-    @Update("update user_ set off=#{param2} where id=#{param1}")
+    @Update("update admin_user set off=#{param2} where id=#{param1}")
     void offUser(int uid, int off);
 
 
@@ -109,7 +109,7 @@ public interface UserMapper {
     @Select("select token from rest_token where uid=#{param1}")
     String findRestToken(int uid);
 
-    @Select("select u.* from user_ u,rest_token t where t.uid=u.id and t.token=#{param1} and now()<=t.createDt+'${hours} hour'")
+    @Select("select u.* from admin_user u,rest_token t where t.uid=u.id and t.token=#{param1} and now()<=t.createDt+'${hours} hour'")
     @Results(value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole"))

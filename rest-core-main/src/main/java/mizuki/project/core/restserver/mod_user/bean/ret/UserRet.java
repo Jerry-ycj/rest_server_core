@@ -4,17 +4,6 @@ import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.mod_user.bean.User;
 
 public class UserRet extends BasicRet{
-    private UserRetData data = new UserRetData();
-
-    public UserRetData getData() {
-        return data;
-    }
-
-    public UserRet setData(UserRetData data) {
-        this.data = data;
-        return this;
-    }
-
     public class UserRetData{
         private User user;
 
@@ -27,5 +16,14 @@ public class UserRet extends BasicRet{
             return this;
         }
     }
+    private UserRetData data = new UserRetData();
 
+    public UserRetData getData() {
+        return data;
+    }
+
+    public UserRet setData(UserRetData data) {
+        this.data = data;
+        return this;
+    }
 }

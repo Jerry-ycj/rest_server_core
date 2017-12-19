@@ -1,13 +1,12 @@
 package mizuki.project.core.restserver.mod_user;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import mizuki.project.core.restserver.config.BasicMapDataRet;
 import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.exception.RestMainException;
 import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
-import mizuki.project.core.restserver.mod_user.bean.ret.UserListRet;
 import mizuki.project.core.restserver.mod_user.bean.ret.UserRet;
 import mizuki.project.core.restserver.mod_user.dao.UserMapper;
 import mizuki.project.core.restserver.util.CodeUtil;
@@ -41,9 +40,9 @@ public class AdminUserRestAction{
     @RequestMapping(value = "/listUsers",method = RequestMethod.POST)
     @PreAuthorize("hasAuthority('" + Role.P_USERMNG+ "')")
     @ApiOperation(value = "用户列表")
-    public UserListRet listUsers(Model model) throws RestMainException {
-        UserListRet ret = new UserListRet();
+    public BasicMapDataRet listUsers(Model model) throws RestMainException {
         try{
+            BasicMapDataRet ret = new BasicMapDataRet();
             List<Role> roles = userMapper.listRoles();
             // 分批role 对应 users:  list: map{role,Role}{users,list}
             List<Map<String,Object>> user_roles = new ArrayList<>();
@@ -54,8 +53,10 @@ public class AdminUserRestAction{
                 map.put("users",users);
                 user_roles.add(map);
             }
-            ret.getData().setRoles(roles).setUserRoles(user_roles);
-            return (UserListRet) ret.setResult(BasicRet.SUCCESS);
+            ret.getData().put("roles",roles);
+            ret.getData().put("userRoles",user_roles);
+            ret.setResult(BasicRet.SUCCESS);
+            return ret;
         }catch (Exception e){
             throw new RestMainException(e,model);
         }

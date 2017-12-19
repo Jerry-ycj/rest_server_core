@@ -56,8 +56,7 @@ public class DateUtil {
 		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			long aa = 0;
-			int years = (int) (((fmt.parse(endTime).getTime() - fmt.parse(startTime).getTime()) / (1000 * 60 * 60 * 24)) / 365);
-			return years;
+			return (int) (((fmt.parse(endTime).getTime() - fmt.parse(startTime).getTime()) / (1000 * 60 * 60 * 24)) / 365);
 		} catch (Exception e) {
 			// 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
 			return 0;
