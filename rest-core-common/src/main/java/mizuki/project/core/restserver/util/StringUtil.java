@@ -25,8 +25,7 @@ public class StringUtil {
         }
         StringBuilder stringBuilder = new StringBuilder();
         Arrays.stream(array).forEach(a-> stringBuilder.append(a).append(separator));
-        stringBuilder.deleteCharAt(stringBuilder.length()-1);
-        return stringBuilder.toString();
+        return stringBuilder.substring(0,stringBuilder.length()-separator.length());
     }
 
     /***
@@ -53,7 +52,7 @@ public class StringUtil {
                 stringBuilder.append(a).append(separator);
             }
         });
-        stringBuilder.deleteCharAt(stringBuilder.length()-1);
-        return stringBuilder.toString();
+        return stringBuilder.substring(0,stringBuilder.length()-separator.length());
     }
+
 }

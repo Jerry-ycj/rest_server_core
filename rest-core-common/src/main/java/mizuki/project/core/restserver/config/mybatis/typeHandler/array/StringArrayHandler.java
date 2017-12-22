@@ -45,13 +45,13 @@ public class StringArrayHandler implements TypeHandler<List<String>>{
     private List<String> transfer(String s){
 //        System.out.println("---- "+s);
         // 可能出现 {"key"}这种情况？？
-        s = s.replace("{\"","{")
-                .replace("\",\"",",")
-                .replace("\"}","}");
         List<String> list = new ArrayList<>();
         if(s==null || s.length()==2){
             return list;
         }
+        s = s.replace("{\"","{")
+                .replace("\",\"",",")
+                .replace("\"}","}");
         String tmp = s.substring(1,s.length()-1);
         list.addAll(Arrays.asList(tmp.split(",")));
         return list;

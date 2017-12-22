@@ -115,16 +115,15 @@ public class PGBaseSqlProvider {
 		// array todo
 		if(object instanceof Collection){
 			Collection collection = (Collection)object;
-			String tmp_mid = "";
-			if(collection.size()!=0){
-				Object e = collection.toArray()[0];
-				if(e instanceof String){
-					tmp_mid = StringUtil.join(collection,",","'");
-				}else if(e instanceof Integer || e instanceof Double || e instanceof Float){
-					tmp_mid = StringUtil.join(collection,",");
-				}
+			if(field.getGenericType().getTypeName().contains("java.util.Map")){
+				// list<Map> 看待为 jsonb
+				val = "'"+ JsonUtil.toJson(collection)+"'::jsonb";
+			} else if(field.getGenericType().getTypeName().contains("<java.lang.String>")){
+				val = "ARRAY[" + StringUtil.join(collection,",","'") + "]::varchar[]";
+			}else if(field.getGenericType().getTypeName().contains("<java.lang.Integer>")){
+				val = "ARRAY[" + StringUtil.join(collection,",") + "]::integer[]";
 			}
-			val = "ARRAY[" + tmp_mid + "]";
+
 		}
 
 		kvs.put(key,val);

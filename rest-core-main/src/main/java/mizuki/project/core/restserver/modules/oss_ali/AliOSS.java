@@ -117,7 +117,6 @@ public class AliOSS {
                 " }" +
                 "]" +
                 "}";
-        System.out.println(policy);
         // 此处必须为 HTTPS
         ProtocolType protocolType = ProtocolType.HTTPS;
         final AssumeRoleResponse response = assumeRole(accessKey, accessKeySecret,
@@ -142,7 +141,9 @@ public class AliOSS {
             ProtocolType protocolType
     ) throws ClientException {
         // 创建一个 Aliyun Acs Client, 用于发起 OpenAPI 请求
-        IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessKeySecret);
+        String regionId = region;
+        if(region.contains("oss-")) regionId=region.substring(4);
+        IClientProfile profile = DefaultProfile.getProfile(regionId, accessKeyId, accessKeySecret);
         DefaultAcsClient client = new DefaultAcsClient(profile);
         // 创建一个 AssumeRoleRequest 并设置请求参数
         final AssumeRoleRequest request = new AssumeRoleRequest();
