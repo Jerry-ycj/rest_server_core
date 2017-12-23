@@ -15,6 +15,9 @@ import java.util.*;
  */
 public class PGBaseSqlProvider {
 
+    public static final String METHOD_INSERT="insert";
+    public static final String METHOD_UPDATEALL="updateAll";
+
 	public String insert(Object bean) throws Exception {
 		Class<?> beanClass = bean.getClass();
 		String tableName = getTableName(beanClass);
