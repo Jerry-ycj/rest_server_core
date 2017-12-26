@@ -9,6 +9,7 @@ import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
 import mizuki.project.core.restserver.mod_user.bean.ret.UserRet;
 import mizuki.project.core.restserver.mod_user.dao.UserMapper;
+import mizuki.project.core.restserver.modules.sms.SmsMapper;
 import mizuki.project.core.restserver.util.CodeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,8 @@ public class AdminUserRestAction{
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private SmsMapper smsMapper;
 
     @RequestMapping(value = "/listUsers",method = RequestMethod.POST)
     @PreAuthorize("hasAuthority('" + Role.P_USERMNG+ "')")
@@ -108,6 +111,76 @@ public class AdminUserRestAction{
             }
             ret.getData().setUser(user);
             return (UserRet)ret.setResult(BasicRet.SUCCESS);
+        }catch (Exception e){
+            throw new RestMainException(e,model);
+        }
+    }
+
+    @RequestMapping(value="/offUser",method= RequestMethod.POST)
+    @ApiOperation(value = "冻结或激活用户")
+    public BasicRet offUser(
+            Model model,
+            @RequestParam int uid,
+            @RequestParam boolean off
+    ) throws RestMainException{
+        try{
+            User user = (User)model.asMap().get("user");
+            if(user.getId()==uid){
+                return new BasicRet(BasicRet.ERR,"不能设置自己");
+            }
+            User target = userMapper.findById(uid);
+            if(off){
+                userMapper.offUser(target.getId(),User.OFF_FREEZE);
+            }else{
+                userMapper.offUser(target.getId(),User.OFF_OK);
+            }
+            return new BasicRet(BasicRet.SUCCESS);
+        }catch (Exception e){
+            throw new RestMainException(e, model);
+        }
+    }
+
+    @RequestMapping(value="/updateUser",method = RequestMethod.POST)
+    @ApiOperation(value = "更新用户信息")
+    public BasicRet updateUserInfo(
+            Model model,
+            @RequestParam int id,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false,defaultValue = "0")int gender,
+            @RequestParam(required = false)String address,
+            @RequestParam(required = false)String pwd,
+            @RequestParam(required = false,defaultValue = "0") int role
+    ) throws RestMainException {
+        try{
+            User user = userMapper.findById(id);
+            if(user==null){
+                return new BasicRet(BasicRet.ERR,"用户不存在");
+            }
+            if(phone!=null && !phone.equals(user.getPhone())){
+                user.setPhone(phone);
+            }
+            if(username!=null && !username.equals(user.getUsername())){
+                if(userMapper.findUserByUsername(username)!=null){
+                    return new BasicRet(BasicRet.ERR,"改用户名已被使用");
+                }else{
+                    user.setUsername(username);
+                }
+            }
+            if(role>0 && role!=user.getRole().getId()){
+                Role r = userMapper.findRole(role);
+                if(r==null){
+                    return new BasicRet(BasicRet.ERR,"role不存在");
+                }
+                user.setRole(r);
+            }
+            if(pwd!=null) user.setPwd(CodeUtil.md5(pwd));
+            if(name!=null) user.setName(name);
+            if(gender!=0) user.setGender(gender);
+            if(address!=null) user.setAddress(address);
+            userMapper.updateUser(user);
+            return new BasicRet(BasicRet.SUCCESS);
         }catch (Exception e){
             throw new RestMainException(e,model);
         }

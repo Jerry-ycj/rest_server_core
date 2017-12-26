@@ -197,11 +197,12 @@ public class UserRestAction{
      * 登录时  获取user 和 systems
      */
     private LoginUserRet loginHandle(User user,LoginUserRet ret,Model model){
-        if(user.getOff()==1){
+        if(user.getOff()==User.OFF_FREEZE){
             return (LoginUserRet) ret.setResult(BasicRet.ERR).setMessage("账户被冻结");
-        }else if(user.getOff()==2){
-            return (LoginUserRet) ret.setResult(BasicRet.ERR).setMessage("账户审核中");
         }
+//        else if(user.getOff()==2){
+//            return (LoginUserRet) ret.setResult(BasicRet.ERR).setMessage("账户审核中");
+//        }
         String token = OtherUtil.get32UUID();
         if(userMapper.findRestToken(user.getId())==null){
             userMapper.saveRestToken(user.getId(),token);
@@ -237,10 +238,10 @@ public class UserRestAction{
         User user = (User)model.asMap().get("user");
         try{
             if(!user.getPwd().equals(CodeUtil.md5(oldPwd))){
-                return new BasicRet(BasicRet.ERR,"用户名或密码错误");
+                return new BasicRet(BasicRet.ERR,"密码错误");
             }
             user.setPwd(CodeUtil.md5(newPwd));
-            userMapper.updateUserPassword(user);
+            userMapper.updateUser(user);
             return new BasicRet(BasicRet.SUCCESS);
         }catch (Exception e){
             throw new RestMainException(e,model);
@@ -291,7 +292,8 @@ public class UserRestAction{
             String uimage = imgPath+"/"+filename;
             File file = IOUtil.prepare(wcb.getProjectPath()+imgPath,filename);
             IOUtil.saveStream2File(image.getInputStream(),file);
-            userMapper.updateUserImage(user.getId(),uimage);
+            user.setImage(uimage);
+            userMapper.updateUser(user);
             // 保存成功
             user.setImage(uimage);
             return data;
@@ -327,7 +329,7 @@ public class UserRestAction{
                 return new BasicRet(BasicRet.ERR,"用户不存在");
             }
             user.setPwd(CodeUtil.md5(newPwd));
-            userMapper.updateUserPassword(user);
+            userMapper.updateUser(user);
             return new BasicRet(BasicRet.SUCCESS);
         }catch (Exception e){
             throw new RestMainException(e);

@@ -1,7 +1,5 @@
 package mizuki.project.core.restserver.util;
 
-import java.util.List;
-
 /**
  * Created by ycj on 2016/12/20.
  *
@@ -72,6 +70,7 @@ public class ByteUtil {
     }
 
     public static byte[] subBytes(byte[] src, int begin, int count) {
+        if(count<=0) return new byte[0];
         byte[] bs = new byte[count];
         System.arraycopy(src, begin, bs, 0, count);
         return bs;

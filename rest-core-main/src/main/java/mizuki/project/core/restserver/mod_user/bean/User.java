@@ -16,8 +16,6 @@ public class User implements Serializable{
 	public static final int OFF_OK = 0;
 	@Transient
     public static final int OFF_FREEZE = 1; // 冻结
-	@Transient
-    public static final int OFF_CHECK = 2;  // 审核中
 
 	@Id @GeneratedValue
 	private int id;
@@ -37,7 +35,6 @@ public class User implements Serializable{
 	private Timestamp createDt;
 	@ApiModelProperty(notes = "1-冻结, 2-等待审核")
     private int off;
-	@ApiModelProperty(notes = "头像地址编码")
 
     public int getId() {
 		return id;

@@ -74,21 +74,14 @@ public interface UserMapper {
     User loginByUsername(String username, String pwd);
 
 
-    @InsertProvider(type = PGBaseSqlProvider.class,method = "insert")
+    @InsertProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_INSERT)
     @Options(useGeneratedKeys = true)
     void saveUser(User user);
 
-    @Update("update admin_user set pwd=#{pwd} where id=#{id}")
-    void updateUserPassword(User user);
-
-    @Update("update admin_user set name=#{name},phone=#{phone}," +
-            "gender=#{gender},address=#{address} where id=#{id}")
+    @UpdateProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_UPDATEALL)
     void updateUser(User user);
 
-    @Update("update admin_user set image=#{param2} where id=#{param1}")
-    void updateUserImage(int uid, String image);
-
-    @Select("select * from admin_user where role=#{param1}")
+    @Select("select * from admin_user where role=#{param1} order by id")
     List<User> listUserByRole(int role);
 
     /** 用户冻结等等 */
