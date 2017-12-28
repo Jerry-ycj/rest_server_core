@@ -2,6 +2,7 @@ package mizuki.project.core.restserver.mod_user;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import mizuki.project.core.restserver.config.BasicMapDataRet;
 import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.exception.RestMainException;
@@ -101,15 +102,21 @@ public class AdminUserRestAction{
     @ApiOperation(value = "用户信息")
     public UserRet info(
             Model model,
-            @RequestParam int uid
+            @ApiParam(value = "不传则表示自己")
+            @RequestParam(required = false) Integer uid
     )throws RestMainException{
         try{
+            User user = (User)model.asMap().get("user");
             UserRet ret = new UserRet();
-            User user = userMapper.findById(uid);
-            if(user==null){
-                return (UserRet) ret.setResult(BasicRet.ERR).setMessage("无此用户");
+            if(uid==null){
+                ret.getData().setUser(user);
+            }else{
+                User target = userMapper.findById(uid);
+                if(target==null){
+                    return (UserRet) ret.setResult(BasicRet.ERR).setMessage("无此用户");
+                }
+                ret.getData().setUser(target);
             }
-            ret.getData().setUser(user);
             return (UserRet)ret.setResult(BasicRet.SUCCESS);
         }catch (Exception e){
             throw new RestMainException(e,model);
