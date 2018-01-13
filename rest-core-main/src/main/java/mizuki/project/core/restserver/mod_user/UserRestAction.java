@@ -8,6 +8,7 @@ import mizuki.project.core.restserver.config.WebConfBean;
 import mizuki.project.core.restserver.config.exception.RestMainException;
 import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
+import mizuki.project.core.restserver.mod_user.bean.ret.RoleListRet;
 import mizuki.project.core.restserver.mod_user.dao.UserMapper;
 import mizuki.project.core.restserver.modules.sms.SmsMapper;
 import mizuki.project.core.restserver.util.CodeUtil;
@@ -50,21 +51,14 @@ public class UserRestAction{
 
     @RequestMapping(value = "/listRoles",method = RequestMethod.POST)
     @ApiOperation(value = "获取角色列表")
-    public ListRolesRet listRoles() throws RestMainException{
-        ListRolesRet ret = new ListRolesRet();
+    public RoleListRet listRoles() throws RestMainException{
+        RoleListRet ret = new RoleListRet();
         try{
-            ret.roles= userMapper.listRoles();
+            ret.getData().setRoles(userMapper.listRoles());
             ret.setResult(BasicRet.SUCCESS);
             return ret;
         }catch (Exception e){
             throw new RestMainException(e);
-        }
-    }
-    @ApiModel(description = "返回结果实体")
-    private class ListRolesRet extends BasicRet{
-        private List<Role> roles;
-        public List<Role> getRoles() {
-            return roles;
         }
     }
 

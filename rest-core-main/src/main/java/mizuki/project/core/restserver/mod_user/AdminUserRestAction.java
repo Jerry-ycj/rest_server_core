@@ -47,18 +47,7 @@ public class AdminUserRestAction{
     public BasicMapDataRet listUsers(Model model) throws RestMainException {
         try{
             BasicMapDataRet ret = new BasicMapDataRet();
-            List<Role> roles = userMapper.listRoles();
-            // 分批role 对应 users:  list: map{role,Role}{users,list}
-            List<Map<String,Object>> user_roles = new ArrayList<>();
-            for (Role role:roles){
-                List<User> users = userMapper.listUserByRole(role.getId());
-                Map<String,Object> map = new HashMap<>();
-                map.put("role",role);
-                map.put("users",users);
-                user_roles.add(map);
-            }
-            ret.getData().put("roles",roles);
-            ret.getData().put("userRoles",user_roles);
+            ret.getData().put("users",userMapper.listAll());
             ret.setResult(BasicRet.SUCCESS);
             return ret;
         }catch (Exception e){
@@ -72,8 +61,8 @@ public class AdminUserRestAction{
     public BasicRet addUser(
             Model model,
             @RequestParam String username,
-            @RequestParam String name,
-            @RequestParam String phone,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String phone,
             @RequestParam String pwd,
             @RequestParam int role
     )throws RestMainException {
@@ -81,7 +70,7 @@ public class AdminUserRestAction{
             if(userMapper.findUserByUsername(username)!=null){
                 return new BasicRet(BasicRet.ERR,"用户名已经存在");
             }
-            if(userMapper.findUserByPhone(phone)!=null){
+            if(phone!=null && userMapper.findUserByPhone(phone)!=null){
                 return new BasicRet(BasicRet.ERR,"手机号已经存在");
             }
             Role r = userMapper.findRole(role);

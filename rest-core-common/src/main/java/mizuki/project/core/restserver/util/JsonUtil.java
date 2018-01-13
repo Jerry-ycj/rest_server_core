@@ -33,7 +33,7 @@ public class JsonUtil {
 
     public static Map toMap(String str){
         try {
-            return str==null?null:JSON.readValue(str,Map.class);
+            return str==null||"".equals(str.trim())?null:JSON.readValue(str,Map.class);
         } catch (IOException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
@@ -43,7 +43,7 @@ public class JsonUtil {
 
     public static Object toObject(String str, Class clas){
         try {
-            return str==null?null:JSON.readValue(str,clas);
+            return str==null||"".equals(str.trim())?null:JSON.readValue(str,clas);
         } catch (IOException e) {
             logger.error(e.getMessage());
             e.printStackTrace();

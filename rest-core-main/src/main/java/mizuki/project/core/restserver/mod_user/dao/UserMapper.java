@@ -84,6 +84,12 @@ public interface UserMapper {
     @Select("select * from admin_user where role=#{param1} order by id")
     List<User> listUserByRole(int role);
 
+    @Select("select * from admin_user order by role,id")
+    @Results({
+            @Result(property = "role", column = "role", one = @One(select = "findRole"))
+    })
+    List<User> listAll();
+
     /** 用户冻结等等 */
     @Update("update admin_user set off=#{param2} where id=#{param1}")
     void offUser(int uid, int off);
