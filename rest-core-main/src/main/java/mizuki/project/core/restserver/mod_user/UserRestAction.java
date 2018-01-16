@@ -49,6 +49,13 @@ public class UserRestAction{
     /** 头像 */
     private static final String imgPath="/user/image";
 
+    private User latestUser(Model model){
+        User user = (User)model.asMap().get("user");
+        user = userMapper.findById(user.getId());
+        model.addAttribute("user",user);
+        return user;
+    }
+
     @RequestMapping(value = "/listRoles",method = RequestMethod.POST)
     @ApiOperation(value = "获取角色列表")
     public RoleListRet listRoles() throws RestMainException{
@@ -229,7 +236,7 @@ public class UserRestAction{
             @RequestParam String oldPwd,
             @RequestParam String newPwd
     ) throws RestMainException {
-        User user = (User)model.asMap().get("user");
+        User user = latestUser(model);
         try{
             if(!user.getPwd().equals(CodeUtil.md5(oldPwd))){
                 return new BasicRet(BasicRet.ERR,"密码错误");

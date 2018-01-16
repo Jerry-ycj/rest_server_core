@@ -45,28 +45,28 @@ public interface UserMapper {
     @Select("select * from admin_user where id=#{param1}")
     User findInfoOnlyById(int id);
 
-    @Select("select * from admin_user where username = #{param1}")
+    @Select("select * from admin_user where username = #{param1} and off=0 limit 1")
     @Results(value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole"))
     })
     User findUserByUsername(String username);
 
-    @Select("select * from admin_user where phone=#{param1}")
+    @Select("select * from admin_user where phone=#{param1} and off=0 limit 1")
     @Results(value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole"))
     })
     User findUserByPhone(String phone);
 
-    @Select("select * from admin_user where phone=#{param1} and pwd=#{param2}")
+    @Select("select * from admin_user where phone=#{param1} and pwd=#{param2} and off=0 limit 1")
     @Results(value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole"))
     })
     User loginByPhone(String phone, String pwd);
 
-    @Select("select * from admin_user where username=#{param1} and pwd=#{param2}")
+    @Select("select * from admin_user where username=#{param1} and pwd=#{param2} and off=0 limit 1")
     @Results(value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole"))
@@ -81,10 +81,7 @@ public interface UserMapper {
     @UpdateProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_UPDATEALL)
     void updateUser(User user);
 
-    @Select("select * from admin_user where role=#{param1} order by id")
-    List<User> listUserByRole(int role);
-
-    @Select("select * from admin_user order by role,id")
+    @Select("select * from admin_user where off=0 order by role,id")
     @Results({
             @Result(property = "role", column = "role", one = @One(select = "findRole"))
     })
