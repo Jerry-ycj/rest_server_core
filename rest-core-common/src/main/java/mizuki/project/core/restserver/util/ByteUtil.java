@@ -1,5 +1,7 @@
 package mizuki.project.core.restserver.util;
 
+import java.util.Locale;
+
 /**
  * Created by ycj on 2016/12/20.
  *
@@ -71,11 +73,17 @@ public class ByteUtil {
 
     public static byte[] subBytes(byte[] src, int begin, int count) {
         if(count<=0) return new byte[0];
+        if(src.length<(count+begin)) count = src.length-begin;
         byte[] bs = new byte[count];
         System.arraycopy(src, begin, bs, 0, count);
         return bs;
     }
 
+    /**
+     * 合并
+     * @param list
+     * @return
+     */
     public static byte[] mergeBytes(byte[][] list){
         int length = 0;
         for(byte[] bytes:list){
@@ -88,5 +96,28 @@ public class ByteUtil {
             temp+=bytes.length;
         }
         return dist;
+    }
+
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] b = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            // 两位一组，表示一个字节,把这样表示的16进制字符串，还原成一个字节
+            b[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character
+                    .digit(s.charAt(i + 1), 16));
+        }
+        return b;
+    }
+
+    public static String byteArrayToHexString(byte[] data) {
+        StringBuilder sb = new StringBuilder(data.length * 2);
+        for (byte b : data) {
+            int v = b & 0xff;
+            if (v < 16) {
+                sb.append('0');
+            }
+            sb.append(Integer.toHexString(v));
+        }
+        return sb.toString().toUpperCase(Locale.getDefault());
     }
 }
