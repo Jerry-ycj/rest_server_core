@@ -7,15 +7,17 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class JsonUtil {
 
     private static Logger logger = LoggerFactory.getLogger(JsonUtil.class);
     private static final ObjectMapper JSON = new ObjectMapper();
-//    static {
+    static {
 //        JSON.setSerializationInclusion(Include.NON_NULL);
 //        JSON.configure(SerializationFeature.INDENT_OUTPUT, Boolean.TRUE);
-//    }
+        JSON.setTimeZone(TimeZone.getDefault());
+    }
 
     public static ObjectMapper getJSON() {
         return JSON;
