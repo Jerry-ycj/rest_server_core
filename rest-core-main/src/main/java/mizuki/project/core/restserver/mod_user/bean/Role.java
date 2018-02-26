@@ -13,10 +13,6 @@ import java.util.List;
  */
 @Table(name = "role")
 public class Role implements Serializable{
-    @Transient
-    public static final int ADMIN = 100; // 普通管理员
-    @Transient
-    public static final String P_USERMNG = "userMng";
 
     @Id @GeneratedValue
     private int id;

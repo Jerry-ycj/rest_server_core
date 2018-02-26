@@ -19,7 +19,7 @@ public interface UserMapper {
      * role
      */
 
-    @Select("select * from role")
+    @Select("select * from role where id>0")
     @Results(
             @Result(property = "privileges",column = "privileges",typeHandler = StringArrayHandler.class)
     )

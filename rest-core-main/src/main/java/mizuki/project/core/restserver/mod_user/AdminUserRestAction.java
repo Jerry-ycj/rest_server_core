@@ -10,7 +10,6 @@ import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
 import mizuki.project.core.restserver.mod_user.bean.ret.UserRet;
 import mizuki.project.core.restserver.mod_user.dao.UserMapper;
-import mizuki.project.core.restserver.modules.sms.SmsMapper;
 import mizuki.project.core.restserver.util.CodeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +18,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by ycj on 2016/12/16.
@@ -34,15 +28,13 @@ import java.util.Map;
 @SessionAttributes({"user"})
 @Transactional(rollbackFor = Exception.class)
 @Api(tags = "管理用户模块-用户管理",description = "用户管理")
+@PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
 public class AdminUserRestAction{
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private UserMapper userMapper;
-    @Autowired
-    private SmsMapper smsMapper;
 
     @RequestMapping(value = "/listUsers",method = RequestMethod.POST)
-    @PreAuthorize("hasAuthority('" + Role.P_USERMNG+ "')")
     @ApiOperation(value = "用户列表")
     public BasicMapDataRet listUsers(Model model) throws RestMainException {
         try{
@@ -56,7 +48,6 @@ public class AdminUserRestAction{
     }
 
     @RequestMapping(value = "/addUser",method = RequestMethod.POST)
-    @PreAuthorize("hasAuthority('" + Role.P_USERMNG+ "')")
     @ApiOperation(value = "添加用户")
     public BasicRet addUser(
             Model model,
