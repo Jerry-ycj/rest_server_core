@@ -6,7 +6,8 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @Import({
         UserRestAction.class,
-        AdminUserRestAction.class
+        AdminUserRestAction.class,
+        AdminRoleRestAction.class
 })
 public class UserModConfig {
 

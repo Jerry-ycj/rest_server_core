@@ -1,5 +1,7 @@
 package mizuki.project.core.restserver;
 
+import mizuki.project.core.restserver.config.BasicMapDataRet;
+import mizuki.project.core.restserver.config.BasicRet;
 import org.springframework.boot.autoconfigure.web.AbstractErrorController;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,11 +19,11 @@ public class ErrorController extends AbstractErrorController {
     }
 
     @RequestMapping("/error")
-    public Map<String, Object> handle(HttpServletRequest request) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("status", request.getAttribute("javax.servlet.error.status_code"));
-        map.put("reason", request.getAttribute("javax.servlet.error.message"));
-        return map;
+    public BasicMapDataRet handle(HttpServletRequest request) {
+        BasicMapDataRet ret  =new BasicMapDataRet();
+        ret.setResult(BasicRet.ERR).setMessage((String) request.getAttribute("javax.servlet.error.message"));
+        ret.getData().put("status", request.getAttribute("javax.servlet.error.status_code"));
+        return ret;
     }
 
     @Override

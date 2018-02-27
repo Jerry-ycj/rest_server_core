@@ -31,6 +31,18 @@ public interface UserMapper {
     })
     Role findRole(int id);
 
+    @InsertProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_INSERT)
+    void saveRole(Role role);
+
+    @UpdateProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_UPDATEALL)
+    void updateRole(Role role);
+
+    @Select("select * from admin_user where role=#{param1}")
+    List<User> listByRole(int rid);
+
+    @Delete("delete from role where id=#{param1} and id>0")
+    void delRole(int id);
+
     /**
      * user
      */

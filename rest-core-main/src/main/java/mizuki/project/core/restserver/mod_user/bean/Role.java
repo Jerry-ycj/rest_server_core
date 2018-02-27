@@ -14,10 +14,24 @@ import java.util.List;
 @Table(name = "role")
 public class Role implements Serializable{
 
+    // 上帝角色
+    @Transient
+    public static final int DEFAULT_ALL = 0;
+
     @Id @GeneratedValue
     private int id;
     private String name;
+    private String description;
     private List<String> privileges;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Role setDescription(String description) {
+        this.description = description;
+        return this;
+    }
 
     public List<String> getPrivileges() {
         return privileges;
