@@ -41,25 +41,23 @@ public class PGBaseSqlProvider {
 		String tableName = getTableName(beanClass);
 		Field[] fields = getFields(beanClass);
 		Map<String,String> kvs = new HashMap<>();
-		String id_key = "";
-		String id_val = "";
+		Map<String,String> idKvs = new HashMap<>();
 		for(Field field:fields){
 			if(annotationExist(field,Id.class)){
-				id_key = field.getName();
-				Column column = field.getAnnotation(Column.class);
-				if(column!=null) id_key=column.name();
-				id_val = "#{" + field.getName()+"}";
+				genKvs(bean,idKvs,field);
 				continue;
 			}
 			genKvs(bean, kvs, field);
 		}
-		String id_param = id_key+"="+id_val;
 		return new SQL(){{
 			UPDATE(tableName);
 			for(String k:kvs.keySet()){
 				SET(k+"="+kvs.get(k));
 			}
-			WHERE(id_param);
+			for (String k:idKvs.keySet()){
+				WHERE(k+"="+idKvs.get(k));
+			}
+
 		}}.toString();
 	}
 
@@ -139,8 +137,10 @@ public class PGBaseSqlProvider {
 //		List<String> list = new ArrayList<>();
 //		list.add("12");list.add("23");
 //		System.out.println(System.currentTimeMillis());
+//		System.out.println(new PGBaseSqlProvider().insert(new Test()
+//				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
 //		System.out.println(new PGBaseSqlProvider().updateAll(new Test()
-//				.setName("abc").setRole(new Test()).setMap(map).setList(list)));
+//				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
 //		System.out.println(System.currentTimeMillis());
 //	}
 

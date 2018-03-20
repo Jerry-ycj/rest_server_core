@@ -11,8 +11,9 @@ public class Test {
     @Id
     @GeneratedValue
     private int id;
+    @Id
     @OneToOne
-    @JoinColumn(name = "role2", referencedColumnName = "id2")
+    @JoinColumn(name = "role2", referencedColumnName = "id")
     private Test role;
     private int num;
     @Column(name = "text")
