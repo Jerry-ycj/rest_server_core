@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 @SessionAttributes({"user"})
 @Transactional(rollbackFor = Exception.class)
 @Api(tags = "管理用户模块-用户管理",description = "用户管理")
-@PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
 public class AdminUserRestAction{
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
@@ -36,6 +35,7 @@ public class AdminUserRestAction{
 
     @RequestMapping(value = "/listUsers",method = RequestMethod.POST)
     @ApiOperation(value = "用户列表")
+    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_LIST+ "')")
     public BasicMapDataRet listUsers(Model model) throws RestMainException {
         try{
             BasicMapDataRet ret = new BasicMapDataRet();
@@ -49,6 +49,7 @@ public class AdminUserRestAction{
 
     @RequestMapping(value = "/addUser",method = RequestMethod.POST)
     @ApiOperation(value = "添加用户")
+    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
     public BasicRet addUser(
             Model model,
             @RequestParam String username,
@@ -65,7 +66,8 @@ public class AdminUserRestAction{
                 return new BasicRet(BasicRet.ERR,"手机号已经存在");
             }
             Role r = userMapper.findRole(role);
-            if(r==null){
+            // role=0 不能设置
+            if(r==null || role==0){
                 return new BasicRet(BasicRet.ERR,"role不存在");
             }
             User user = new User().setRole(r)
@@ -80,6 +82,7 @@ public class AdminUserRestAction{
 
     @RequestMapping(value = "/info",method = RequestMethod.POST)
     @ApiOperation(value = "用户信息")
+    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_LIST+ "')")
     public UserRet info(
             Model model,
             @ApiParam(value = "不传则表示自己")
@@ -95,6 +98,9 @@ public class AdminUserRestAction{
                 if(target==null){
                     return (UserRet) ret.setResult(BasicRet.ERR).setMessage("无此用户");
                 }
+                if(target.getRole().getId()==0){
+                    return (UserRet) ret.setResult(BasicRet.ERR).setMessage("该用户不能设置");
+                }
                 ret.getData().setUser(target);
             }
             return (UserRet)ret.setResult(BasicRet.SUCCESS);
@@ -105,6 +111,7 @@ public class AdminUserRestAction{
 
     @RequestMapping(value="/offUser",method= RequestMethod.POST)
     @ApiOperation(value = "冻结或激活用户")
+    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
     public BasicRet offUser(
             Model model,
             @RequestParam int uid,
@@ -116,6 +123,9 @@ public class AdminUserRestAction{
                 return new BasicRet(BasicRet.ERR,"不能设置自己");
             }
             User target = userMapper.findById(uid);
+            if(target.getRole().getId()==0){
+                return new BasicRet(BasicRet.ERR,"该用户不能设置");
+            }
             if(off){
                 userMapper.offUser(target.getId(),User.OFF_FREEZE);
             }else{
@@ -129,6 +139,7 @@ public class AdminUserRestAction{
 
     @RequestMapping(value="/updateUser",method = RequestMethod.POST)
     @ApiOperation(value = "更新用户信息")
+    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
     public BasicRet updateUserInfo(
             Model model,
             @RequestParam int id,
@@ -144,6 +155,9 @@ public class AdminUserRestAction{
             User user = userMapper.findById(id);
             if(user==null){
                 return new BasicRet(BasicRet.ERR,"用户不存在");
+            }
+            if(user.getRole().getId()==0){
+                return new BasicRet(BasicRet.ERR,"该用户不能设置");
             }
             if(phone!=null && !phone.equals(user.getPhone())){
                 user.setPhone(phone);

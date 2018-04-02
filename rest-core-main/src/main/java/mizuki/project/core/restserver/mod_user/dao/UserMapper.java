@@ -2,6 +2,7 @@ package mizuki.project.core.restserver.mod_user.dao;
 
 import mizuki.project.core.restserver.config.mybatis.provider.PGBaseSqlProvider;
 import mizuki.project.core.restserver.config.mybatis.typeHandler.array.StringArrayHandler;
+import mizuki.project.core.restserver.mod_user.bean.PrivilegeConstantBean;
 import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
 import org.apache.ibatis.annotations.*;
@@ -19,7 +20,7 @@ public interface UserMapper {
      * role
      */
 
-    @Select("select * from role where id>0")
+    @Select("select * from role where id>0 order by id")
     @Results(
             @Result(property = "privileges",column = "privileges",typeHandler = StringArrayHandler.class)
     )
@@ -42,6 +43,9 @@ public interface UserMapper {
 
     @Delete("delete from role where id=#{param1} and id>0")
     void delRole(int id);
+
+    @Select("select * from privilege_constant where type<>'dev' order by sort")
+    List<PrivilegeConstantBean> listPrivileges();
 
     /**
      * user
@@ -93,7 +97,7 @@ public interface UserMapper {
     @UpdateProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_UPDATEALL)
     void updateUser(User user);
 
-    @Select("select * from admin_user where off=0 order by role,id")
+    @Select("select * from admin_user where off=0 and role>0 order by role,id")
     @Results({
             @Result(property = "role", column = "role", one = @One(select = "findRole"))
     })

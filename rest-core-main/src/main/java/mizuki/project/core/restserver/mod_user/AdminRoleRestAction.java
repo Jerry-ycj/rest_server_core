@@ -22,7 +22,6 @@ import java.util.List;
 @SessionAttributes({"user"})
 @Transactional(rollbackFor = Exception.class)
 @Api(tags = "管理用户模块-角色管理",description = "角色管理")
-@PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
 public class AdminRoleRestAction {
     @Autowired
     private UserMapper userMapper;
@@ -32,7 +31,7 @@ public class AdminRoleRestAction {
     public BasicMapDataRet listAllPrivileges(Model model) throws RestMainException{
         try{
             BasicMapDataRet ret = new BasicMapDataRet();
-            ret.getData().put("privileges",userMapper.findRole(Role.DEFAULT_ALL).getPrivileges());
+            ret.getData().put("privileges",userMapper.listPrivileges());
             ret.setResult(BasicRet.SUCCESS);
             return ret;
         }catch (Exception e){
@@ -41,7 +40,7 @@ public class AdminRoleRestAction {
     }
 
     @RequestMapping(value="/create",method= RequestMethod.POST)
-    @ApiOperation(value = "")
+    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.ROLE_MNG+ "')")
     public BasicRet create(
             Model model,
             @RequestParam String name,
@@ -61,6 +60,7 @@ public class AdminRoleRestAction {
 
     @RequestMapping(value="/update",method= RequestMethod.POST)
     @ApiOperation(value = "")
+    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.ROLE_MNG+ "')")
     public BasicRet update(
             Model model,
             @RequestParam int id,
@@ -83,6 +83,7 @@ public class AdminRoleRestAction {
 
     @RequestMapping(value="/del",method= RequestMethod.POST)
     @ApiOperation(value = "删除角色")
+    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.ROLE_MNG+ "')")
     public BasicRet del(
             Model model,
             @RequestParam int id
