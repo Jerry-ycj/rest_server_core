@@ -20,7 +20,7 @@ import java.util.Random;
  * 阿里大于  sms
  */
 @Component
-@ConfigurationProperties("mod.sms_dayu")
+@ConfigurationProperties("mod.sms-dayu")
 public class DayuSms {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

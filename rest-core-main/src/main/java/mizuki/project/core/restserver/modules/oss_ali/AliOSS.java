@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@ConfigurationProperties("mod.oss_ali")
+@ConfigurationProperties("mod.oss-ali")
 public class AliOSS {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private OSSClient ossClient;

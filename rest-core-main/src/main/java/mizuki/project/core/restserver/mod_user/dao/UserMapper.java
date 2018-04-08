@@ -112,20 +112,20 @@ public interface UserMapper {
      * rest token
      */
 
-    @Insert({"insert into rest_token(uid,token,createDt) values(#{param1},#{param2},now())"})
-    void saveRestToken(int uid, String token);
-
-    @Update("update rest_token set token=#{param2},createDt=now() where uid=#{param1}")
-    void updateRestToken(int uid, String token);
-
-    @Select("select token from rest_token where uid=#{param1}")
-    String findRestToken(int uid);
-
-    @Select("select u.* from admin_user u,rest_token t where t.uid=u.id and t.token=#{param1} and now()<=t.createDt+'${hours} hour'")
-    @Results(value = {
-            @Result(id = true, property = "id", column = "id"),
-            @Result(property = "role", column = "role", one = @One(select = "findRole"))
-    })
-    User findUserByToken(String token, @Param("hours") int hours);
+//    @Insert({"insert into rest_token(uid,token,createDt) values(#{param1},#{param2},now())"})
+//    void saveRestToken(int uid, String token);
+//
+//    @Update("update rest_token set token=#{param2},createDt=now() where uid=#{param1}")
+//    void updateRestToken(int uid, String token);
+//
+//    @Select("select token from rest_token where uid=#{param1}")
+//    String findRestToken(int uid);
+//
+//    @Select("select u.* from admin_user u,rest_token t where t.uid=u.id and t.token=#{param1} and now()<=t.createDt+'${hours} hour'")
+//    @Results(value = {
+//            @Result(id = true, property = "id", column = "id"),
+//            @Result(property = "role", column = "role", one = @One(select = "findRole"))
+//    })
+//    User findUserByToken(String token, @Param("hours") int hours);
 
 }

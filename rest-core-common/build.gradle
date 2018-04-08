@@ -5,7 +5,8 @@ version "$moduleCommonVersion"
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'
-apply plugin: 'org.springframework.boot'
+apply plugin: "org.springframework.boot"
+apply plugin: 'io.spring.dependency-management'
 
 buildscript {
     repositories {
@@ -24,22 +25,16 @@ repositories {
 dependencies {
     compile fileTree(dir: 'exlibs', include: ['*.jar'])
 
-    compile "org.springframework.boot:spring-boot-starter"
-    // json
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.5',
-            'com.fasterxml.jackson.core:jackson-core:2.8.5',
-            'com.fasterxml.jackson.core:jackson-annotations:2.8.5'
-//    compile "org.springframework.boot:spring-boot-starter-json"
-
-    compile group: 'org.msgpack', name: 'jackson-dataformat-msgpack', version: '0.8.13'
+    compile "org.springframework.boot:spring-boot-starter:$springBootGradlePluginVerison"
+    compile "org.springframework.boot:spring-boot-starter-json:$springBootGradlePluginVerison"
 
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
     compile group: 'commons-io', name: 'commons-io', version: '2.5'
 
     // databases orm
-    compile 'org.mybatis:mybatis:3.4.5'
-    compile group: 'com.alibaba', name: 'druid', version: '1.1.5'
-    compile group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '1.3.1'
+    compile 'org.mybatis:mybatis:3.4.6'
+    compile group: 'com.alibaba', name: 'druid', version: '1.1.9'
+    compile group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '1.3.2'
 
     // 暂时，应用jpa注解，可能引起spring冲突
     compile group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
@@ -64,6 +59,7 @@ publishing {
 }
 
 jar {
+    enabled = true
     from {
         fileTree(dir: 'exlibs', include: ['*.jar']).collect{
             zipTree(it)

@@ -1,7 +1,6 @@
 package mizuki.project.core.restserver.mod_user;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.WebConfBean;
@@ -13,7 +12,6 @@ import mizuki.project.core.restserver.mod_user.dao.UserMapper;
 import mizuki.project.core.restserver.modules.sms.SmsMapper;
 import mizuki.project.core.restserver.util.CodeUtil;
 import mizuki.project.core.restserver.util.IOUtil;
-import mizuki.project.core.restserver.util.OtherUtil;
 import mizuki.project.core.restserver.util.WebIOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,12 +28,11 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/rest/user")
-@SessionAttributes({"user"})
+@SessionAttributes({"user","sessionId"})
 @Transactional(rollbackFor = Exception.class)
 @Api(tags = "管理用户模块",description = "管理的用户")
 public class UserRestAction{
@@ -114,9 +111,7 @@ public class UserRestAction{
                     .setPwd(CodeUtil.md5(pwd))
                     .setPhone(phone).setRole(r);
             userMapper.saveUser(user);
-            String token = OtherUtil.get32UUID();
-            /** 注意, 只在这里save了,其他地方是update */
-            userMapper.saveRestToken(user.getId(),token);
+            String token = (String) model.asMap().get("sessionId");
 
             model.addAttribute("user",user);
             data.put("result", 1);
@@ -204,12 +199,12 @@ public class UserRestAction{
 //        else if(user.getOff()==2){
 //            return (LoginUserRet) ret.setResult(BasicRet.ERR).setMessage("账户审核中");
 //        }
-        String token = OtherUtil.get32UUID();
-        if(userMapper.findRestToken(user.getId())==null){
-            userMapper.saveRestToken(user.getId(),token);
-        }else {
-            userMapper.updateRestToken(user.getId(), token);
-        }
+        String token = (String) model.asMap().get("sessionId");
+//        if(userMapper.findRestToken(user.getId())==null){
+//            userMapper.saveRestToken(user.getId(),token);
+//        }else {
+//            userMapper.updateRestToken(user.getId(), token);
+//        }
         model.addAttribute("user",user);
         ret.token = token;
         ret.user = user;

@@ -20,7 +20,7 @@ public class WebConfBean {
     private String projectDomainMain;
     private String iconfontPath;
     private String staticResVersion;
-    @Value("${server.context-path}")
+    @Value("${server.servlet.context-path}")
     private String contextPath;
     // nginx https限制
 //    private boolean forceNginxHttps;
