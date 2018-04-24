@@ -1,14 +1,14 @@
 package mizuki.project.core.restserver.interceptor;
 
+import mizuki.project.core.restserver.config.WebConfBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-import mizuki.project.core.restserver.config.WebConfBean;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.LocalTime;
+import javax.servlet.http.HttpSession;
 import java.util.Enumeration;
 
 /**
@@ -24,14 +24,15 @@ public class DefaultIntercep extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
+        HttpSession session = request.getSession();
+        if(session.getAttribute("sessionId")==null) session.setAttribute("sessionId",session.getId());
         StringBuilder sb = new StringBuilder();
         sb.append(" -------- request: \n");
         sb.append(request.getRequestURI())
             .append(" ").append(request.getHeader("X-Real-IP"))
             .append(" X-Forwarded-Proto:")
             .append(request.getHeader("X-Forwarded-Proto")).append("\n");
-        sb.append("sessionid: ")
-                .append(request.getSession().getId()).append(" \n");
+        sb.append("sessionid: ").append(session.getId()).append(" \n");
         Enumeration<String> e = request.getParameterNames();
         while (e.hasMoreElements()){
             String param = e.nextElement();
