@@ -30,8 +30,8 @@ public class RestAuthIntercep extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession();
         User u = (User)session.getAttribute("user");
+        // 用于 session操作时 可以获取session
         if(session.getAttribute("sessionId")==null) session.setAttribute("sessionId",session.getId());
-
         if(u==null){
             // token 用于在session有效期内的 重新获得session
             String token = request.getParameter("token");
@@ -40,7 +40,6 @@ public class RestAuthIntercep extends HandlerInterceptorAdapter {
                 if(session1!=null){
                     u = session1.getAttribute("user");
                     if (u != null) {
-                        System.out.println(123);
                         // 复制session内容
                         session1.getAttributeNames().forEach(name->{
                             session.setAttribute(name,session1.getAttribute(name));

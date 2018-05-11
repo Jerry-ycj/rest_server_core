@@ -9,6 +9,7 @@ import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
 import mizuki.project.core.restserver.mod_user.bean.ret.RoleListRet;
 import mizuki.project.core.restserver.mod_user.dao.UserMapper;
+import mizuki.project.core.restserver.modules.session.SpringSessionService;
 import mizuki.project.core.restserver.modules.sms.SmsMapper;
 import mizuki.project.core.restserver.util.CodeUtil;
 import mizuki.project.core.restserver.util.IOUtil;
@@ -18,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.session.Session;
+import org.springframework.session.SessionRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -66,6 +69,9 @@ public class UserRestAction{
         }
     }
 
+    @Autowired
+    private SpringSessionService sessionService;
+
     @RequestMapping(value = "/logout",method = RequestMethod.POST)
     @ApiOperation(value = "登出")
     public BasicRet logout(
@@ -75,6 +81,7 @@ public class UserRestAction{
         try{
             model.asMap().remove("user");
             session.removeAttribute("user");
+            sessionService.checkAndUpdateSession(session,model,"user");
             return new BasicRet(BasicRet.SUCCESS);
         }catch (Exception e){
             throw new RestMainException(e,model);
@@ -228,6 +235,7 @@ public class UserRestAction{
     @ApiOperation(value = "密码修改")
     public BasicRet updateUserPassword(
             Model model,
+            HttpSession session,
             @RequestParam String oldPwd,
             @RequestParam String newPwd
     ) throws RestMainException {
@@ -238,6 +246,7 @@ public class UserRestAction{
             }
             user.setPwd(CodeUtil.md5(newPwd));
             userMapper.updateUser(user);
+            sessionService.checkAndUpdateSession(session,model,"user");
             return new BasicRet(BasicRet.SUCCESS);
         }catch (Exception e){
             throw new RestMainException(e,model);
@@ -248,6 +257,7 @@ public class UserRestAction{
     @ApiOperation(value = "更新用户信息")
     public BasicRet updateUserInfo(
             Model model,
+            HttpSession session,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String phone,
             @RequestParam(required = false,defaultValue = "0")int gender,
@@ -267,6 +277,7 @@ public class UserRestAction{
             if(gender!=0) user.setGender(gender);
             if(address!=null) user.setAddress(address);
             userMapper.updateUser(user);
+            sessionService.checkAndUpdateSession(session,model,"user");
             return new BasicRet(BasicRet.SUCCESS);
         }catch (Exception e){
             throw new RestMainException(e,model);

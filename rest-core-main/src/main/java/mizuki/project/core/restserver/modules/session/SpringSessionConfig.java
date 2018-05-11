@@ -1,5 +1,6 @@
 package mizuki.project.core.restserver.modules.session;
 
+import org.springframework.context.annotation.Import;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 /**
@@ -7,6 +8,9 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  *
  */
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 7200)
+@Import({
+        SpringSessionService.class
+})
 public class SpringSessionConfig {
 
 //    @Autowired

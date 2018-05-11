@@ -164,7 +164,7 @@ public class AdminUserRestAction{
             }
             if(username!=null && !username.equals(user.getUsername())){
                 if(userMapper.findUserByUsername(username)!=null){
-                    return new BasicRet(BasicRet.ERR,"改用户名已被使用");
+                    return new BasicRet(BasicRet.ERR,"该用户名已被使用");
                 }else{
                     user.setUsername(username);
                 }
