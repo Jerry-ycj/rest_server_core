@@ -1,11 +1,13 @@
 package mizuki.project.core.restserver.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -14,7 +16,7 @@ public class JsonUtil {
     private static Logger logger = LoggerFactory.getLogger(JsonUtil.class);
     private static final ObjectMapper JSON = new ObjectMapper();
     static {
-//        JSON.setSerializationInclusion(Include.NON_NULL);
+        JSON.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 //        JSON.configure(SerializationFeature.INDENT_OUTPUT, Boolean.TRUE);
         JSON.setTimeZone(TimeZone.getDefault());
     }
@@ -52,5 +54,4 @@ public class JsonUtil {
         }
         return null;
     }
-
 }

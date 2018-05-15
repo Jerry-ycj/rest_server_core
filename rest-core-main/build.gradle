@@ -27,10 +27,15 @@ dependencies {
     compile fileTree(dir: 'exlibs', include: ['*.jar'])
     compile group: 'mizuki.project.rest.core', name: 'rest-core-common', version: "$moduleCommonVersionForMain"
 
-    compile "org.springframework.boot:spring-boot-starter-web:$springBootGradlePluginVerison"
+    compile ("org.springframework.boot:spring-boot-starter-web:$springBootGradlePluginVerison") {
+        exclude module: "spring-boot-starter-tomcat"
+    }
     compile "org.springframework.boot:spring-boot-starter-security:$springBootGradlePluginVerison"
     // websocket
-    compile "org.springframework.boot:spring-boot-starter-websocket:$springBootGradlePluginVerison"
+    compile ("org.springframework.boot:spring-boot-starter-websocket:$springBootGradlePluginVerison") {
+        exclude module: "spring-boot-starter-tomcat"
+    }
+    compile "org.springframework.boot:spring-boot-starter-undertow"
     // session
     compile "org.springframework.boot:spring-boot-starter-data-redis:$springBootGradlePluginVerison"
     compile "org.springframework.session:spring-session-core:2.0.2.RELEASE"
