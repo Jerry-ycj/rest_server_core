@@ -4,17 +4,44 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
-@Deprecated
-public class DateUtil {
+public class DateTimeUtil {
 	private final static SimpleDateFormat sdfTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+	public static String formatStandard(long times) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(times);
+		return formatStandard(calendar);
+	}
+
+	public static String formatStandard(Calendar calendar) {
+		return calendar.get(Calendar.YEAR)+"-"+(calendar.get(Calendar.MONTH)+1)+"-"+calendar.get(Calendar.DATE)
+				+" "+calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND);
+	}
+
+	public static void clearHMS(Calendar calendar){
+		calendar.set(Calendar.HOUR_OF_DAY,0);
+		calendar.set(Calendar.MINUTE,0);
+		calendar.set(Calendar.SECOND,0);
+		calendar.set(Calendar.MILLISECOND,0);
+	}
+
+	public static String formatYMD(Calendar calendar){
+		return calendar.get(Calendar.YEAR)+"-"+(calendar.get(Calendar.MONTH)+1)+"-"+calendar.get(Calendar.DATE);
+	}
+
 	/**
-	 * 格式化日期
-	 * @return
+	 * 间隔多少天 注意 参数的值会更改
 	 */
-	public static Date formatDate(String date) {
+	public static long computeIntervalDays(Calendar a,Calendar b){
+		clearHMS(a);
+		clearHMS(b);
+		return (b.getTimeInMillis()-a.getTimeInMillis())/(24*60*60*1000)-1;
+	}
+
+	public static Date formatStandard(String date) {
 		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			return fmt.parse(date);
@@ -40,7 +67,6 @@ public class DateUtil {
 
 	/**
 	 * 校验日期是否合法
-	 * @return
 	 */
 	public static boolean isValidDate(String s) {
 		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
@@ -67,7 +93,6 @@ public class DateUtil {
 
 	/**
 	 * 把时间根据时、分、秒转换为时间段
-	 * @param StrDate
 	 */
 	public static String getTimes(String StrDate) {
 		String resultTimes = "";
@@ -101,5 +126,6 @@ public class DateUtil {
 
 		return resultTimes;
 	}
+
 
 }
