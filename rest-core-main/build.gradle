@@ -27,7 +27,7 @@ dependencies {
     compile fileTree(dir: 'exlibs', include: ['*.jar'])
     compile group: 'mizuki.project.rest.core', name: 'rest-core-common', version: "$moduleCommonVersionForMain"
 
-    compile ("org.springframework.boot:spring-boot-starter-web:$springBootGradlePluginVerison") {
+    compile ("org.springframework.boot:spring-boot-starter-web") {
         exclude module: "spring-boot-starter-tomcat"
     }
     compile "org.springframework.boot:spring-boot-starter-security:$springBootGradlePluginVerison"

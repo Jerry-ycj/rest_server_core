@@ -1,10 +1,7 @@
 package mizuki.project.core.restserver.mod_user.bean;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
-import mizuki.project.core.restserver.util.CodeUtil;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -25,13 +22,13 @@ public class User implements Serializable{
 	private String username;
 	private String name;
 	private String phone;
-    @JsonIgnore
+    @JSONField(serialize = false)
 	private String pwd;
     @ApiModelProperty(notes = "1-nan,2-nv")
 	private int gender;
 	private String image;// 头像
 	private String address;
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Timestamp createDt;
 	@ApiModelProperty(notes = "1-冻结, 2-等待审核")
     private int off;

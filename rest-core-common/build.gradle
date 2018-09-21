@@ -26,7 +26,7 @@ dependencies {
     compile fileTree(dir: 'exlibs', include: ['*.jar'])
 
     compile "org.springframework.boot:spring-boot-starter:$springBootGradlePluginVerison"
-    compile "org.springframework.boot:spring-boot-starter-json:$springBootGradlePluginVerison"
+//    compile "org.springframework.boot:spring-boot-starter-json:$springBootGradlePluginVerison"
 
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
     compile group: 'commons-io', name: 'commons-io', version: '2.5'
@@ -38,6 +38,9 @@ dependencies {
 
     // 暂时，应用jpa注解，可能引起spring冲突
     compile group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
+
+    // https://mvnrepository.com/artifact/com.alibaba/fastjson
+    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.49'
 
 }
 

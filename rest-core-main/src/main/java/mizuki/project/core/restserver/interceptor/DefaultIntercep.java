@@ -1,9 +1,7 @@
 package mizuki.project.core.restserver.interceptor;
 
-import mizuki.project.core.restserver.config.WebConfBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,8 +15,6 @@ import java.util.Enumeration;
  */
 public class DefaultIntercep extends HandlerInterceptorAdapter {
 
-    @Autowired
-    private WebConfBean wcb;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -40,16 +36,6 @@ public class DefaultIntercep extends HandlerInterceptorAdapter {
                     .append(request.getParameter(param)).append("\n");
         }
         logger.info(sb.toString());
-
-//        // check nginx https
-//        if(wcb.isForceNginxHttps()){
-//            if("https".equals(request.getHeader("X-Forwarded-Proto"))){
-//                return true;
-//            }else{
-//                logger.error("not https request forwarded from web server");
-//                return false;
-//            }
-//        }
         return true;
     }
 }
