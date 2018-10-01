@@ -15,6 +15,7 @@ public class BasicRet {
     public static final int ERR=0;
     public static final int SUCCESS=1;
     public static final int TOKEN_ERR=2;
+    public static final int FREQ_LIMIT = 3;
 
     @ApiModelProperty(notes = "返回码: 0-err, 1-success, 2-token_err")
     protected int result;
