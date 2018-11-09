@@ -44,6 +44,7 @@ public class IntArrayHandler implements TypeHandler<List<Integer>>{
         }
         String tmp = s.substring(1,s.length()-1);
         for(String e:tmp.split(",")){
+            if(e.contains("\"")) e=e.replaceAll("\"","");
             list.add(Integer.parseInt(e));
         }
         return list;
