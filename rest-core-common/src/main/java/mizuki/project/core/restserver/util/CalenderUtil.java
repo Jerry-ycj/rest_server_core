@@ -1,5 +1,8 @@
 package mizuki.project.core.restserver.util;
 
+import org.apache.commons.lang3.time.DateParser;
+import org.apache.commons.lang3.time.FastDateFormat;
+
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,7 +11,7 @@ import java.util.Date;
 
 public class CalenderUtil {
 
-    private static final SimpleDateFormat sdfTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final DateParser sdfTime = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
     public static void clearHMS(Calendar calendar){
         calendar.set(Calendar.HOUR_OF_DAY,0);

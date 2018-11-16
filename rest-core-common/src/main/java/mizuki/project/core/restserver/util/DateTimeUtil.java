@@ -1,5 +1,8 @@
 package mizuki.project.core.restserver.util;
 
+import org.apache.commons.lang3.time.DateParser;
+import org.apache.commons.lang3.time.FastDateFormat;
+
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -8,7 +11,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DateTimeUtil {
-	private final static SimpleDateFormat sdfTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private final static DateParser sdfTime = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
+	private final static FastDateFormat fastDateFormat = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
 	public static String formatStandard(long times) {
 		Calendar calendar = Calendar.getInstance();
@@ -52,7 +56,7 @@ public class DateTimeUtil {
 	}
 
 	public static String formatSdfTimeFromTimes(long times){
-		return sdfTime.format(new Date(times));
+		return fastDateFormat.format(new Date(times));
 	}
 
 	public static Timestamp formatTimestamp(String date) {
