@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping("/rest/admin/user/role")
 @SessionAttributes({"user"})
 @Transactional(rollbackFor = Exception.class)
-@Api(tags = "管理用户模块-角色管理",description = "角色管理")
+@Api(tags = "管理员模块-角色管理",description = "角色管理")
 public class AdminRoleRestAction {
     @Autowired
     private UserMapper userMapper;
@@ -59,7 +59,7 @@ public class AdminRoleRestAction {
     }
 
     @RequestMapping(value="/update",method= RequestMethod.POST)
-    @ApiOperation(value = "")
+    @ApiOperation(value = "创建角色")
     @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.ROLE_MNG+ "')")
     public BasicRet update(
             Model model,

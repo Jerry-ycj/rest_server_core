@@ -6,11 +6,14 @@ import com.hankcs.hanlp.dictionary.CustomDictionary;
 import com.hankcs.hanlp.dictionary.stopword.CoreStopWordDictionary;
 import com.hankcs.hanlp.seg.common.Term;
 import com.hankcs.hanlp.tokenizer.IndexTokenizer;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Service
 public class NLPUtil {
 
     private static List<String> ignoreNaturesHanLP;
@@ -18,9 +21,8 @@ public class NLPUtil {
         "ul","uj","w","d","dg","dl","c","cc","p","pba","pbei"
     };
 
-    static {
-//        IndexAnalysis.parse("初始化 init");
-//        new KeyWordComputer(1).computeArticleTfidf("初始化 init");
+    @PostConstruct
+    public void init(){
         IndexTokenizer.segment("初始化 init");
         HanLP.extractKeyword("初始化 init",1);
         ignoreNaturesHanLP= Arrays.stream(ignoreNaturesHanLPArr).collect(Collectors.toList());
@@ -40,7 +42,7 @@ public class NLPUtil {
     /**
      * for 保存索引
      */
-    public static String seqForPgVector(String... origin){
+    public String seqForPgVector(String... origin){
         // todo 处理同义词
         return tranlatePGVector(seq_hanlp(origin));
     }
@@ -48,11 +50,11 @@ public class NLPUtil {
     /**
      * seq for pgsql tsquery , or关系. for 查询字段
      */
-    public static String seqForPgQuery(String... origin){
+    public String seqForPgQuery(String... origin){
         return tranlatePGQuery(seq_hanlp(origin));
     }
 
-    private static List seq_hanlp(String... origin){
+    private List seq_hanlp(String... origin){
         String strs = combine(origin);
         List<Term> list = IndexTokenizer.segment(strs);
         List<String> ret = new ArrayList<>();
@@ -62,7 +64,7 @@ public class NLPUtil {
         return ret;
     }
 
-    private static String combine(String... strs){
+    private String combine(String... strs){
         if(strs.length==0) return "";
         if(strs.length==1) return strs[0];
         StringBuilder stringBuilder = new StringBuilder();
@@ -75,7 +77,7 @@ public class NLPUtil {
     /**
      * translate for tsvector
      */
-    private static String tranlatePGVector(Collection list){
+    private String tranlatePGVector(Collection list){
         if(list.size()==0) return "";
         StringBuilder stringBuilder = new StringBuilder();
         list.forEach(c->stringBuilder.append(c).append(" "));
@@ -84,7 +86,7 @@ public class NLPUtil {
     /**
      * translate for tsquery
      */
-    private static String tranlatePGQuery(Collection list){
+    private String tranlatePGQuery(Collection list){
         if(list.size()==0) return "";
         StringBuilder stringBuilder = new StringBuilder();
         list.forEach(c->stringBuilder.append(c).append("|"));

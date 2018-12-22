@@ -1,5 +1,7 @@
 package mizuki.project.core.restserver.mod_user.bean;
 
+import io.swagger.annotations.ApiModel;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -12,6 +14,7 @@ import java.util.List;
  * 角色
  */
 @Table(name = "role")
+@ApiModel(value = "角色")
 public class Role implements Serializable{
 
     // 上帝角色

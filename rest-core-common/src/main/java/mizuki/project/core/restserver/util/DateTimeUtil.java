@@ -12,6 +12,7 @@ import java.util.Date;
 
 public class DateTimeUtil {
 	private final static DateParser sdfTime = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
+	private final static DateParser sdfDate = FastDateFormat.getInstance("yyyy-MM-dd");
 	private final static FastDateFormat fastDateFormat = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
 	public static String formatStandard(long times) {
@@ -36,6 +37,19 @@ public class DateTimeUtil {
 		return calendar.get(Calendar.YEAR)+"-"+(calendar.get(Calendar.MONTH)+1)+"-"+calendar.get(Calendar.DATE);
 	}
 
+	public static String formatMD(Calendar calendar){
+		return String.format("%02d",(calendar.get(Calendar.MONTH)+1))+"-"+String.format("%02d",calendar.get(Calendar.DATE));
+	}
+
+	public static Timestamp parseStamp(String datetime){
+		try {
+			Date date = sdfTime.parse(datetime);
+			return new Timestamp(date.getTime());
+		} catch (ParseException e) {
+			return null;
+		}
+	}
+
 	/**
 	 * 间隔多少天 注意 参数的值会更改
 	 */
@@ -43,16 +57,6 @@ public class DateTimeUtil {
 		clearHMS(a);
 		clearHMS(b);
 		return (b.getTimeInMillis()-a.getTimeInMillis())/(24*60*60*1000)-1;
-	}
-
-	public static Date formatStandard(String date) {
-		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			return fmt.parse(date);
-		} catch (ParseException e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	public static String formatSdfTimeFromTimes(long times){
@@ -73,9 +77,8 @@ public class DateTimeUtil {
 	 * 校验日期是否合法
 	 */
 	public static boolean isValidDate(String s) {
-		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
 		try {
-			fmt.parse(s);
+			sdfDate.parse(s);
 			return true;
 		} catch (Exception e) {
 			// 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
@@ -83,30 +86,49 @@ public class DateTimeUtil {
 		}
 	}
 
-	public static int getDiffYear(String startTime, String endTime) {
-		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			long aa = 0;
-			return (int) (((fmt.parse(endTime).getTime() - fmt.parse(startTime).getTime()) / (1000 * 60 * 60 * 24)) / 365);
-		} catch (Exception e) {
-			// 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
-			return 0;
+	public static String formatMillSecondHMS(long sec,boolean zh){
+		sec = sec/1000;
+		int hh=(int)Math.floor(sec/60/60);
+		int mm=(int)Math.floor(sec/60)%60;
+		String ret="";
+		if(zh){
+			// ret += (dd===0?"0":dd)+"天";
+			ret += (hh==0?"0":hh)+"时";
+			ret += (mm==0?"0":mm)+"分";
+			ret += sec%60+"秒";
+		}else {
+			// ret += (dd===0?"00":dd)+":";
+			ret += (hh == 0 ? "00" : String.format("%2d", hh)) + ":";
+			ret += (mm == 0 ? "00" : String.format("%2d", mm)) + ":";
+			ret += String.format("%2d", sec % 60);
 		}
+		return ret;
 	}
 
+	public static String formatMillSecondHM(long sec,boolean zh){
+		sec = sec/1000;
+		int hh=(int)Math.floor(sec/60/60);
+		int mm=(int)Math.floor(sec/60)%60;
+		String ret="";
+		if(zh){
+			ret += (hh==0?"0":hh)+"时";
+			ret += (mm==0?"0":mm)+"分";
+		}else {
+			ret += (hh == 0 ? "00" : String.format("%2d", hh)) + ":";
+			ret += (mm == 0 ? "00" : String.format("%2d", mm));
+		}
+		return ret;
+	}
 
 	/**
 	 * 把时间根据时、分、秒转换为时间段
 	 */
 	public static String getTimes(String StrDate) {
 		String resultTimes = "";
-
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date now;
-
 		try {
 			now = new Date();
-			Date date = df.parse(StrDate);
+			Date date = sdfTime.parse(StrDate);
 			long times = now.getTime() - date.getTime();
 			long day = times / (24 * 60 * 60 * 1000);
 			long hour = (times / (60 * 60 * 1000) - day * 24);

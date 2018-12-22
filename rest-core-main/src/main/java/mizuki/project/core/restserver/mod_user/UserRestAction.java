@@ -37,7 +37,7 @@ import java.util.Map;
 @RequestMapping(value = "/rest/user")
 @SessionAttributes({"user","sessionId"})
 @Transactional(rollbackFor = Exception.class)
-@Api(tags = "管理用户模块",description = "管理的用户")
+@Api(tags = "管理员模块",description = "管理员接口")
 public class UserRestAction{
 
 	@Autowired
@@ -45,9 +45,6 @@ public class UserRestAction{
 	@Autowired
     private SmsMapper smsMapper;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    /** 头像 */
-    private static final String imgPath="/user/image";
 
     private User latestUser(Model model){
         User user = (User)model.asMap().get("user");
@@ -282,42 +279,6 @@ public class UserRestAction{
         }catch (Exception e){
             throw new RestMainException(e,model);
         }
-    }
-
-
-//    @RequestMapping(value="/updateUserImage",method = RequestMethod.POST)
-    public Map<String, Object> updateUserImage(
-            Model model,
-            @RequestParam MultipartFile image
-    ) throws RestMainException {
-        User user = (User)model.asMap().get("user");
-        WebConfBean wcb = (WebConfBean)model.asMap().get("confBean");
-        Map<String,Object> data = new HashMap<>();
-        try{
-            data.put("result", 1);
-            String filename = user.getId()+"_"+ LocalDateTime.now().toString()+IOUtil.getSuffixFromMIME(image.getContentType());
-            String uimage = imgPath+"/"+filename;
-            File file = IOUtil.prepare(wcb.getProjectPath()+imgPath,filename);
-            IOUtil.saveStream2File(image.getInputStream(),file);
-            user.setImage(uimage);
-            userMapper.updateUser(user);
-            // 保存成功
-            user.setImage(uimage);
-            return data;
-        }catch (Exception e){
-            throw new RestMainException(e,model);
-        }
-    }
-
-//    @RequestMapping(value = "/download/{code}",method = RequestMethod.GET)
-    public ResponseEntity<InputStreamResource> downloadFile(
-            Model model,
-            @PathVariable String code)
-            throws IOException {
-        WebConfBean wcb = (WebConfBean)model.asMap().get("confBean");
-        return WebIOUtil.downloadFileWithCode(
-                wcb.getProjectPath(), "image",code,
-                imgPath);
     }
 
     @RequestMapping(value="/resetPassword",method = RequestMethod.POST)

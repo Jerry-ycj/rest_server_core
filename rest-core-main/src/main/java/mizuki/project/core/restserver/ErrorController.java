@@ -5,7 +5,9 @@ import mizuki.project.core.restserver.config.BasicRet;
 import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,7 +18,8 @@ public class ErrorController extends AbstractErrorController {
         super(errorAttributes);
     }
 
-    @RequestMapping("/error")
+    @RequestMapping(value = "/error",method = {RequestMethod.GET,RequestMethod.POST})
+    @ApiIgnore
     public BasicMapDataRet handle(HttpServletRequest request) {
         BasicMapDataRet ret  =new BasicMapDataRet();
         ret.setResult(BasicRet.ERR).setMessage((String) request.getAttribute("javax.servlet.error.message"));

@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/rest/admin/user")
 @SessionAttributes({"user"})
 @Transactional(rollbackFor = Exception.class)
-@Api(tags = "管理用户模块-用户管理",description = "用户管理")
+@Api(tags = "管理员模块-用户管理",description = "用户管理")
 public class AdminUserRestAction{
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired

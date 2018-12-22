@@ -130,18 +130,18 @@ public class PGBaseSqlProvider {
 		kvs.put(key,val);
 	}
 
-//	public static void main(String[] args) throws Exception {
-//		HashMap<String,Object> map = new HashMap<>();
-//		map.put("key1","val");
-//		map.put("key2",12);
-//		List<String> list = new ArrayList<>();
-//		list.add("12");list.add("23");
-//		System.out.println(System.currentTimeMillis());
-//		System.out.println(new PGBaseSqlProvider().insert(new Test()
-//				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
-//		System.out.println(new PGBaseSqlProvider().updateAll(new Test()
-//				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
-//		System.out.println(System.currentTimeMillis());
-//	}
+	public static void main(String[] args) throws Exception {
+		HashMap<String,Object> map = new HashMap<>();
+		map.put("key1","val");
+		map.put("key2",12);
+		List<String> list = new ArrayList<>();
+		list.add("12");list.add("23");
+		System.out.println(System.currentTimeMillis());
+		System.out.println(new PGBaseSqlProvider().insert(new Test()
+				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
+		System.out.println(new PGBaseSqlProvider().updateAll(new Test()
+				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
+		System.out.println(System.currentTimeMillis());
+	}
 
 }

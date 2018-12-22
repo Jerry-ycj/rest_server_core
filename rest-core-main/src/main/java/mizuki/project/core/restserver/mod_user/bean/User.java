@@ -1,12 +1,14 @@
 package mizuki.project.core.restserver.mod_user.bean;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Table(name = "admin_user")
+@ApiModel(value = "用户(管理员)")
 public class User implements Serializable{
 
 	@Transient
@@ -24,9 +26,10 @@ public class User implements Serializable{
 	private String phone;
     @JSONField(serialize = false)
 	private String pwd;
-    @ApiModelProperty(notes = "1-nan,2-nv")
+    @ApiModelProperty(notes = "1-male,2f-female")
 	private int gender;
-	private String image;// 头像
+    @ApiModelProperty(notes = "头像地址")
+	private String image;
 	private String address;
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Timestamp createDt;

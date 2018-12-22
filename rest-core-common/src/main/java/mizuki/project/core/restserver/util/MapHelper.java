@@ -12,4 +12,19 @@ public class MapHelper {
         else return map.get(key);
     }
 
+    /***
+     * 合并，map2合并入map1
+     */
+    public static void merge(Map<String,Object> map1, Map<String,Object> map2){
+        if(map2==null) return;
+        for(String key:map2.keySet()){
+            Object obj = map2.get(key);
+            if(obj instanceof Map && map1.get(key)!=null && map1.get(key) instanceof Map){
+                merge((Map<String, Object>) map1.get(key),(Map<String, Object>) obj);
+            }else{
+                map1.put(key,obj);
+            }
+        }
+    }
+
 }
