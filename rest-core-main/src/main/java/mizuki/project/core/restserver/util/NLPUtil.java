@@ -59,7 +59,7 @@ public class NLPUtil {
         List<Term> list = IndexTokenizer.segment(strs);
         List<String> ret = new ArrayList<>();
         list.forEach(term -> {
-            if(!ignoreNaturesHanLP.contains(term.nature.name())) ret.add(term.word);
+            if(!ignoreNaturesHanLP.contains(term.nature.toString())) ret.add(term.word);
         });
         return ret;
     }

@@ -37,7 +37,7 @@ import java.util.Map;
 @RequestMapping(value = "/rest/user")
 @SessionAttributes({"user","sessionId"})
 @Transactional(rollbackFor = Exception.class)
-@Api(tags = "管理员模块",description = "管理员接口")
+@Api(tags = "系统用户模块")
 public class UserRestAction{
 
 	@Autowired
@@ -138,6 +138,7 @@ public class UserRestAction{
     ) throws RestMainException {
         LoginUserRet ret=new LoginUserRet();
         try{
+            phone = phone.trim();
             String passwd = CodeUtil.md5(pwd);
             User user = userMapper.loginByPhone(phone,passwd);
             if(user != null){
@@ -159,6 +160,7 @@ public class UserRestAction{
     ) throws RestMainException{
         LoginUserRet ret=new LoginUserRet();
         try{
+            username = username.trim();
             String passwd = CodeUtil.md5(pwd);
             User user = userMapper.loginByUsername(username,passwd);
             if(user != null){
@@ -180,6 +182,7 @@ public class UserRestAction{
     ) throws RestMainException {
         LoginUserRet ret=new LoginUserRet();
         try{
+            phone = phone.trim();
             if(!sms.equals(smsMapper.findSmsCode(phone))){
                 return (LoginUserRet) ret.setResult(BasicRet.ERR).setMessage("验证码错误");
             }
@@ -270,7 +273,10 @@ public class UserRestAction{
                     && !sms.equals(smsMapper.findSmsCode(phone))){
                 return new BasicRet(BasicRet.ERR,"验证码错误");
             }
-            if(name!=null) user.setName(name);
+            if(name!=null){
+                name = name.trim();
+                user.setName(name);
+            }
             if(gender!=0) user.setGender(gender);
             if(address!=null) user.setAddress(address);
             userMapper.updateUser(user);

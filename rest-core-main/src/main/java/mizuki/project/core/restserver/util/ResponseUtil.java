@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
  * 用于response的处理，如springboot的interceptor中
  */
 public class ResponseUtil {
-
     public static void setCross(HttpServletResponse response, HttpServletRequest request){
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");

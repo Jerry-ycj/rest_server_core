@@ -9,7 +9,6 @@ import java.util.Map;
  * 基本的返回map
  */
 public class BasicRet {
-
     private static final String key_result="result";
     private static final String key_message="message";
     public static final int ERR=0;

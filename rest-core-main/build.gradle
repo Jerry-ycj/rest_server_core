@@ -12,7 +12,7 @@ apply plugin: 'io.spring.dependency-management'
 
 repositories {
     maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
-    maven{ url 'http://www.leadtotech.com:10001/repository/maven-releases/'}
+    maven{ url 'http://www.linkortech.com:10001/repository/maven-releases/'}
     mavenCentral()
 }
 dependencies {
