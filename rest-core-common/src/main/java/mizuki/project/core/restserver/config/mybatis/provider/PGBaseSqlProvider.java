@@ -17,6 +17,8 @@ public class PGBaseSqlProvider {
 
     public static final String METHOD_INSERT="insert";
     public static final String METHOD_UPDATEALL="updateAll";
+    public static final String METHOD_DELETE="delete";
+    public static final String METHOD_DELETE_OFF="deleteWithOff";
 
 	public String insert(Object bean) throws Exception {
 		Class<?> beanClass = bean.getClass();
@@ -58,6 +60,43 @@ public class PGBaseSqlProvider {
 				WHERE(k+"="+idKvs.get(k));
 			}
 
+		}}.toString();
+	}
+
+	public String delete(Object bean) throws Exception{
+		Class<?> beanClass = bean.getClass();
+		String tableName = getTableName(beanClass);
+		Field[] fields = getFields(beanClass);
+		Map<String,String> idKvs = new HashMap<>();
+		for(Field field:fields){
+			if(annotationExist(field,Id.class)){
+				genKvs(bean,idKvs,field);
+			}
+		}
+		return new SQL(){{
+			DELETE_FROM(tableName);
+			for (String k:idKvs.keySet()){
+				WHERE(k+"="+idKvs.get(k));
+			}
+		}}.toString();
+	}
+
+	public String deleteWithOff(Object bean) throws Exception{
+		Class<?> beanClass = bean.getClass();
+		String tableName = getTableName(beanClass);
+		Field[] fields = getFields(beanClass);
+		Map<String,String> idKvs = new HashMap<>();
+		for(Field field:fields){
+			if(annotationExist(field,Id.class)){
+				genKvs(bean,idKvs,field);
+			}
+		}
+		return new SQL(){{
+			UPDATE(tableName);
+			SET("off=true");
+			for (String k:idKvs.keySet()){
+				WHERE(k+"="+idKvs.get(k));
+			}
 		}}.toString();
 	}
 
@@ -124,9 +163,7 @@ public class PGBaseSqlProvider {
 			}else if(field.getGenericType().getTypeName().contains("<java.lang.Integer>")){
 				val = "ARRAY[" + StringUtil.join(collection,",") + "]::integer[]";
 			}
-
 		}
-
 		kvs.put(key,val);
 	}
 
@@ -140,6 +177,8 @@ public class PGBaseSqlProvider {
 		System.out.println(new PGBaseSqlProvider().insert(new Test()
 				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
 		System.out.println(new PGBaseSqlProvider().updateAll(new Test()
+				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
+		System.out.println(new PGBaseSqlProvider().deleteWithOff(new Test()
 				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
 		System.out.println(System.currentTimeMillis());
 	}

@@ -6,9 +6,10 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Map;
 
 @Table(name = "admin_user")
-@ApiModel(value = "用户(管理员)")
+@ApiModel(value = "系统用户")
 public class User implements Serializable{
 
 	@Transient
@@ -35,8 +36,18 @@ public class User implements Serializable{
 	private Timestamp createDt;
 	@ApiModelProperty(notes = "1-冻结, 2-等待审核")
     private int off;
+	private Map<String,Object> extend;
 
-    public int getId() {
+	public Map<String, Object> getExtend() {
+		return extend;
+	}
+
+	public User setExtend(Map<String, Object> extend) {
+		this.extend = extend;
+		return this;
+	}
+
+	public int getId() {
 		return id;
 	}
 
