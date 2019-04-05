@@ -217,6 +217,7 @@ public class UserRestAction{
         ret.user = user;
         return (LoginUserRet) ret.setResult(BasicRet.SUCCESS);
     }
+    // todo 不合规范
     private class LoginUserRet extends BasicRet{
         private String token;
         private User user;

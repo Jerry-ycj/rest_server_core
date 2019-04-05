@@ -98,7 +98,6 @@ public interface UserMapper {
     })
     User loginByUsername(String username, String pwd);
 
-
     @InsertProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_INSERT)
     @Options(useGeneratedKeys = true)
     void saveUser(User user);
