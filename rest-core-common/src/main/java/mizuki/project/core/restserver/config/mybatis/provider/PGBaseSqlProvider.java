@@ -178,6 +178,8 @@ public class PGBaseSqlProvider {
 				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
 		System.out.println(new PGBaseSqlProvider().updateAll(new Test()
 				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
+		System.out.println(new PGBaseSqlProvider().updateAll(new Test()
+				.setName("abc").setRole(new Test().setId(111)).setList(list)));
 		System.out.println(new PGBaseSqlProvider().deleteWithOff(new Test()
 				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
 		System.out.println(System.currentTimeMillis());

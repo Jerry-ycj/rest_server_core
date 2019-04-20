@@ -25,10 +25,25 @@ public interface DepartmentMapper {
     })
     Department findById(int id);
 
-    @Select("select * from department where parent is null order by id")
+    @Select("select * from department where parent is null order by no,id")
     @Results({
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
-            @Result(property = "parent",column = "parent",one = @One(select = "findById"))
+            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class)
     })
     List<Department> listParent();
+
+    @Select("select * from department where parent=#{param1} order by no,id")
+    @Results({
+            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
+            @Result(property = "id",column = "id"),
+            @Result(property = "children",column = "id",many = @Many(select = "listAllByParent"))
+    })
+    List<Department> listAllByParent(int id);
+
+    @Select("select * from department order by no,id")
+    @Results({
+            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
+            @Result(property = "id",column = "id"),
+            @Result(property = "children",column = "id",many = @Many(select = "listAllByParent"))
+    })
+    List<Department> listAll();
 }

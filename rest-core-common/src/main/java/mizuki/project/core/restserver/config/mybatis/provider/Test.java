@@ -3,6 +3,7 @@ package mizuki.project.core.restserver.config.mybatis.provider;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -70,6 +71,7 @@ public class Test {
     }
 
     public Map getMap() {
+        if(map==null) map = new HashMap();
         return map;
     }
 

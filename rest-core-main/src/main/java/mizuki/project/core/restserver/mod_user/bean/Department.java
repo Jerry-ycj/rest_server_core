@@ -5,10 +5,11 @@ import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 
 @Table(name = "department")
-@ApiModel(value = "系统用户")
+@ApiModel(value = "部门")
 public class Department {
     @Id
     @GeneratedValue
@@ -22,6 +23,17 @@ public class Department {
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Timestamp createDt;
     private Map<String,Object> extend;
+    @Transient
+    private List<Department> children;
+
+    public List<Department> getChildren() {
+        return children;
+    }
+
+    public Department setChildren(List<Department> children) {
+        this.children = children;
+        return this;
+    }
 
     public int getId() {
         return id;

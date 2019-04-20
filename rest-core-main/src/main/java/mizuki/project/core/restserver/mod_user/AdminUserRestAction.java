@@ -34,12 +34,12 @@ public class AdminUserRestAction{
     private UserMapper userMapper;
 
     @RequestMapping(value = "/listUsers",method = RequestMethod.POST)
-    @ApiOperation(value = "用户列表")
+    @ApiOperation(value = "用户列表-系统组")
     @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_LIST+ "')")
     public BasicMapDataRet listUsers(Model model) throws RestMainException {
         try{
             BasicMapDataRet ret = new BasicMapDataRet();
-            ret.getData().put("users",userMapper.listAll());
+            ret.getData().put("users",userMapper.listSys());
             ret.setResult(BasicRet.SUCCESS);
             return ret;
         }catch (Exception e){

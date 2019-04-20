@@ -41,19 +41,21 @@ public interface UserMapper {
     @UpdateProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_UPDATEALL)
     void updateRole(Role role);
 
-    @Select("select * from admin_user where role=#{param1}")
-    List<User> listByRole(int rid);
-
     @Delete("delete from role where id=#{param1} and id>0")
     void delRole(int id);
 
     @Select("select * from privilege_constant where type<>'dev' order by sort")
     List<PrivilegeConstantBean> listPrivileges();
 
+    @Select("select * from role where department=#{param1} order by id")
+    List<Role> listRoleByDepartment(int id);
 
     /**
      * user
      */
+
+    @Select("select * from admin_user where role=#{param1}")
+    List<User> listByRole(int rid);
 
     @Select("select * from admin_user where id=#{param1}")
     @Results(value = {
@@ -111,6 +113,13 @@ public interface UserMapper {
             @Result(property = "role", column = "role", one = @One(select = "findRole"))
     })
     List<User> listAll();
+
+    @Select("select * from admin_user user, role where user.role=role.id and user.off=0 and user.role>0 and role.department is null order by role,id")
+    @Results({
+            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
+            @Result(property = "role", column = "role", one = @One(select = "findRole"))
+    })
+    List<User> listSys();
 
     /** 用户冻结等等 */
     @Update("update admin_user set off=#{param2} where id=#{param1}")
