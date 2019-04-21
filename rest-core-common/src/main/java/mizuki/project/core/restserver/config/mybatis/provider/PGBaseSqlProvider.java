@@ -19,6 +19,7 @@ public class PGBaseSqlProvider {
     public static final String METHOD_UPDATEALL="updateAll";
     public static final String METHOD_DELETE="delete";
     public static final String METHOD_DELETE_OFF="deleteWithOff";
+    public static final String METHOD_FIND_ONE = "findOne";
 
 	public String insert(Object bean) throws Exception {
 		Class<?> beanClass = bean.getClass();
@@ -97,6 +98,17 @@ public class PGBaseSqlProvider {
 			for (String k:idKvs.keySet()){
 				WHERE(k+"="+idKvs.get(k));
 			}
+		}}.toString();
+	}
+
+	public String findOne(Object bean, String key){
+		Class<?> beanClass = bean.getClass();
+		String tableName = getTableName(beanClass);
+//		Field[] fields = getFields(beanClass);
+		return new SQL(){{
+			SELECT("*");
+			FROM(tableName);
+			WHERE(String.format("%s=#{param1.%s}",key,key));
 		}}.toString();
 	}
 
@@ -180,9 +192,10 @@ public class PGBaseSqlProvider {
 				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
 		System.out.println(new PGBaseSqlProvider().updateAll(new Test()
 				.setName("abc").setRole(new Test().setId(111)).setList(list)));
-		System.out.println(new PGBaseSqlProvider().deleteWithOff(new Test()
-				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
+		System.out.println(new PGBaseSqlProvider().findOne(new Test()
+				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list),"id"));
 		System.out.println(System.currentTimeMillis());
+
 	}
 
 }

@@ -114,19 +114,7 @@ public class AdminRoleRestAction {
             throw new RestMainException(e, model);
         }
     }
-    
-    @RequestMapping(value="/listDepartment",method= RequestMethod.POST)
-    @ApiOperation(value = "部门列表")
-    public DepartmentListRet listDepartment(Model model) throws RestMainException{
-        try{
-            DepartmentListRet ret = new DepartmentListRet();
-            ret.getData().setDepartments(departmentMapper.listAll());
-            ret.setResult(BasicRet.SUCCESS);
-            return ret;
-        }catch (Exception e){
-            throw new RestMainException(e, model);
-        }
-    }
+
 
     @RequestMapping(value="/department/create",method= RequestMethod.POST)
     @ApiOperation(value = "创建部门")

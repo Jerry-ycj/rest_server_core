@@ -3,33 +3,24 @@ package mizuki.project.core.restserver.mod_user;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import mizuki.project.core.restserver.config.BasicRet;
-import mizuki.project.core.restserver.config.WebConfBean;
 import mizuki.project.core.restserver.config.exception.RestMainException;
 import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
+import mizuki.project.core.restserver.mod_user.bean.ret.DepartmentListRet;
 import mizuki.project.core.restserver.mod_user.bean.ret.RoleListRet;
+import mizuki.project.core.restserver.mod_user.dao.DepartmentMapper;
 import mizuki.project.core.restserver.mod_user.dao.UserMapper;
 import mizuki.project.core.restserver.modules.session.SpringSessionService;
 import mizuki.project.core.restserver.modules.sms.SmsMapper;
 import mizuki.project.core.restserver.util.CodeUtil;
-import mizuki.project.core.restserver.util.IOUtil;
-import mizuki.project.core.restserver.util.WebIOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.ResponseEntity;
-import org.springframework.session.Session;
-import org.springframework.session.SessionRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +35,8 @@ public class UserRestAction{
 	private UserMapper userMapper;
 	@Autowired
     private SmsMapper smsMapper;
+	@Autowired
+    private DepartmentMapper departmentMapper;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private User latestUser(Model model){
@@ -63,6 +56,19 @@ public class UserRestAction{
             return ret;
         }catch (Exception e){
             throw new RestMainException(e);
+        }
+    }
+
+    @RequestMapping(value="/listDepartment",method= RequestMethod.POST)
+    @ApiOperation(value = "获取部门列表")
+    public DepartmentListRet listDepartment(Model model) throws RestMainException{
+        try{
+            DepartmentListRet ret = new DepartmentListRet();
+            ret.getData().setDepartments(departmentMapper.listAll());
+            ret.setResult(BasicRet.SUCCESS);
+            return ret;
+        }catch (Exception e){
+            throw new RestMainException(e, model);
         }
     }
 
