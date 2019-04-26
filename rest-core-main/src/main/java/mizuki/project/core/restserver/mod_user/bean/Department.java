@@ -4,13 +4,14 @@ import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
 @Table(name = "department")
 @ApiModel(value = "部门")
-public class Department {
+public class Department implements Serializable {
     @Id
     @GeneratedValue
     private int id;
