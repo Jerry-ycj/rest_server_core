@@ -8,6 +8,7 @@ import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.exception.RestMainException;
 import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
+import mizuki.project.core.restserver.mod_user.bean.ret.UserListRet;
 import mizuki.project.core.restserver.mod_user.bean.ret.UserRet;
 import mizuki.project.core.restserver.mod_user.dao.UserMapper;
 import mizuki.project.core.restserver.util.CodeUtil;
@@ -18,6 +19,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Created by ycj on 2016/12/16.
@@ -36,15 +39,12 @@ public class AdminUserRestAction{
     @RequestMapping(value = "/listUsers",method = RequestMethod.POST)
     @ApiOperation(value = "用户列表-系统组")
     @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_LIST+ "')")
-    public BasicMapDataRet listUsers(Model model) throws RestMainException {
-        try{
-            BasicMapDataRet ret = new BasicMapDataRet();
-            ret.getData().put("users",userMapper.listSys());
-            ret.setResult(BasicRet.SUCCESS);
-            return ret;
-        }catch (Exception e){
-            throw new RestMainException(e,model);
-        }
+    public UserListRet listUsers() throws RestMainException {
+        UserListRet ret = new UserListRet();
+        List<User> users = userMapper.listFromRootDepart(0);
+        ret.getData().setList(users);
+        ret.setResult(BasicRet.SUCCESS);
+        return ret;
     }
 
     @RequestMapping(value = "/addUser",method = RequestMethod.POST)

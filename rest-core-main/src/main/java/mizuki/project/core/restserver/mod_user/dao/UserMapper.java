@@ -50,11 +50,21 @@ public interface UserMapper {
     @Select("select * from role where department=#{param1} order by id")
     List<Role> listRoleByDepartment(int id);
 
+    // 从department的树状遍历
+    @Select("select * from role where department in (" +
+            " with recursive t(id) as( values(#{param1}) union all select d.id from department d, t where t.id=d.parent) select id from t" +
+            ") order by id")
+    @Results({
+            @Result(property = "privileges", column = "privileges", typeHandler = StringArrayHandler.class),
+            @Result(property = "department", column = "department", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.DepartmentMapper.findById"))
+    })
+    List<Role> listRolesFromRootDepart(int id);
+
     /**
      * user
      */
 
-    @Select("select * from admin_user where role=#{param1}")
+    @Select("select * from admin_user where role=#{param1} and off>-1")
     List<User> listByRole(int rid);
 
     @Select("select * from admin_user where id=#{param1}")
@@ -107,21 +117,30 @@ public interface UserMapper {
     @UpdateProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_UPDATEALL)
     void updateUser(User user);
 
-    @Select("select * from admin_user where off=0 and role>0 order by role,id")
-    @Results({
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
-            @Result(property = "role", column = "role", one = @One(select = "findRole"))
-    })
-    List<User> listAll();
+//    @Select("select * from admin_user where off=0 and role>0 order by role,id")
+//    @Results({
+//            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
+//            @Result(property = "role", column = "role", one = @One(select = "findRole"))
+//    })
+//    List<User> listAll();
 
-    @Select("select * from admin_user user, role where user.role=role.id and user.off=0 and user.role>0 and role.department is null order by role,id")
-    @Results({
+    // 获取某一root组用户
+    @Select("select * from admin_user where off>-1 and role in(" +
+            " select id from role where department in (" +
+            "  with recursive t(id) as( values(#{param1}) union all select d.id from department d, t where t.id=d.parent) select id from t" +
+            " )" +
+            ") order by name,id")
+    @Results(value = {
+            @Result(id = true, property = "id", column = "id"),
             @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
-            @Result(property = "role", column = "role", one = @One(select = "findRole"))
+            @Result(property = "role", column = "role", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.UserMapper.findRole"))
     })
-    List<User> listSys();
+    List<User> listFromRootDepart(int departId);
 
     /** 用户冻结等等 */
     @Update("update admin_user set off=#{param2} where id=#{param1}")
     void offUser(int uid, int off);
+
+    @Update("update admin_user set username=null, phone=null where id=#{param1}")
+    void setNull(int id);
 }

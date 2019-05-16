@@ -16,6 +16,8 @@ public class User implements Serializable{
 	public static final int OFF_OK = 0;
 	@Transient
     public static final int OFF_FREEZE = 1; // 冻结
+	@Transient
+	public static final int OFF_DEL = -1;	// 删除
 
 	@Id @GeneratedValue
 	private int id;
@@ -34,7 +36,7 @@ public class User implements Serializable{
 	private String address;
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Timestamp createDt;
-	@ApiModelProperty(notes = "1-冻结, 2-等待审核")
+	@ApiModelProperty(notes = "1-冻结, 2-等待审核，-1-删除")
     private int off;
 	private Map<String,Object> extend;
 
