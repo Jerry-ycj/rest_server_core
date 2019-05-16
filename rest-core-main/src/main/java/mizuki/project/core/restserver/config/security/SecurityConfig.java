@@ -114,8 +114,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         /* 每次请求这里都要执行 每次都是新的 TODO */
         /* security 作用于当前线程 */
         Set<GrantedAuthority> authorities = new HashSet<>();
-        for(String p:u.getRole().getPrivileges()) {
-            authorities.add(new SimpleGrantedAuthority(p));
+        if(u.getRole()!=null && u.getRole().getPrivileges()!=null) {
+            for (String p : u.getRole().getPrivileges()) {
+                authorities.add(new SimpleGrantedAuthority(p));
+            }
         }
         Authentication req = new UsernamePasswordAuthenticationToken(u.getId(), u.getPwd(),authorities);
         SecurityContextHolder.getContext().setAuthentication(req);

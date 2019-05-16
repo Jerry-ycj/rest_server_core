@@ -174,15 +174,14 @@ public class AdminRoleRestAction {
     @RequestMapping(value="/department/del",method= RequestMethod.POST)
     @ApiOperation(value = "删除部门")
     public BasicRet delDepartment(
-            Model model,
             @RequestParam int id
     ) throws RestMainException{
-        try{
-            if(userMapper.listRoleByDepartment(id).size()>0) return new BasicRet(BasicRet.ERR,"部门下还有角色,不能删除");
-            departmentMapper.del(new Department().setId(id));
-            return new BasicRet(BasicRet.SUCCESS);
-        }catch (Exception e){
-            throw new RestMainException(e, model);
+        if(userMapper.listRoleByDepartment(id).size()>0) throw new RestMainException("部门下还有角色,不能删除");
+        Department department = departmentMapper.findById(id);
+        if((boolean)department.getExtend().getOrDefault("immutable",false)){
+            throw new RestMainException("该部门不可删除");
         }
+        departmentMapper.del(new Department().setId(id));
+        return new BasicRet(BasicRet.SUCCESS);
     }
 }

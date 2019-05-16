@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -91,6 +92,7 @@ public class Department implements Serializable {
     }
 
     public Map<String, Object> getExtend() {
+        if(extend==null) extend=new HashMap<>();
         return extend;
     }
 

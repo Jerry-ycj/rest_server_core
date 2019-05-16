@@ -25,7 +25,7 @@ public class ExceptionProcess {
     @ExceptionHandler(RestMainException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public @ResponseBody BasicRet handle(RestMainException e){
-        logger.error("业务错误：",e);
+        logger.error("业务错误："+e.getMessage());
         return new BasicRet(BasicRet.ERR,e.getMessage());
     }
 
