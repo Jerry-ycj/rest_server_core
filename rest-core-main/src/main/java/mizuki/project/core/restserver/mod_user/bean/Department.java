@@ -13,6 +13,8 @@ import java.util.Map;
 @Table(name = "department")
 @ApiModel(value = "部门")
 public class Department implements Serializable {
+    @Transient
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue
     private int id;

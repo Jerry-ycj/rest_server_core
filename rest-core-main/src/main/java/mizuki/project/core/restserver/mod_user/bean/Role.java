@@ -13,6 +13,8 @@ import java.util.List;
 @Table(name = "role")
 @ApiModel(value = "角色")
 public class Role implements Serializable{
+    @Transient
+    private static final long serialVersionUID = 1L;
 
     // 上帝角色
     @Transient

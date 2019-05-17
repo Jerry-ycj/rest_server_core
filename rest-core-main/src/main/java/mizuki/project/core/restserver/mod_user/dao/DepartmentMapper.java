@@ -43,7 +43,8 @@ public interface DepartmentMapper {
     @Results({
             @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
             @Result(property = "id",column = "id"),
-            @Result(property = "children",column = "id",many = @Many(select = "listAllByParent"))
+            @Result(property = "children",column = "id",many = @Many(select = "listAllByParent")),
+            @Result(property = "parent",column = "parent",one = @One(select = "findById"))
     })
     List<Department> listAll();
 }

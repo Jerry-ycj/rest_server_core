@@ -11,7 +11,8 @@ import java.util.Map;
 @Table(name = "admin_user")
 @ApiModel(value = "系统用户")
 public class User implements Serializable{
-
+	@Transient
+	private static final long serialVersionUID = 1L;
 	@Transient
 	public static final int OFF_OK = 0;
 	@Transient
