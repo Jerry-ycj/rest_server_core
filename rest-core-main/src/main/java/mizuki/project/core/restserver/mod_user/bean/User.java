@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.Map;
 
 @Table(name = "admin_user")
@@ -42,6 +43,7 @@ public class User implements Serializable{
 	private Map<String,Object> extend;
 
 	public Map<String, Object> getExtend() {
+		if(extend==null) extend = new HashMap<>();
 		return extend;
 	}
 
