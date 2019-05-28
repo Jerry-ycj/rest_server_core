@@ -31,20 +31,16 @@ public class CommonSmsRestAction {
     public BasicRet smsCode(
             @RequestParam String phone
     ) throws RestMainException {
-        try{
-            String code = dayuSms.send(phone);
-            if(code==null){
-                return new BasicRet(BasicRet.ERR,"短信发送失败");
-            }
-            if(smsMapper.findSmsCode(phone)!=null){
-                smsMapper.updateSmsCode(phone,code);
-            }else{
-                smsMapper.saveSmsCode(phone,code);
-            }
-            return new BasicRet(BasicRet.SUCCESS);
-        }catch (Exception e){
-            throw new RestMainException(e);
+        String code = dayuSms.send(phone);
+        if(code==null){
+            throw new RestMainException("短信发送失败");
         }
+        if(smsMapper.findSmsCode(phone)!=null){
+            smsMapper.updateSmsCode(phone,code);
+        }else{
+            smsMapper.saveSmsCode(phone,code);
+        }
+        return new BasicRet(BasicRet.SUCCESS);
     }
 
 }

@@ -40,6 +40,7 @@ public class User implements Serializable{
 	private Timestamp createDt;
 	@ApiModelProperty(notes = "1-冻结, 2-等待审核，-1-删除")
     private int off;
+	@ApiModelProperty(notes = "immutable:true 不可删除")
 	private Map<String,Object> extend;
 
 	public Map<String, Object> getExtend() {

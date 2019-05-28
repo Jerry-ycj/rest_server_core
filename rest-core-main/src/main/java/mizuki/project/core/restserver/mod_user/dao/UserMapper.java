@@ -24,14 +24,16 @@ public interface UserMapper {
     @Select("select * from role where id>0 order by id")
     @Results({
             @Result(property = "privileges", column = "privileges", typeHandler = StringArrayHandler.class),
-            @Result(property = "department", column = "department", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.DepartmentMapper.findById"))
+            @Result(property = "department", column = "department", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.DepartmentMapper.findById")),
+            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
     })
     List<Role> listRoles();
 
     @Select("select * from role where id=#{param1}")
     @Results({
             @Result(property = "privileges", column = "privileges", typeHandler = StringArrayHandler.class),
-            @Result(property = "department", column = "department", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.DepartmentMapper.findById"))
+            @Result(property = "department", column = "department", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.DepartmentMapper.findById")),
+            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
     })
     Role findRole(int id);
 
@@ -47,16 +49,20 @@ public interface UserMapper {
     @Select("select * from privilege_constant where type<>'dev' order by sort")
     List<PrivilegeConstantBean> listPrivileges();
 
-    @Select("select * from role where department=#{param1} order by id")
+    @Select("select * from role where id>0 and department=#{param1} order by id")
+    @Results({
+            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class)
+    })
     List<Role> listRoleByDepartment(int id);
 
     // 从department的树状遍历
-    @Select("select * from role where department in (" +
+    @Select("select * from role where id>0 and department in (" +
             " with recursive t(id) as( values(#{param1}) union all select d.id from department d, t where t.id=d.parent) select id from t" +
             ") order by id")
     @Results({
             @Result(property = "privileges", column = "privileges", typeHandler = StringArrayHandler.class),
-            @Result(property = "department", column = "department", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.DepartmentMapper.findById"))
+            @Result(property = "department", column = "department", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.DepartmentMapper.findById")),
+            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
     })
     List<Role> listRolesFromRootDepart(int id);
 
@@ -125,7 +131,7 @@ public interface UserMapper {
 //    List<User> listAll();
 
     // 获取某一root组用户
-    @Select("select * from admin_user where off>-1 and role in(" +
+    @Select("select * from admin_user where off>-1 and role>0 and role in(" +
             " select id from role where department in (" +
             "  with recursive t(id) as( values(#{param1}) union all select d.id from department d, t where t.id=d.parent) select id from t" +
             " )" +

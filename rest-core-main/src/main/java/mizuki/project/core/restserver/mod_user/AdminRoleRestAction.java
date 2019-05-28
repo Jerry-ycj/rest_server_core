@@ -35,140 +35,114 @@ public class AdminRoleRestAction {
     @RequestMapping(value="/listAllPrivileges",method= RequestMethod.POST)
     @ApiOperation(value = "所有权限")
     public BasicMapDataRet listAllPrivileges(Model model) throws RestMainException{
-        try{
-            BasicMapDataRet ret = new BasicMapDataRet();
-            ret.getData().put("privileges",userMapper.listPrivileges());
-            ret.setResult(BasicRet.SUCCESS);
-            return ret;
-        }catch (Exception e){
-            throw new RestMainException(e, model);
-        }
+        BasicMapDataRet ret = new BasicMapDataRet();
+        ret.getData().put("privileges",userMapper.listPrivileges());
+        ret.setResult(BasicRet.SUCCESS);
+        return ret;
     }
 
     @RequestMapping(value="/create",method= RequestMethod.POST)
     @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.ROLE_MNG+ "')")
     public BasicRet create(
-            Model model,
             @RequestParam String name,
             @ApiParam(required = true,value = "数组json字符串：[a,b,c]")
             @RequestParam String privilegesJson,
             @RequestParam(required = false, defaultValue = "0") int departmentId
     ) throws RestMainException {
-        try{
-            List<String> privileges = (List<String>) JsonUtil.toObject(privilegesJson,List.class);
-            if(privileges==null) return new BasicRet(BasicRet.ERR,"权限不能为空");
-            Role role = new Role().setName(name).setPrivileges(privileges);
-            Department department = departmentMapper.findById(departmentId);
-            if(department==null) return new BasicRet(BasicRet.ERR,"部门不存在");
-            role.setDepartment(department);
-            userMapper.saveRole(role);
-            return new BasicRet(BasicRet.SUCCESS);
-        }catch (Exception e){
-            throw new RestMainException(e, model);
-        }
+        List<String> privileges = (List<String>) JsonUtil.toObject(privilegesJson,List.class);
+        if(privileges==null) throw new RestMainException("权限不能为空");
+        Role role = new Role().setName(name).setPrivileges(privileges);
+        Department department = departmentMapper.findById(departmentId);
+        if(department==null) throw new RestMainException("部门不存在");
+        role.setDepartment(department);
+        userMapper.saveRole(role);
+        return new BasicRet(BasicRet.SUCCESS);
     }
 
     @RequestMapping(value="/update",method= RequestMethod.POST)
     @ApiOperation(value = "修改角色")
     @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.ROLE_MNG+ "')")
     public BasicRet update(
-            Model model,
             @RequestParam int id,
             @RequestParam String name,
             @ApiParam(required = true,value = "数组json字符串：[a,b,c]")
             @RequestParam String privilegesJson,
             @RequestParam(required = false, defaultValue = "0") int departmentId
     ) throws RestMainException {
-        try{
-            List<String> privileges = (List<String>) JsonUtil.toObject(privilegesJson,List.class);
-            if(privileges==null) return new BasicRet(BasicRet.ERR,"权限不能为空");
-            Role role = userMapper.findRole(id);
-            if(role==null) return new BasicRet(BasicRet.ERR,"角色不存在");
-            role.setName(name).setPrivileges(privileges);
-            if(departmentId!=role.getDepartment().getId()){
-                Department department = departmentMapper.findById(departmentId);
-                if(department==null) return new BasicRet(BasicRet.ERR,"部门不存在");
-                role.setDepartment(department);
-            }
-            userMapper.updateRole(role);
-            return new BasicRet(BasicRet.SUCCESS);
-        }catch (Exception e){
-            throw new RestMainException(e, model);
+        List<String> privileges = (List<String>) JsonUtil.toObject(privilegesJson,List.class);
+        if(privileges==null) throw new RestMainException("权限不能为空");
+        Role role = userMapper.findRole(id);
+        if(role==null) throw new RestMainException("角色不存在");
+        role.setName(name).setPrivileges(privileges);
+        if(departmentId!=role.getDepartment().getId()){
+            Department department = departmentMapper.findById(departmentId);
+            if(department==null) throw new RestMainException("部门不存在");
+            role.setDepartment(department);
         }
+        userMapper.updateRole(role);
+        return new BasicRet(BasicRet.SUCCESS);
     }
 
     @RequestMapping(value="/del",method= RequestMethod.POST)
     @ApiOperation(value = "删除角色")
     @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.ROLE_MNG+ "')")
     public BasicRet del(
-            Model model,
             @RequestParam int id
-    ) throws RestMainException{
-        try{
-            Role role = userMapper.findRole(id);
-            if(role==null) return new BasicRet(BasicRet.ERR,"角色不存在");
-            if(userMapper.listByRole(id).size()>0) return new BasicRet(BasicRet.ERR,"角色下还有用户,不能删除");
-            userMapper.delRole(id);
-            return new BasicRet(BasicRet.SUCCESS);
-        }catch (Exception e){
-            throw new RestMainException(e, model);
+    ) throws RestMainException {
+        Role role = userMapper.findRole(id);
+        if(role==null) throw new RestMainException("角色不存在");
+        if((boolean)role.getExtend().getOrDefault("immutable",false)){
+            throw new RestMainException("该角色不可删除");
         }
+        if(userMapper.listByRole(id).size()>0) throw new RestMainException("角色下还有用户,不能删除");
+        userMapper.delRole(id);
+        return new BasicRet(BasicRet.SUCCESS);
     }
 
 
     @RequestMapping(value="/department/create",method= RequestMethod.POST)
     @ApiOperation(value = "创建部门")
     public BasicRet createDepartment(
-            Model model,
             @RequestParam(required = false) String no,
             @RequestParam String name,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) Integer parentId
     ) throws RestMainException{
-        try{
-            Department department = new Department()
-                    .setCreateDt(new Timestamp(System.currentTimeMillis()))
-                    .setDescr(description).setName(name).setNo(no);
-            if(parentId!=null){
-                Department parent = departmentMapper.findById(parentId);
-                if(parent==null) return new BasicRet(BasicRet.ERR,"父级部门不存在");
-                department.setParent(parent);
-            }
-            departmentMapper.save(department);
-            return new BasicRet(BasicRet.SUCCESS);
-        }catch (Exception e){
-            throw new RestMainException(e, model);
+        Department department = new Department()
+                .setCreateDt(new Timestamp(System.currentTimeMillis()))
+                .setDescr(description).setName(name).setNo(no);
+        if(parentId!=null){
+            Department parent = departmentMapper.findById(parentId);
+            if(parent==null) throw new RestMainException("父级部门不存在");
+            department.setParent(parent);
         }
+        departmentMapper.save(department);
+        return new BasicRet(BasicRet.SUCCESS);
     }
 
     @RequestMapping(value="/department/update",method= RequestMethod.POST)
     @ApiOperation(value = "修改部门")
     public BasicRet updateDepartment(
-            Model model,
             @RequestParam int id,
             @RequestParam(required = false) String no,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) Integer parentId
     ) throws RestMainException{
-        try{
-            Department department = departmentMapper.findById(id);
-            if(department==null) return new BasicRet(BasicRet.ERR,"部门不存在");
-            if(no!=null) department.setNo(no);
-            if(name!=null) department.setName(name);
-            if(description!=null) department.setDescr(description);
-            if(parentId==null){
-                department.setParent(null);
-            }else if(department.getParent()==null || !parentId.equals(department.getParent().getId())){
-                Department parent = departmentMapper.findById(parentId);
-                if(parent==null) return new BasicRet(BasicRet.ERR,"父级部门不存在");
-                department.setParent(parent);
-            }
-            departmentMapper.update(department);
-            return new BasicRet(BasicRet.SUCCESS);
-        }catch (Exception e){
-            throw new RestMainException(e, model);
+        Department department = departmentMapper.findById(id);
+        if(department==null) throw new RestMainException("部门不存在");
+        if(no!=null) department.setNo(no);
+        if(name!=null) department.setName(name);
+        if(description!=null) department.setDescr(description);
+        if(parentId==null){
+            department.setParent(null);
+        }else if(department.getParent()==null || !parentId.equals(department.getParent().getId())){
+            Department parent = departmentMapper.findById(parentId);
+            if(parent==null) throw new RestMainException("父级部门不存在");
+            department.setParent(parent);
         }
+        departmentMapper.update(department);
+        return new BasicRet(BasicRet.SUCCESS);
     }
 
     @RequestMapping(value="/department/del",method= RequestMethod.POST)

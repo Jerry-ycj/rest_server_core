@@ -48,28 +48,20 @@ public class UserRestAction{
 
     @RequestMapping(value = "/listRoles",method = RequestMethod.POST)
     @ApiOperation(value = "获取角色列表")
-    public RoleListRet listRoles() throws RestMainException{
+    public RoleListRet listRoles(){
         RoleListRet ret = new RoleListRet();
-        try{
-            ret.getData().setRoles(userMapper.listRoles());
-            ret.setResult(BasicRet.SUCCESS);
-            return ret;
-        }catch (Exception e){
-            throw new RestMainException(e);
-        }
+        ret.getData().setRoles(userMapper.listRoles());
+        ret.setResult(BasicRet.SUCCESS);
+        return ret;
     }
 
     @RequestMapping(value="/listDepartment",method= RequestMethod.POST)
     @ApiOperation(value = "获取部门列表")
     public DepartmentListRet listDepartment(Model model) throws RestMainException{
-        try{
-            DepartmentListRet ret = new DepartmentListRet();
-            ret.getData().setDepartments(departmentMapper.listAll());
-            ret.setResult(BasicRet.SUCCESS);
-            return ret;
-        }catch (Exception e){
-            throw new RestMainException(e, model);
-        }
+        DepartmentListRet ret = new DepartmentListRet();
+        ret.getData().setDepartments(departmentMapper.listAll());
+        ret.setResult(BasicRet.SUCCESS);
+        return ret;
     }
 
     @Autowired
@@ -81,59 +73,11 @@ public class UserRestAction{
             Model model,
             HttpSession session
     ) throws RestMainException {
-        try{
-            model.asMap().remove("user");
-            session.removeAttribute("user");
-            sessionService.checkAndUpdateSession(session,model,"user");
-            return new BasicRet(BasicRet.SUCCESS);
-        }catch (Exception e){
-            throw new RestMainException(e,model);
-        }
+        model.asMap().remove("user");
+        session.removeAttribute("user");
+        sessionService.checkAndUpdateSession(session,model,"user");
+        return new BasicRet(BasicRet.SUCCESS);
     }
-
-//	@RequestMapping(value="/register")
-	public Map<String, Object> userRegister(
-            Model model,
-            @RequestParam String pwd,
-            @RequestParam String phone,
-            @RequestParam String sms,
-            @RequestParam int role
-    ) throws RestMainException {
-        Map<String,Object> data = new HashMap<>();
-        try{
-            Role r = userMapper.findRole(role);
-            if(r==null){
-                data.put("result", 0);
-                data.put("message", "role err");
-                return data;
-            }
-            if(userMapper.findUserByPhone(phone)!=null){
-                data.put("result", 0);
-                data.put("message", "手机已注册");
-                return data;
-            }
-            if(!sms.equals(smsMapper.findSmsCode(phone))){
-                data.put("result", 0);
-                data.put("message", "验证码错误");
-                return data;
-            }
-            User user = new User()
-                    .setPwd(CodeUtil.md5(pwd))
-                    .setPhone(phone).setRole(r);
-            userMapper.saveUser(user);
-            String token = (String) model.asMap().get("sessionId");
-
-            model.addAttribute("user",user);
-            data.put("result", 1);
-            data.put("token", token);
-            data.put("user", user);
-            data.put("message", "成功");
-            return data;
-        }catch (Exception e){
-            throw new RestMainException(e,model);
-        }
-	}
-	
 
 	@RequestMapping(value="/loginByPhone",method = RequestMethod.POST)
     @ApiOperation(value = "用户登录（手机）")
@@ -143,17 +87,13 @@ public class UserRestAction{
             Model model
     ) throws RestMainException {
         LoginUserRet ret=new LoginUserRet();
-        try{
-            phone = phone.trim();
-            String passwd = CodeUtil.md5(pwd);
-            User user = userMapper.loginByPhone(phone,passwd);
-            if(user != null){
-                return loginHandle(user,ret,model);
-            }else{
-                return (LoginUserRet)ret.setResult(BasicRet.ERR).setMessage("用户名或密码错误");
-            }
-        }catch (Exception e){
-            throw new RestMainException(e,model);
+        phone = phone.trim();
+        String passwd = CodeUtil.md5(pwd);
+        User user = userMapper.loginByPhone(phone,passwd);
+        if(user != null){
+            return loginHandle(user,ret,model);
+        }else{
+            throw new RestMainException("用户名或密码错误");
         }
 	}
 
@@ -165,17 +105,13 @@ public class UserRestAction{
             @RequestParam String pwd
     ) throws RestMainException{
         LoginUserRet ret=new LoginUserRet();
-        try{
-            username = username.trim();
-            String passwd = CodeUtil.md5(pwd);
-            User user = userMapper.loginByUsername(username,passwd);
-            if(user != null){
-                return loginHandle(user,ret,model);
-            }else{
-                return (LoginUserRet)ret.setResult(BasicRet.ERR).setMessage("用户名或密码错误");
-            }
-        }catch (Exception e){
-            throw new RestMainException(e,model);
+        username = username.trim();
+        String passwd = CodeUtil.md5(pwd);
+        User user = userMapper.loginByUsername(username,passwd);
+        if(user != null){
+            return loginHandle(user,ret,model);
+        }else{
+            throw new RestMainException("用户名或密码错误");
         }
     }
 
@@ -187,30 +123,26 @@ public class UserRestAction{
             Model model
     ) throws RestMainException {
         LoginUserRet ret=new LoginUserRet();
-        try{
-            phone = phone.trim();
-            if(!sms.equals(smsMapper.findSmsCode(phone))){
-                return (LoginUserRet) ret.setResult(BasicRet.ERR).setMessage("验证码错误");
-            }
-            User user = userMapper.findUserByPhone(phone);
-            if(user==null){
-                return (LoginUserRet) ret.setResult(BasicRet.ERR).setMessage("用户不存在");
-            }
-            return loginHandle(user,ret,model);
-        }catch (Exception e){
-            throw new RestMainException(e,model);
+        phone = phone.trim();
+        if(!sms.equals(smsMapper.findSmsCode(phone))){
+            throw new RestMainException("验证码错误");
         }
+        User user = userMapper.findUserByPhone(phone);
+        if(user==null){
+            throw new RestMainException("用户不存在");
+        }
+        return loginHandle(user,ret,model);
     }
 
     /***
      * 登录时  获取user 和 systems
      */
-    private LoginUserRet loginHandle(User user,LoginUserRet ret,Model model){
+    private LoginUserRet loginHandle(User user,LoginUserRet ret,Model model) throws RestMainException {
         if(user.getOff()==User.OFF_FREEZE){
-            return (LoginUserRet) ret.setResult(BasicRet.ERR).setMessage("账户被冻结");
+            throw new RestMainException("账户被冻结");
         }
 //        else if(user.getOff()==2){
-//            return (LoginUserRet) ret.setResult(BasicRet.ERR).setMessage("账户审核中");
+//            throw new RestMainException("账户审核中");
 //        }
         String token = (String) model.asMap().get("sessionId");
 //        if(userMapper.findRestToken(user.getId())==null){
@@ -247,17 +179,13 @@ public class UserRestAction{
             @RequestParam String newPwd
     ) throws RestMainException {
         User user = latestUser(model);
-        try{
-            if(!user.getPwd().equals(CodeUtil.md5(oldPwd))){
-                return new BasicRet(BasicRet.ERR,"密码错误");
-            }
-            user.setPwd(CodeUtil.md5(newPwd));
-            userMapper.updateUser(user);
-            sessionService.checkAndUpdateSession(session,model,"user");
-            return new BasicRet(BasicRet.SUCCESS);
-        }catch (Exception e){
-            throw new RestMainException(e,model);
+        if(!user.getPwd().equals(CodeUtil.md5(oldPwd))){
+            throw new RestMainException("密码错误");
         }
+        user.setPwd(CodeUtil.md5(newPwd));
+        userMapper.updateUser(user);
+        sessionService.checkAndUpdateSession(session,model,"user");
+        return new BasicRet(BasicRet.SUCCESS);
     }
 
     @RequestMapping(value="/updateUserInfo",method = RequestMethod.POST)
@@ -272,26 +200,22 @@ public class UserRestAction{
             @RequestParam(required = false)String sms
     ) throws RestMainException {
         User user = (User)model.asMap().get("user");
-        try{
-            if(phone!=null && !phone.equals(user.getPhone()) && sms==null){
-                return new BasicRet(BasicRet.ERR,"修改手机需要验证码");
-            }
-            if(sms!=null && phone!=null && !phone.equals(user.getPhone())
-                    && !sms.equals(smsMapper.findSmsCode(phone))){
-                return new BasicRet(BasicRet.ERR,"验证码错误");
-            }
-            if(name!=null){
-                name = name.trim();
-                user.setName(name);
-            }
-            if(gender!=0) user.setGender(gender);
-            if(address!=null) user.setAddress(address);
-            userMapper.updateUser(user);
-            sessionService.checkAndUpdateSession(session,model,"user");
-            return new BasicRet(BasicRet.SUCCESS);
-        }catch (Exception e){
-            throw new RestMainException(e,model);
+        if(phone!=null && !phone.equals(user.getPhone()) && sms==null){
+            throw new RestMainException("修改手机需要验证码");
         }
+        if(sms!=null && phone!=null && !phone.equals(user.getPhone())
+                && !sms.equals(smsMapper.findSmsCode(phone))){
+            throw new RestMainException("验证码错误");
+        }
+        if(name!=null){
+            name = name.trim();
+            user.setName(name);
+        }
+        if(gender!=0) user.setGender(gender);
+        if(address!=null) user.setAddress(address);
+        userMapper.updateUser(user);
+        sessionService.checkAndUpdateSession(session,model,"user");
+        return new BasicRet(BasicRet.SUCCESS);
     }
 
     @RequestMapping(value="/resetPassword",method = RequestMethod.POST)
@@ -301,19 +225,15 @@ public class UserRestAction{
             @RequestParam String phone,
             @RequestParam String newPwd
     ) throws RestMainException {
-        try{
-            if(!sms.equals(smsMapper.findSmsCode(phone))){
-                return new BasicRet(BasicRet.ERR,"验证码错误");
-            }
-            User user = userMapper.findUserByPhone(phone);
-            if(user==null){
-                return new BasicRet(BasicRet.ERR,"用户不存在");
-            }
-            user.setPwd(CodeUtil.md5(newPwd));
-            userMapper.updateUser(user);
-            return new BasicRet(BasicRet.SUCCESS);
-        }catch (Exception e){
-            throw new RestMainException(e);
+        if(!sms.equals(smsMapper.findSmsCode(phone))){
+            throw new RestMainException("验证码错误");
         }
+        User user = userMapper.findUserByPhone(phone);
+        if(user==null){
+            throw new RestMainException("用户不存在");
+        }
+        user.setPwd(CodeUtil.md5(newPwd));
+        userMapper.updateUser(user);
+        return new BasicRet(BasicRet.SUCCESS);
     }
 }

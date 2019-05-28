@@ -4,7 +4,9 @@ import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ycj on 2016/12/3.
@@ -28,6 +30,17 @@ public class Role implements Serializable{
     @OneToOne
     @JoinColumn(name = "department", referencedColumnName = "id")
     private Department department;
+    private Map<String,Object> extend;
+
+    public Map<String, Object> getExtend() {
+        if(extend==null) extend = new HashMap<>();
+        return extend;
+    }
+
+    public Role setExtend(Map<String, Object> extend) {
+        this.extend = extend;
+        return this;
+    }
 
     public Department getDepartment() {
         return department;
