@@ -21,7 +21,7 @@ public interface UserMapper {
      * role
      */
 
-    @Select("select * from role where id>0 order by id")
+    @Select("select * from role where id>0 and department>=0 order by id")
     @Results({
             @Result(property = "privileges", column = "privileges", typeHandler = StringArrayHandler.class),
             @Result(property = "department", column = "department", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.DepartmentMapper.findById")),
