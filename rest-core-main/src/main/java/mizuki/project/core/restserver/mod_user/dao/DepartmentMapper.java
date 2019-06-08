@@ -39,7 +39,7 @@ public interface DepartmentMapper {
     })
     List<Department> listAllByParent(int id);
 
-    @Select("select * from department order by no,id")
+    @Select("select * from department order by parent,no,id")
     @Results({
             @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
             @Result(property = "id",column = "id"),
