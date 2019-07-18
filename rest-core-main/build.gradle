@@ -35,9 +35,11 @@ dependencies {
     compile "org.springframework.session:spring-session-data-redis:${springBootGradlePluginVerison}"
 
     // ali oss
-    compile group: 'com.aliyun.oss', name: 'aliyun-sdk-oss', version: '3.4.0'
-    compile group: 'com.aliyun', name: 'aliyun-java-sdk-sts', version: '2.1.6'
-    compile group: 'com.aliyun', name: 'aliyun-java-sdk-core', version: '2.1.7'
+    compile group: 'com.aliyun.oss', name: 'aliyun-sdk-oss', version: '3.5.0'
+    // https://mvnrepository.com/artifact/com.aliyun/aliyun-java-sdk-sts
+    compile group: 'com.aliyun', name: 'aliyun-java-sdk-sts', version: '3.0.1'
+    // https://mvnrepository.com/artifact/com.aliyun/aliyun-java-sdk-core
+    compile group: 'com.aliyun', name: 'aliyun-java-sdk-core', version: '4.4.2'
 
     // springfox
     compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'

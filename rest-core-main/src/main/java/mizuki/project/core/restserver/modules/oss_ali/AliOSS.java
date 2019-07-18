@@ -14,10 +14,9 @@ import com.aliyuncs.sts.model.v20150401.AssumeRoleRequest;
 import com.aliyuncs.sts.model.v20150401.AssumeRoleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -27,16 +26,23 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@ConfigurationProperties("mod.oss-ali")
 public class AliOSS {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private OSSClient ossClient;
 
+    @Value("${mod.oss-ali.accessKey}")
     private String accessKey;
+    @Value("${mod.oss-ali.accessKeySecret}")
     private String accessKeySecret;
+    @Value("${mod.oss-ali.endpoint}")
     private String endpoint;
+    @Value("${mod.oss-ali.stsEndpoint}")
+    private String stsEndpoint;
+    @Value("${mod.oss-ali.bucketName}")
     private String bucketName;
+    @Value("${mod.oss-ali.arn}")
     private String arn;
+    @Value("${mod.oss-ali.region}")
     private String region;
 
     private OSSClient ossClient(){
@@ -53,17 +59,12 @@ public class AliOSS {
         ossClient=null;
     }
 
-    @PostConstruct
-    private void init(){
-        if (!ossClient().doesBucketExist(bucketName)) {
-//            logger.info("Creating bucket " + bucketName);
-//            ossClient.createBucket(bucketName);
-//            CreateBucketRequest createBucketRequest= new CreateBucketRequest(bucketName);
-//            createBucketRequest.setCannedACL(CannedAccessControlList.PublicReadWrite);
-//            ossClient.createBucket(createBucketRequest);
-            throw new RuntimeException("ali oss bucket not exist");
-        }
-    }
+//    @PostConstruct
+//    private void init(){
+//        if (!ossClient().doesBucketExist(bucketName)) {
+//            throw new RuntimeException("ali oss bucket not exist");
+//        }
+//    }
 
     /**
      * key - path/xxx.xx
@@ -96,8 +97,9 @@ public class AliOSS {
      * 返回 sts
      * 终端用sts 上传或构造url
      *  path: test/timg.jpg or test/12/*
+     * @return
      */
-    public Map<String,String> stsGetPutForUser(String roleSession,List<String> path) throws ClientException {
+    public Map<String, Object> stsGetPutForUser(String roleSession, List<String> path) throws ClientException {
         // 如何定制你的policy?
         // https://github.com/rockuw/node-sts-app-server/blob/master/policy/bucket_read_write_policy.txt
         StringBuilder resources= new StringBuilder();
@@ -121,7 +123,7 @@ public class AliOSS {
         ProtocolType protocolType = ProtocolType.HTTPS;
         final AssumeRoleResponse response = assumeRole(accessKey, accessKeySecret,
                 arn, roleSession, policy, protocolType);
-        Map<String,String> map = new HashMap<>();
+        Map<String,Object> map = new HashMap<>();
         map.put("accessKeyId",response.getCredentials().getAccessKeyId());
         map.put("accessKeySecret",response.getCredentials().getAccessKeySecret());
         map.put("stsToken",response.getCredentials().getSecurityToken());
@@ -141,9 +143,7 @@ public class AliOSS {
             ProtocolType protocolType
     ) throws ClientException {
         // 创建一个 Aliyun Acs Client, 用于发起 OpenAPI 请求
-        String regionId = region;
-        if(region.contains("oss-")) regionId=region.substring(4);
-        IClientProfile profile = DefaultProfile.getProfile(regionId, accessKeyId, accessKeySecret);
+        IClientProfile profile = DefaultProfile.getProfile(region, accessKeyId, accessKeySecret);
         DefaultAcsClient client = new DefaultAcsClient(profile);
         // 创建一个 AssumeRoleRequest 并设置请求参数
         final AssumeRoleRequest request = new AssumeRoleRequest();
@@ -156,8 +156,7 @@ public class AliOSS {
         // duration min/max 15min/1h  default max
 //        request.setDurationSeconds(180L);
         // 发起请求，并得到response
-        final AssumeRoleResponse response = client.getAcsResponse(request);
-        return response;
+        return client.getAcsResponse(request);
     }
 
 
@@ -203,15 +202,6 @@ public class AliOSS {
 
     public AliOSS setArn(String arn) {
         this.arn = arn;
-        return this;
-    }
-
-    public String getRegion() {
-        return region;
-    }
-
-    public AliOSS setRegion(String region) {
-        this.region = region;
         return this;
     }
 }

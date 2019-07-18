@@ -84,7 +84,7 @@ public interface UserMapper {
     @Select("select * from admin_user where id=#{param1}")
     User findInfoOnlyById(int id);
 
-    @Select("select * from admin_user where username = #{param1} and off=0 limit 1")
+    @Select("select * from admin_user where username = #{param1} and off>=0 limit 1")
     @Results(value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole")),
@@ -92,7 +92,7 @@ public interface UserMapper {
     })
     User findUserByUsername(String username);
 
-    @Select("select * from admin_user where phone=#{param1} and off=0 limit 1")
+    @Select("select * from admin_user where phone=#{param1} and off>=0 limit 1")
     @Results(value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole")),

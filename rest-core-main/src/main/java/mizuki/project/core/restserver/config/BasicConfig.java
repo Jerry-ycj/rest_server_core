@@ -30,4 +30,5 @@ public class BasicConfig {
         converter.setSupportedMediaTypes(fastMedisTypes);
         return new HttpMessageConverters(converter);
     }
+
 }
