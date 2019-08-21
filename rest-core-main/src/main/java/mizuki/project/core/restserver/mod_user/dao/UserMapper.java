@@ -74,7 +74,7 @@ public interface UserMapper {
     List<User> listByRole(int rid);
 
     @Select("select * from admin_user where id=#{param1}")
-    @Results(value = {
+    @Results(id="user_all",value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole")),
             @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
@@ -85,36 +85,24 @@ public interface UserMapper {
     User findInfoOnlyById(int id);
 
     @Select("select * from admin_user where username = #{param1} and off>=0 limit 1")
-    @Results(value = {
-            @Result(id = true, property = "id", column = "id"),
-            @Result(property = "role", column = "role", one = @One(select = "findRole")),
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
-    })
+    @ResultMap("user_all")
     User findUserByUsername(String username);
 
     @Select("select * from admin_user where phone=#{param1} and off>=0 limit 1")
-    @Results(value = {
-            @Result(id = true, property = "id", column = "id"),
-            @Result(property = "role", column = "role", one = @One(select = "findRole")),
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
-    })
+    @ResultMap("user_all")
     User findUserByPhone(String phone);
 
     @Select("select * from admin_user where phone=#{param1} and pwd=#{param2} and off=0 limit 1")
-    @Results(value = {
-            @Result(id = true, property = "id", column = "id"),
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
-            @Result(property = "role", column = "role", one = @One(select = "findRole"))
-    })
+    @ResultMap("user_all")
     User loginByPhone(String phone, String pwd);
 
     @Select("select * from admin_user where username=#{param1} and pwd=#{param2} and off=0 limit 1")
-    @Results(value = {
-            @Result(id = true, property = "id", column = "id"),
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
-            @Result(property = "role", column = "role", one = @One(select = "findRole"))
-    })
+    @ResultMap("user_all")
     User loginByUsername(String username, String pwd);
+
+    @Select("select * from admin_user where extend->>'openid'=#{param1} and off=0 limit 1")
+    @ResultMap("user_all")
+    User loginByOpenid(String openid);
 
     @InsertProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_INSERT)
     @Options(useGeneratedKeys = true)
@@ -136,11 +124,7 @@ public interface UserMapper {
             "  with recursive t(id) as( values(#{param1}) union all select d.id from department d, t where t.id=d.parent) select id from t" +
             " )" +
             ") order by name,id")
-    @Results(value = {
-            @Result(id = true, property = "id", column = "id"),
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
-            @Result(property = "role", column = "role", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.UserMapper.findRole"))
-    })
+    @ResultMap("user_all")
     List<User> listFromRootDepart(int departId);
 
     /** 用户冻结等等 */

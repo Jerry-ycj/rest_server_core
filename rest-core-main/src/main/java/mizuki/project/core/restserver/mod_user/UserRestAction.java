@@ -4,9 +4,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.exception.RestMainException;
-import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
 import mizuki.project.core.restserver.mod_user.bean.ret.DepartmentListRet;
+import mizuki.project.core.restserver.mod_user.bean.ret.LoginUserRet;
 import mizuki.project.core.restserver.mod_user.bean.ret.RoleListRet;
 import mizuki.project.core.restserver.mod_user.dao.DepartmentMapper;
 import mizuki.project.core.restserver.mod_user.dao.UserMapper;
@@ -30,14 +30,16 @@ import javax.servlet.http.HttpSession;
 public class UserRestAction{
 
 	@Autowired
-	private UserMapper userMapper;
+	protected UserMapper userMapper;
 	@Autowired
-    private SmsMapper smsMapper;
+    protected SmsMapper smsMapper;
 	@Autowired
-    private DepartmentMapper departmentMapper;
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected DepartmentMapper departmentMapper;
+    @Autowired
+    protected SpringSessionService sessionService;
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private User latestUser(Model model){
+    protected User latestUser(Model model){
         User user = (User)model.asMap().get("user");
         user = userMapper.findById(user.getId());
         model.addAttribute("user",user);
@@ -55,22 +57,19 @@ public class UserRestAction{
 
     @RequestMapping(value="/listDepartment",method= RequestMethod.POST)
     @ApiOperation(value = "获取部门列表")
-    public DepartmentListRet listDepartment(Model model) throws RestMainException{
+    public DepartmentListRet listDepartment(){
         DepartmentListRet ret = new DepartmentListRet();
         ret.getData().setDepartments(departmentMapper.listAll());
         ret.setResult(BasicRet.SUCCESS);
         return ret;
     }
 
-    @Autowired
-    private SpringSessionService sessionService;
-
     @RequestMapping(value = "/logout",method = RequestMethod.POST)
     @ApiOperation(value = "登出")
     public BasicRet logout(
             Model model,
             HttpSession session
-    ) throws RestMainException {
+    ){
         model.asMap().remove("user");
         session.removeAttribute("user");
         sessionService.checkAndUpdateSession(session,model,"user");
@@ -88,11 +87,7 @@ public class UserRestAction{
         phone = phone.trim();
         String passwd = CodeUtil.md5(pwd);
         User user = userMapper.loginByPhone(phone,passwd);
-        if(user != null){
-            return loginHandle(user,ret,model);
-        }else{
-            throw new RestMainException("用户名或密码错误");
-        }
+        return loginHandle(user,ret,model);
 	}
 
     @RequestMapping(value = "/loginByUsername",method = RequestMethod.POST)
@@ -106,12 +101,34 @@ public class UserRestAction{
         username = username.trim();
         String passwd = CodeUtil.md5(pwd);
         User user = userMapper.loginByUsername(username,passwd);
-        if(user != null){
-            return loginHandle(user,ret,model);
-        }else{
-            throw new RestMainException("用户名或密码错误");
-        }
+        return loginHandle(user,ret,model);
     }
+
+//    @RequestMapping(value = "/loginWithWxCode",method = RequestMethod.POST)
+//    @ApiOperation(value = "登录-绑定微信小程序code")
+//    public LoginUserRet loginWithWxMini(
+//            Model model,
+//            @RequestParam String username,
+//            @RequestParam String pwd,
+//            @RequestParam String code
+//    ) throws RestMainException{
+//        LoginUserRet ret=new LoginUserRet();
+//        username = username.trim();
+//        String passwd = CodeUtil.md5(pwd);
+//        User user = userMapper.loginByUsername(username,passwd);
+//        return loginHandle(user,ret,model);
+//    }
+
+//    @RequestMapping(value = "/loginByWxCode",method = RequestMethod.POST)
+//    @ApiOperation(value = "微信openid登录")
+//    public LoginUserRet loginByWxCode(
+//            Model model,
+//            @RequestParam String code
+//    ) throws RestMainException{
+//        LoginUserRet ret=new LoginUserRet();
+//        User user = userMapper.
+//        return loginHandle(user,ret,model);
+//    }
 
     @RequestMapping(value="/loginSms",method = RequestMethod.POST)
     @ApiOperation(value = "短信登录")
@@ -126,16 +143,24 @@ public class UserRestAction{
             throw new RestMainException("验证码错误");
         }
         User user = userMapper.findUserByPhone(phone);
-        if(user==null){
-            throw new RestMainException("用户不存在");
-        }
         return loginHandle(user,ret,model);
     }
+
+//    protected LoginUserRet loginHandle4Wx(User user,LoginUserRet ret,Model model,String code) throws RestMainException{
+//        loginHandle(user, ret, model);
+//        if(ret.getResult()==BasicRet.SUCCESS){
+//            // todo
+//            if(wxMiniService==null) throw new RestMainException("wx mini service error");
+//        }
+//        return ret;
+//    }
 
     /***
      * 登录时  获取user 和 systems
      */
-    private LoginUserRet loginHandle(User user,LoginUserRet ret,Model model) throws RestMainException {
+    protected LoginUserRet loginHandle(User user,LoginUserRet ret,Model model) throws RestMainException {
+        if(user==null)
+            throw new RestMainException("用户名或密码错误");
         if(user.getOff()==User.OFF_FREEZE){
             throw new RestMainException("账户被冻结");
         }
@@ -149,22 +174,11 @@ public class UserRestAction{
 //            userMapper.updateRestToken(user.getId(), token);
 //        }
         model.addAttribute("user",user);
-        ret.token = token;
-        ret.user = user;
+        ret.setToken(token);
+        ret.setUser(user);
+        ret.getData().setUser(user);
+        ret.getData().setToken(token);
         return (LoginUserRet) ret.setResult(BasicRet.SUCCESS);
-    }
-    // todo 不合规范
-    private class LoginUserRet extends BasicRet{
-        private String token;
-        private User user;
-
-        public String getToken() {
-            return token;
-        }
-
-        public User getUser() {
-            return user;
-        }
     }
 
 

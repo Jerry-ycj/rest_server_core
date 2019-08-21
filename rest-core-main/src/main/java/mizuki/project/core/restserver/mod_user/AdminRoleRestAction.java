@@ -28,13 +28,13 @@ import java.util.List;
 @Api(tags = "管理员模块-角色管理")
 public class AdminRoleRestAction {
     @Autowired
-    private UserMapper userMapper;
+    protected UserMapper userMapper;
     @Autowired
-    private DepartmentMapper departmentMapper;
+    protected DepartmentMapper departmentMapper;
 
     @RequestMapping(value="/listAllPrivileges",method= RequestMethod.POST)
     @ApiOperation(value = "所有权限")
-    public BasicMapDataRet listAllPrivileges(Model model) throws RestMainException{
+    public BasicMapDataRet listAllPrivileges(){
         BasicMapDataRet ret = new BasicMapDataRet();
         ret.getData().put("privileges",userMapper.listPrivileges());
         ret.setResult(BasicRet.SUCCESS);

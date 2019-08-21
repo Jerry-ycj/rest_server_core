@@ -29,16 +29,16 @@ import java.util.List;
 @RequestMapping("/rest/admin/user")
 @SessionAttributes({"user"})
 @Transactional(rollbackFor = Exception.class)
-@Api(tags = "管理员模块-用户管理",description = "用户管理")
+@Api(tags = "管理员模块-用户管理")
 public class AdminUserRestAction{
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
-    private UserMapper userMapper;
+    protected UserMapper userMapper;
 
     @RequestMapping(value = "/listUsers",method = RequestMethod.POST)
     @ApiOperation(value = "用户列表-系统组")
     @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_LIST+ "')")
-    public UserListRet listUsers() throws RestMainException {
+    public UserListRet listUsers(){
         UserListRet ret = new UserListRet();
         List<User> users = userMapper.listFromRootDepart(0);
         ret.getData().setList(users);
@@ -81,7 +81,7 @@ public class AdminUserRestAction{
             Model model,
             @ApiParam(value = "不传则表示自己")
             @RequestParam(required = false) Integer uid
-    )throws RestMainException{
+    ){
         User user = (User)model.asMap().get("user");
         UserRet ret = new UserRet();
         if(uid==null){
@@ -127,7 +127,6 @@ public class AdminUserRestAction{
     @ApiOperation(value = "更新用户信息")
     @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
     public BasicRet updateUserInfo(
-            Model model,
             @RequestParam int id,
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String name,
