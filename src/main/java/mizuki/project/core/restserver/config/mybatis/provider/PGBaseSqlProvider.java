@@ -1,6 +1,5 @@
 package mizuki.project.core.restserver.config.mybatis.provider;
-import mizuki.project.core.restserver.util.JsonUtil;
-import mizuki.project.core.restserver.util.StringUtil;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.ibatis.jdbc.SQL;
 
@@ -35,6 +34,7 @@ public class PGBaseSqlProvider {
 			for(String k:kvs.keySet()){
 				VALUES(k,kvs.get(k));
 			}
+
 		}}.toString();
 	}
 
@@ -162,18 +162,17 @@ public class PGBaseSqlProvider {
 
 		// jsonb
 		if(object instanceof Map){
-			val = "'"+ JsonUtil.toJson(object)+"'::jsonb";
+			val = "#{"+field.getName()+",typeHandler=mizuki.project.core.restserver.config.mybatis.typeHandler.jsonb.JsonbHandler}";
 		}
 		// array todo
 		if(object instanceof Collection){
-			Collection collection = (Collection)object;
 			if(field.getGenericType().getTypeName().contains("java.util.Map")){
 				// list<Map> 看待为 jsonb
-				val = "'"+ JsonUtil.toJson(collection)+"'::jsonb";
+				val = "#{"+field.getName()+",typeHandler=mizuki.project.core.restserver.config.mybatis.typeHandler.jsonb.JsonbHandler}";
 			} else if(field.getGenericType().getTypeName().contains("<java.lang.String>")){
-				val = "ARRAY[" + StringUtil.join(collection,",","'") + "]::varchar[]";
+				val = "#{"+field.getName()+",typeHandler=mizuki.project.core.restserver.config.mybatis.typeHandler.array.StringArrayHandler}";
 			}else if(field.getGenericType().getTypeName().contains("<java.lang.Integer>")){
-				val = "ARRAY[" + StringUtil.join(collection,",") + "]::integer[]";
+				val = "#{"+field.getName()+",typeHandler=mizuki.project.core.restserver.config.mybatis.typeHandler.array.IntArrayHandler}";
 			}
 		}
 		kvs.put(key,val);
@@ -181,12 +180,12 @@ public class PGBaseSqlProvider {
 
 	public static void main(String[] args) throws Exception {
 		HashMap<String,Object> map = new HashMap<>();
-		map.put("key1","val");
+		map.put("key1","'val");
 		map.put("key2",12);
 		List<String> list = new ArrayList<>();
 		list.add("12");list.add("23");
 		System.out.println(System.currentTimeMillis());
-		System.out.println(new PGBaseSqlProvider().insert(new Test()
+		System.out.println(new PGBaseSqlProvider().insert(new Test().setName("'sss'")
 				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
 		System.out.println(new PGBaseSqlProvider().updateAll(new Test()
 				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));

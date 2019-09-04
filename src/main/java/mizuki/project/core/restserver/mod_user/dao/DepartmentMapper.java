@@ -1,7 +1,7 @@
 package mizuki.project.core.restserver.mod_user.dao;
 
 import mizuki.project.core.restserver.config.mybatis.provider.PGBaseSqlProvider;
-import mizuki.project.core.restserver.config.mybatis.typeHandler.jsonb.JsonHandler;
+import mizuki.project.core.restserver.config.mybatis.typeHandler.jsonb.JsonbHandler;
 import mizuki.project.core.restserver.mod_user.bean.Department;
 import org.apache.ibatis.annotations.*;
 
@@ -20,20 +20,20 @@ public interface DepartmentMapper {
 
     @Select("select * from department where id=#{param1}")
     @Results({
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
+            @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class),
             @Result(property = "parent",column = "parent",one = @One(select = "findById"))
     })
     Department findById(int id);
 
     @Select("select * from department where parent is null order by no,id")
     @Results({
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class)
+            @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class)
     })
     List<Department> listParent();
 
     @Select("select * from department where parent=#{param1} order by no,id")
     @Results({
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
+            @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class),
             @Result(property = "id",column = "id"),
             @Result(property = "children",column = "id",many = @Many(select = "listAllByParent"))
     })
@@ -41,7 +41,7 @@ public interface DepartmentMapper {
 
     @Select("select * from department order by parent,no,id")
     @Results({
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
+            @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class),
             @Result(property = "id",column = "id"),
             @Result(property = "children",column = "id",many = @Many(select = "listAllByParent")),
             @Result(property = "parent",column = "parent",one = @One(select = "findById"))

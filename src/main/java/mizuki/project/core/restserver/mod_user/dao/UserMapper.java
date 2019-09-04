@@ -2,7 +2,7 @@ package mizuki.project.core.restserver.mod_user.dao;
 
 import mizuki.project.core.restserver.config.mybatis.provider.PGBaseSqlProvider;
 import mizuki.project.core.restserver.config.mybatis.typeHandler.array.StringArrayHandler;
-import mizuki.project.core.restserver.config.mybatis.typeHandler.jsonb.JsonHandler;
+import mizuki.project.core.restserver.config.mybatis.typeHandler.jsonb.JsonbHandler;
 import mizuki.project.core.restserver.mod_user.bean.PrivilegeConstantBean;
 import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
@@ -25,7 +25,7 @@ public interface UserMapper {
     @Results({
             @Result(property = "privileges", column = "privileges", typeHandler = StringArrayHandler.class),
             @Result(property = "department", column = "department", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.DepartmentMapper.findById")),
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
+            @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class),
     })
     List<Role> listRoles();
 
@@ -33,7 +33,7 @@ public interface UserMapper {
     @Results({
             @Result(property = "privileges", column = "privileges", typeHandler = StringArrayHandler.class),
             @Result(property = "department", column = "department", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.DepartmentMapper.findById")),
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
+            @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class),
     })
     Role findRole(int id);
 
@@ -51,7 +51,7 @@ public interface UserMapper {
 
     @Select("select * from role where id>0 and department=#{param1} order by id")
     @Results({
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class)
+            @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class)
     })
     List<Role> listRoleByDepartment(int id);
 
@@ -62,7 +62,7 @@ public interface UserMapper {
     @Results({
             @Result(property = "privileges", column = "privileges", typeHandler = StringArrayHandler.class),
             @Result(property = "department", column = "department", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.DepartmentMapper.findById")),
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
+            @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class),
     })
     List<Role> listRolesFromRootDepart(int id);
 
@@ -77,7 +77,7 @@ public interface UserMapper {
     @Results(id="user_all",value = {
             @Result(id = true, property = "id", column = "id"),
             @Result(property = "role", column = "role", one = @One(select = "findRole")),
-            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
+            @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class),
     })
     User findById(int id);
 
@@ -113,7 +113,7 @@ public interface UserMapper {
 
 //    @Select("select * from admin_user where off=0 and role>0 order by role,id")
 //    @Results({
-//            @Result(property = "extend",column = "extend",typeHandler = JsonHandler.class),
+//            @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class),
 //            @Result(property = "role", column = "role", one = @One(select = "findRole"))
 //    })
 //    List<User> listAll();
