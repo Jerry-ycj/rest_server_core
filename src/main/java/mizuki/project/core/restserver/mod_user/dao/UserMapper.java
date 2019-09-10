@@ -92,11 +92,11 @@ public interface UserMapper {
     @ResultMap("user_all")
     User findUserByPhone(String phone);
 
-    @Select("select * from admin_user where phone=#{param1} and pwd=#{param2} and off=0 limit 1")
+    @Select("select * from admin_user where phone=#{param1} and pwd=#{param2} and off>=0 limit 1")
     @ResultMap("user_all")
     User loginByPhone(String phone, String pwd);
 
-    @Select("select * from admin_user where username=#{param1} and pwd=#{param2} and off=0 limit 1")
+    @Select("select * from admin_user where username=#{param1} and pwd=#{param2} and off>=0 limit 1")
     @ResultMap("user_all")
     User loginByUsername(String username, String pwd);
 
