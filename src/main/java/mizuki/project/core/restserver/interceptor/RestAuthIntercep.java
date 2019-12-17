@@ -8,6 +8,7 @@ import mizuki.project.core.restserver.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -50,6 +51,7 @@ public class RestAuthIntercep extends HandlerInterceptorAdapter {
                 }
             }
             ResponseUtil.setCross(response,request);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
             response.getWriter().print(JsonUtil.toJson(new BasicRet(BasicRet.TOKEN_ERR,"登录失效")));
             return false;
         }else{

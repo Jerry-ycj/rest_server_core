@@ -46,7 +46,8 @@ public class StringArrayHandler implements TypeHandler<Collection<String>>{
             return new ArrayList<>();
         }
         try {
-            return List.of((String[]) s.getArray());
+            // fix UnsupportedOperationException
+            return new ArrayList<>(List.of((String[]) s.getArray()));
         } catch (SQLException e) {
             logger.error("error: ",e);
             return new ArrayList<>();

@@ -1,14 +1,14 @@
 plugins {
     id "java"
-    id "org.springframework.boot" version "2.1.7.RELEASE"
+    id "org.springframework.boot" version "2.2.2.RELEASE"
     id "io.spring.dependency-management" version "1.0.8.RELEASE"
 }
 apply from: "./configs.gradle"
 
 group "mizuki.project.rest.core"
-version "0.5.1"
+version "0.5.9"
 
-//apply plugin: 'java'
+apply plugin: 'java'
 apply plugin: 'maven-publish'
 //apply plugin: 'io.spring.dependency-management'
 
@@ -22,27 +22,27 @@ dependencies {
     compile fileTree(dir: 'exlibs', include: ['*.jar'])
 //    compile group: 'mizuki.project.rest.core', name: 'rest-core-common', version: "$moduleCommonVersionForMain"
     testCompile group: 'org.springframework.boot',name: 'spring-boot-starter-test'
-    compile ("org.springframework.boot:spring-boot-starter:${springBootGradlePluginVerison}")
-    compile ("org.springframework.boot:spring-boot-starter-web:${springBootGradlePluginVerison}") {
-        exclude module: "spring-boot-starter-tomcat"
+    compile ("org.springframework.boot:spring-boot-starter")
+    compile ('org.springframework.boot:spring-boot-starter-web') {
+        exclude group: 'org.springframework.boot', module: "spring-boot-starter-tomcat"
     }
-    compile "org.springframework.boot:spring-boot-starter-security:${springBootGradlePluginVerison}"
+    compile "org.springframework.boot:spring-boot-starter-security"
     // websocket
-    compile ("org.springframework.boot:spring-boot-starter-websocket:${springBootGradlePluginVerison}") {
+    compile ("org.springframework.boot:spring-boot-starter-websocket"){
         exclude module: "spring-boot-starter-tomcat"
     }
-    compile "org.springframework.boot:spring-boot-starter-undertow:${springBootGradlePluginVerison}"
+    compile "org.springframework.boot:spring-boot-starter-jetty"
     // session
-    compile group: 'org.springframework.boot',name: "spring-boot-starter-data-redis",version: "${springBootGradlePluginVerison}"
-    compile "org.springframework.session:spring-session-core:${springBootGradlePluginVerison}"
-    compile "org.springframework.session:spring-session-data-redis:${springBootGradlePluginVerison}"
+    compile 'org.springframework.boot:spring-boot-starter-data-redis'
+    compile "org.springframework.session:spring-session-core"
+    compile "org.springframework.session:spring-session-data-redis"
 
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     // databases orm
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
     compile 'org.mybatis:mybatis:3.5.2'
-    compile group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '2.1.0'
+    compile group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '2.1.1'
     compile group: 'com.alibaba', name: 'druid', version: '1.1.12'
     // 暂时，应用jpa注解，可能引起spring冲突
     compile group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
@@ -50,11 +50,11 @@ dependencies {
     compile group: 'com.alibaba', name: 'fastjson', version: '1.2.54'
 
     // ali oss
-    compile group: 'com.aliyun.oss', name: 'aliyun-sdk-oss', version: '3.5.0'
+    compile group: 'com.aliyun.oss', name: 'aliyun-sdk-oss', version: '3.6.0'
     // https://mvnrepository.com/artifact/com.aliyun/aliyun-java-sdk-sts
     compile group: 'com.aliyun', name: 'aliyun-java-sdk-sts', version: '3.0.1'
     // https://mvnrepository.com/artifact/com.aliyun/aliyun-java-sdk-core
-    compile group: 'com.aliyun', name: 'aliyun-java-sdk-core', version: '4.4.2'
+    compile group: 'com.aliyun', name: 'aliyun-java-sdk-core', version: '4.4.4'
 
     // springfox
     compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'

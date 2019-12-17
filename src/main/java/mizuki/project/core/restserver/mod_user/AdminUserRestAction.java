@@ -37,7 +37,7 @@ public class AdminUserRestAction{
 
     @RequestMapping(value = "/listUsers",method = RequestMethod.POST)
     @ApiOperation(value = "用户列表-系统组")
-    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_LIST+ "')")
+//    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_LIST+ "')")
     public UserListRet listUsers(){
         UserListRet ret = new UserListRet();
         List<User> users = userMapper.listFromRootDepart(0);
@@ -76,7 +76,7 @@ public class AdminUserRestAction{
 
     @RequestMapping(value = "/info",method = RequestMethod.POST)
     @ApiOperation(value = "用户信息")
-    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_LIST+ "')")
+//    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_LIST+ "')")
     public UserRet info(
             Model model,
             @ApiParam(value = "不传则表示自己")

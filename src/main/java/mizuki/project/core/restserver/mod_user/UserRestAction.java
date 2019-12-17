@@ -223,6 +223,9 @@ public class UserRestAction{
             name = name.trim();
             user.setName(name);
         }
+        if(phone!=null && !"".equals(phone.trim())){
+            user.setPhone(phone.trim());
+        }
         if(gender!=0) user.setGender(gender);
         if(address!=null) user.setAddress(address);
         userMapper.updateUser(user);
