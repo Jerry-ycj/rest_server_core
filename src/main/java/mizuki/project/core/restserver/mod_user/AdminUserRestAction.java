@@ -34,6 +34,9 @@ public class AdminUserRestAction{
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     protected UserMapper userMapper;
+    @Autowired
+    protected UserCenter userCenter;
+
 
     @RequestMapping(value = "/listUsers",method = RequestMethod.POST)
     @ApiOperation(value = "用户列表-系统组")
@@ -117,8 +120,12 @@ public class AdminUserRestAction{
         }
         if(off){
             userMapper.offUser(target.getId(),User.OFF_FREEZE);
+            target.setOff(User.OFF_FREEZE);
+            userCenter.add(target);
         }else{
             userMapper.offUser(target.getId(),User.OFF_OK);
+            target.setOff(User.OFF_OK);
+            userCenter.add(target);
         }
         return new BasicRet(BasicRet.SUCCESS);
     }
@@ -165,6 +172,7 @@ public class AdminUserRestAction{
         if(gender!=0) user.setGender(gender);
         if(address!=null) user.setAddress(address);
         userMapper.updateUser(user);
+        userCenter.add(user);
         return new BasicRet(BasicRet.SUCCESS);
     }
 }

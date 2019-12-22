@@ -2,6 +2,7 @@ package mizuki.project.core.restserver.interceptor;
 
 import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.security.SecurityConfig;
+import mizuki.project.core.restserver.mod_user.UserCenter;
 import mizuki.project.core.restserver.mod_user.bean.User;
 import mizuki.project.core.restserver.util.JsonUtil;
 import mizuki.project.core.restserver.util.ResponseUtil;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  * Created by ycj on 2016/12/10.
@@ -26,6 +28,8 @@ public class RestAuthIntercep extends HandlerInterceptorAdapter {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private SessionRepository sessionRepository;
+    @Autowired
+    private UserCenter userCenter;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -41,6 +45,7 @@ public class RestAuthIntercep extends HandlerInterceptorAdapter {
                 if(session1!=null){
                     u = session1.getAttribute("user");
                     if (u != null) {
+                        if(!checkUser(u, response,request)) return false;
                         // 复制session内容
                         session1.getAttributeNames().forEach(name->{
                             session.setAttribute(name,session1.getAttribute(name));
@@ -50,13 +55,36 @@ public class RestAuthIntercep extends HandlerInterceptorAdapter {
                     }
                 }
             }
-            ResponseUtil.setCross(response,request);
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            response.getWriter().print(JsonUtil.toJson(new BasicRet(BasicRet.TOKEN_ERR,"登录失效")));
+            resError(response,request,new BasicRet(BasicRet.TOKEN_ERR,"登录失效"));
             return false;
         }else{
+            if(!checkUser(u, response,request)) return false;
             SecurityConfig.authStore(u);
             return true;
         }
+    }
+
+    // 用于用户信息的同步
+    private boolean checkUser(User u, HttpServletResponse response, HttpServletRequest request) throws IOException {
+        if(userCenter.get(u)==null) {
+            userCenter.add(u);
+            return true;
+        }
+        User newUser = userCenter.get(u);
+        u.setOff(newUser.getOff()).setAddress(newUser.getAddress()).setExtend(newUser.getExtend()).setGender(newUser.getGender()).setImage(newUser.getImage()).setName(newUser.getName()).setUsername(newUser.getUsername()).setPhone(newUser.getPhone()).setPwd(newUser.getPwd()).setRole(newUser.getRole());
+        if(u.getOff()==User.OFF_DEL){
+            resError(response,request,new BasicRet(BasicRet.ERR, "用户不存在"));
+            return false;
+        }else if(u.getOff()==User.OFF_FREEZE){
+            resError(response,request,new BasicRet(BasicRet.ERR, "用户已冻结"));
+            return false;
+        }
+        return true;
+    }
+
+    private void resError(HttpServletResponse response, HttpServletRequest request, BasicRet basicRet) throws IOException {
+        ResponseUtil.setCross(response,request);
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.getWriter().print(JsonUtil.toJson(basicRet));
     }
 }

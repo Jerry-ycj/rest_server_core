@@ -105,7 +105,7 @@ public interface UserMapper {
     User loginByOpenid(String openid);
 
     @InsertProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_INSERT)
-    @Options(useGeneratedKeys = true)
+    @Options(useGeneratedKeys = true, keyProperty = "id")
     void saveUser(User user);
 
     @UpdateProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_UPDATEALL)

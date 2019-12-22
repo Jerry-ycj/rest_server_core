@@ -35,6 +35,8 @@ public class UserRestAction{
     protected SmsMapper smsMapper;
 	@Autowired
     protected DepartmentMapper departmentMapper;
+	@Autowired
+    protected UserCenter userCenter;
     @Autowired
     protected SpringSessionService sessionService;
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -70,6 +72,7 @@ public class UserRestAction{
             Model model,
             HttpSession session
     ){
+        userCenter.del((User)model.asMap().get("user"));
         model.asMap().remove("user");
         session.removeAttribute("user");
         sessionService.checkAndUpdateSession(session,model,"user");
@@ -174,6 +177,7 @@ public class UserRestAction{
 //            userMapper.updateRestToken(user.getId(), token);
 //        }
         model.addAttribute("user",user);
+        userCenter.add(user);
         ret.setToken(token);
         ret.setUser(user);
         ret.getData().setUser(user);
@@ -196,6 +200,7 @@ public class UserRestAction{
         }
         user.setPwd(CodeUtil.md5(newPwd));
         userMapper.updateUser(user);
+        userCenter.add(user);
         sessionService.checkAndUpdateSession(session,model,"user");
         return new BasicRet(BasicRet.SUCCESS);
     }
@@ -229,6 +234,7 @@ public class UserRestAction{
         if(gender!=0) user.setGender(gender);
         if(address!=null) user.setAddress(address);
         userMapper.updateUser(user);
+        userCenter.add(user);
         sessionService.checkAndUpdateSession(session,model,"user");
         return new BasicRet(BasicRet.SUCCESS);
     }
@@ -249,6 +255,7 @@ public class UserRestAction{
         }
         user.setPwd(CodeUtil.md5(newPwd));
         userMapper.updateUser(user);
+        userCenter.add(user);
         return new BasicRet(BasicRet.SUCCESS);
     }
 }
