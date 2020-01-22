@@ -50,11 +50,10 @@ public class JsonArrayHandler extends BaseTypeHandler<Object> {
 
     private List<Map> transfer(String s){
         // "[{\"test\": 2,\"key\": 12},{}]"
-        Map<String,Object> map = new HashMap<>();
         if(s==null || s.length()==2){
             return new ArrayList<>();
         }
-        List list = (List) JsonUtil.toObject(s,List.class);
+        List list = JsonUtil.toObject(s,List.class);
         if(list==null){
             return new ArrayList<>();
         }else{

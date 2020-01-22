@@ -6,16 +6,15 @@ import io.swagger.annotations.ApiParam;
 import mizuki.project.core.restserver.config.BasicMapDataRet;
 import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.exception.RestMainException;
+import mizuki.project.core.restserver.config.mybatis.provider.PGBaseSqlProvider;
 import mizuki.project.core.restserver.mod_user.bean.Department;
 import mizuki.project.core.restserver.mod_user.bean.Role;
-import mizuki.project.core.restserver.mod_user.bean.ret.DepartmentListRet;
 import mizuki.project.core.restserver.mod_user.dao.DepartmentMapper;
 import mizuki.project.core.restserver.mod_user.dao.UserMapper;
 import mizuki.project.core.restserver.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -36,7 +35,7 @@ public class AdminRoleRestAction {
     @ApiOperation(value = "所有权限")
     public BasicMapDataRet listAllPrivileges(){
         BasicMapDataRet ret = new BasicMapDataRet();
-        ret.getData().put("privileges",userMapper.listPrivileges());
+        ret.getData().put("privileges",userMapper.listPrivileges(PGBaseSqlProvider.SCHEMA));
         ret.setResult(BasicRet.SUCCESS);
         return ret;
     }
@@ -52,10 +51,10 @@ public class AdminRoleRestAction {
         List<String> privileges = (List<String>) JsonUtil.toObject(privilegesJson,List.class);
         if(privileges==null) throw new RestMainException("权限不能为空");
         Role role = new Role().setName(name).setPrivileges(privileges);
-        Department department = departmentMapper.findById(departmentId);
+        Department department = departmentMapper.findById(PGBaseSqlProvider.SCHEMA,departmentId);
         if(department==null) throw new RestMainException("部门不存在");
         role.setDepartment(department);
-        userMapper.saveRole(role);
+        userMapper.saveRole(PGBaseSqlProvider.SCHEMA,role);
         return new BasicRet(BasicRet.SUCCESS);
     }
 
@@ -71,15 +70,15 @@ public class AdminRoleRestAction {
     ) throws RestMainException {
         List<String> privileges = (List<String>) JsonUtil.toObject(privilegesJson,List.class);
         if(privileges==null) throw new RestMainException("权限不能为空");
-        Role role = userMapper.findRole(id);
+        Role role = userMapper.findRole(PGBaseSqlProvider.SCHEMA, id);
         if(role==null) throw new RestMainException("角色不存在");
         role.setName(name).setPrivileges(privileges);
         if(departmentId!=role.getDepartment().getId()){
-            Department department = departmentMapper.findById(departmentId);
+            Department department = departmentMapper.findById(PGBaseSqlProvider.SCHEMA, departmentId);
             if(department==null) throw new RestMainException("部门不存在");
             role.setDepartment(department);
         }
-        userMapper.updateRole(role);
+        userMapper.updateRole(PGBaseSqlProvider.SCHEMA, role);
         return new BasicRet(BasicRet.SUCCESS);
     }
 
@@ -89,13 +88,13 @@ public class AdminRoleRestAction {
     public BasicRet del(
             @RequestParam int id
     ) throws RestMainException {
-        Role role = userMapper.findRole(id);
+        Role role = userMapper.findRole(PGBaseSqlProvider.SCHEMA, id);
         if(role==null) throw new RestMainException("角色不存在");
         if((boolean)role.getExtend().getOrDefault("immutable",false)){
             throw new RestMainException("该角色不可删除");
         }
-        if(userMapper.listByRole(id).size()>0) throw new RestMainException("角色下还有用户,不能删除");
-        userMapper.delRole(id);
+        if(userMapper.listByRole(PGBaseSqlProvider.SCHEMA, id).size()>0) throw new RestMainException("角色下还有用户,不能删除");
+        userMapper.delRole(PGBaseSqlProvider.SCHEMA, id);
         return new BasicRet(BasicRet.SUCCESS);
     }
 
@@ -112,11 +111,11 @@ public class AdminRoleRestAction {
                 .setCreateDt(new Timestamp(System.currentTimeMillis()))
                 .setDescr(description).setName(name).setNo(no);
         if(parentId!=null){
-            Department parent = departmentMapper.findById(parentId);
+            Department parent = departmentMapper.findById(PGBaseSqlProvider.SCHEMA,parentId);
             if(parent==null) throw new RestMainException("父级部门不存在");
             department.setParent(parent);
         }
-        departmentMapper.save(department);
+        departmentMapper.save(PGBaseSqlProvider.SCHEMA,department);
         return new BasicRet(BasicRet.SUCCESS);
     }
 
@@ -129,7 +128,7 @@ public class AdminRoleRestAction {
             @RequestParam(required = false) String description,
             @RequestParam(required = false) Integer parentId
     ) throws RestMainException{
-        Department department = departmentMapper.findById(id);
+        Department department = departmentMapper.findById(PGBaseSqlProvider.SCHEMA,id);
         if(department==null) throw new RestMainException("部门不存在");
         if(no!=null) department.setNo(no);
         if(name!=null) department.setName(name);
@@ -137,11 +136,11 @@ public class AdminRoleRestAction {
         if(parentId==null){
             department.setParent(null);
         }else if(department.getParent()==null || !parentId.equals(department.getParent().getId())){
-            Department parent = departmentMapper.findById(parentId);
+            Department parent = departmentMapper.findById(PGBaseSqlProvider.SCHEMA,parentId);
             if(parent==null) throw new RestMainException("父级部门不存在");
             department.setParent(parent);
         }
-        departmentMapper.update(department);
+        departmentMapper.update(PGBaseSqlProvider.SCHEMA,department);
         return new BasicRet(BasicRet.SUCCESS);
     }
 
@@ -150,12 +149,12 @@ public class AdminRoleRestAction {
     public BasicRet delDepartment(
             @RequestParam int id
     ) throws RestMainException{
-        if(userMapper.listRoleByDepartment(id).size()>0) throw new RestMainException("部门下还有角色,不能删除");
-        Department department = departmentMapper.findById(id);
+        if(userMapper.listRoleByDepartment(PGBaseSqlProvider.SCHEMA,id).size()>0) throw new RestMainException("部门下还有角色,不能删除");
+        Department department = departmentMapper.findById(PGBaseSqlProvider.SCHEMA,id);
         if((boolean)department.getExtend().getOrDefault("immutable",false)){
             throw new RestMainException("该部门不可删除");
         }
-        departmentMapper.del(new Department().setId(id));
+        departmentMapper.del(PGBaseSqlProvider.SCHEMA,new Department().setId(id));
         return new BasicRet(BasicRet.SUCCESS);
     }
 }

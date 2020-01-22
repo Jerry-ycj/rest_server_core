@@ -26,4 +26,7 @@ public class OtherUtil {
         return UUID.randomUUID().toString().trim().replaceAll("-", "");
     }
 
+    public static boolean isNilString(String str){
+        return str==null || "".equals(str.trim());
+    }
 }

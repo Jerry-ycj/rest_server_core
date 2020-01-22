@@ -2,15 +2,9 @@ package mizuki.project.core.restserver.util;
 
 import java.lang.reflect.Field;
 
-/**
- * @author Administrator 反射工具
- */
 public class ReflectHelper {
 	/**
 	 * 获取obj对象fieldName的Field
-	 * @param obj
-	 * @param fieldName
-	 * @return
 	 */
 	public static Field getFieldByFieldName(Object obj, String fieldName) {
 		for (Class<?> superClass = obj.getClass(); superClass != Object.class; superClass = superClass.getSuperclass()) {
@@ -24,13 +18,6 @@ public class ReflectHelper {
 
 	/**
 	 * 获取obj对象fieldName的属性值
-	 * @param obj
-	 * @param fieldName
-	 * @return
-	 * @throws SecurityException
-	 * @throws NoSuchFieldException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
 	 */
 	public static Object getValueByFieldName(Object obj, String fieldName) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		Field field = getFieldByFieldName(obj, fieldName);
@@ -49,13 +36,6 @@ public class ReflectHelper {
 
 	/**
 	 * 设置obj对象fieldName的属性值
-	 * @param obj
-	 * @param fieldName
-	 * @param value
-	 * @throws SecurityException
-	 * @throws NoSuchFieldException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
 	 */
 	public static void setValueByFieldName(Object obj, String fieldName, Object value) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		Field field = obj.getClass().getDeclaredField(fieldName);

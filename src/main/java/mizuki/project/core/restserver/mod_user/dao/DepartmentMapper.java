@@ -10,41 +10,41 @@ import java.util.List;
 @Mapper
 public interface DepartmentMapper {
     @InsertProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_INSERT)
-    void save(Department department);
+    void save(String schema, Department department);
 
     @UpdateProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_UPDATEALL)
-    void update(Department department);
+    void update(String schema, Department department);
 
     @DeleteProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_DELETE)
-    void del(Department department);
+    void del(String schema, Department department);
 
-    @Select("select * from department where id=#{param1}")
+    @Select("select * from ${schema}.department where id=#{param1}")
     @Results({
             @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class),
             @Result(property = "parent",column = "parent",one = @One(select = "findById"))
     })
-    Department findById(int id);
+    Department findById(@Param("schema") String schema, int id);
 
-    @Select("select * from department where parent is null order by no,id")
+    @Select("select * from ${schema}.department where parent is null order by no,id")
     @Results({
             @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class)
     })
-    List<Department> listParent();
+    List<Department> listParent(@Param("schema") String schema);
 
-    @Select("select * from department where parent=#{param1} order by no,id")
+    @Select("select * from ${schema}.department where parent=#{param1} order by no,id")
     @Results({
             @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class),
             @Result(property = "id",column = "id"),
             @Result(property = "children",column = "id",many = @Many(select = "listAllByParent"))
     })
-    List<Department> listAllByParent(int id);
+    List<Department> listAllByParent(@Param("schema") String schema, int id);
 
-    @Select("select * from department order by parent,no,id")
+    @Select("select * from ${schema}.department order by parent,no,id")
     @Results({
             @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class),
             @Result(property = "id",column = "id"),
             @Result(property = "children",column = "id",many = @Many(select = "listAllByParent")),
             @Result(property = "parent",column = "parent",one = @One(select = "findById"))
     })
-    List<Department> listAll();
+    List<Department> listAll(@Param("schema") String schema);
 }

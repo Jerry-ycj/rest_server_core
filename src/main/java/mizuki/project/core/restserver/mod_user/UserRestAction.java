@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.exception.RestMainException;
+import mizuki.project.core.restserver.config.mybatis.provider.PGBaseSqlProvider;
 import mizuki.project.core.restserver.mod_user.bean.User;
 import mizuki.project.core.restserver.mod_user.bean.ret.DepartmentListRet;
 import mizuki.project.core.restserver.mod_user.bean.ret.LoginUserRet;
@@ -43,7 +44,7 @@ public class UserRestAction{
 
     protected User latestUser(Model model){
         User user = (User)model.asMap().get("user");
-        user = userMapper.findById(user.getId());
+        user = userMapper.findById(PGBaseSqlProvider.SCHEMA,user.getId());
         model.addAttribute("user",user);
         return user;
     }
@@ -52,7 +53,7 @@ public class UserRestAction{
     @ApiOperation(value = "获取角色列表")
     public RoleListRet listRoles(){
         RoleListRet ret = new RoleListRet();
-        ret.getData().setRoles(userMapper.listRoles());
+        ret.getData().setRoles(userMapper.listRoles(PGBaseSqlProvider.SCHEMA));
         ret.setResult(BasicRet.SUCCESS);
         return ret;
     }
@@ -61,7 +62,7 @@ public class UserRestAction{
     @ApiOperation(value = "获取部门列表")
     public DepartmentListRet listDepartment(){
         DepartmentListRet ret = new DepartmentListRet();
-        ret.getData().setDepartments(departmentMapper.listAll());
+        ret.getData().setDepartments(departmentMapper.listAll(PGBaseSqlProvider.SCHEMA));
         ret.setResult(BasicRet.SUCCESS);
         return ret;
     }
@@ -89,7 +90,7 @@ public class UserRestAction{
         LoginUserRet ret=new LoginUserRet();
         phone = phone.trim();
         String passwd = CodeUtil.md5(pwd);
-        User user = userMapper.loginByPhone(phone,passwd);
+        User user = userMapper.loginByPhone(PGBaseSqlProvider.SCHEMA,phone,passwd);
         return loginHandle(user,ret,model);
 	}
 
@@ -103,7 +104,7 @@ public class UserRestAction{
         LoginUserRet ret=new LoginUserRet();
         username = username.trim();
         String passwd = CodeUtil.md5(pwd);
-        User user = userMapper.loginByUsername(username,passwd);
+        User user = userMapper.loginByUsername(PGBaseSqlProvider.SCHEMA,username,passwd);
         return loginHandle(user,ret,model);
     }
 
@@ -145,7 +146,7 @@ public class UserRestAction{
         if(!sms.equals(smsMapper.findSmsCode(phone))){
             throw new RestMainException("验证码错误");
         }
-        User user = userMapper.findUserByPhone(phone);
+        User user = userMapper.findUserByPhone(PGBaseSqlProvider.SCHEMA,phone);
         return loginHandle(user,ret,model);
     }
 
@@ -199,7 +200,7 @@ public class UserRestAction{
             throw new RestMainException("密码错误");
         }
         user.setPwd(CodeUtil.md5(newPwd));
-        userMapper.updateUser(user);
+        userMapper.updateUser(PGBaseSqlProvider.SCHEMA,user);
         userCenter.add(user);
         sessionService.checkAndUpdateSession(session,model,"user");
         return new BasicRet(BasicRet.SUCCESS);
@@ -233,7 +234,7 @@ public class UserRestAction{
         }
         if(gender!=0) user.setGender(gender);
         if(address!=null) user.setAddress(address);
-        userMapper.updateUser(user);
+        userMapper.updateUser(PGBaseSqlProvider.SCHEMA,user);
         userCenter.add(user);
         sessionService.checkAndUpdateSession(session,model,"user");
         return new BasicRet(BasicRet.SUCCESS);
@@ -249,12 +250,12 @@ public class UserRestAction{
         if(!sms.equals(smsMapper.findSmsCode(phone))){
             throw new RestMainException("验证码错误");
         }
-        User user = userMapper.findUserByPhone(phone);
+        User user = userMapper.findUserByPhone(PGBaseSqlProvider.SCHEMA,phone);
         if(user==null){
             throw new RestMainException("用户不存在");
         }
         user.setPwd(CodeUtil.md5(newPwd));
-        userMapper.updateUser(user);
+        userMapper.updateUser(PGBaseSqlProvider.SCHEMA,user);
         userCenter.add(user);
         return new BasicRet(BasicRet.SUCCESS);
     }

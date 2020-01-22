@@ -14,13 +14,24 @@ import java.util.*;
  */
 public class PGBaseSqlProvider {
 
+	public static final String SCHEMA = "public";
+
     public static final String METHOD_INSERT="insert";
     public static final String METHOD_UPDATEALL="updateAll";
     public static final String METHOD_DELETE="delete";
     public static final String METHOD_DELETE_OFF="deleteWithOff";
     public static final String METHOD_FIND_ONE = "findOne";
 
-	public String insert(Object bean) throws Exception {
+//	public static final String METHOD_INSERT_BY_SCHEMA="insertBySchema";
+//	public static final String METHOD_UPDATE_BY_SCHEMA="updateAllBySchema";
+//	public static final String METHOD_DELETE_BY_SCHEMA="deleteBySchema";
+//	public static final String METHOD_DELETE_OFF_BY_SCHEMA="deleteWithOffBySchema";
+//	public static final String METHOD_FIND_ONE_BY_SCHEMA = "findOneBySchema";
+
+	public String insert(Object bean) throws IllegalAccessException {
+		return insert(null, bean);
+	}
+	public String insert(String schema, Object bean) throws IllegalAccessException {
 		Class<?> beanClass = bean.getClass();
 		String tableName = getTableName(beanClass);
 		Field[] fields = getFields(beanClass);
@@ -30,16 +41,15 @@ public class PGBaseSqlProvider {
 			genKvs(bean, kvs, field);
 		}
 		return new SQL(){{
-			INSERT_INTO(tableName);
+			INSERT_INTO(schema==null?"public."+tableName:schema+"."+tableName);
 			for(String k:kvs.keySet()){
 				VALUES(k,kvs.get(k));
 			}
-
 		}}.toString();
 	}
 
 	/** update all by id */
-	public String updateAll(Object bean) throws Exception{
+	public String updateAll(String schema, Object bean) throws IllegalAccessException {
 		Class<?> beanClass = bean.getClass();
 		String tableName = getTableName(beanClass);
 		Field[] fields = getFields(beanClass);
@@ -53,7 +63,7 @@ public class PGBaseSqlProvider {
 			genKvs(bean, kvs, field);
 		}
 		return new SQL(){{
-			UPDATE(tableName);
+			UPDATE(schema==null?"public."+tableName:schema+"."+tableName);
 			for(String k:kvs.keySet()){
 				SET(k+"="+kvs.get(k));
 			}
@@ -63,8 +73,11 @@ public class PGBaseSqlProvider {
 
 		}}.toString();
 	}
+	public String updateAll(Object bean) throws IllegalAccessException {
+		return updateAll(null, bean);
+	}
 
-	public String delete(Object bean) throws Exception{
+	public String delete(String schema, Object bean) throws IllegalAccessException {
 		Class<?> beanClass = bean.getClass();
 		String tableName = getTableName(beanClass);
 		Field[] fields = getFields(beanClass);
@@ -75,14 +88,17 @@ public class PGBaseSqlProvider {
 			}
 		}
 		return new SQL(){{
-			DELETE_FROM(tableName);
+			DELETE_FROM(schema==null?"public."+tableName:schema+"."+tableName);
 			for (String k:idKvs.keySet()){
 				WHERE(k+"="+idKvs.get(k));
 			}
 		}}.toString();
 	}
+	public String delete(Object bean) throws IllegalAccessException {
+		return delete(null, bean);
+	}
 
-	public String deleteWithOff(Object bean) throws Exception{
+	public String deleteWithOff(String schema, Object bean) throws IllegalAccessException {
 		Class<?> beanClass = bean.getClass();
 		String tableName = getTableName(beanClass);
 		Field[] fields = getFields(beanClass);
@@ -93,23 +109,29 @@ public class PGBaseSqlProvider {
 			}
 		}
 		return new SQL(){{
-			UPDATE(tableName);
+			UPDATE(schema==null?"public."+tableName:schema+"."+tableName);
 			SET("off=true");
 			for (String k:idKvs.keySet()){
 				WHERE(k+"="+idKvs.get(k));
 			}
 		}}.toString();
 	}
+	public String deleteWithOff(Object bean) throws IllegalAccessException {
+		return deleteWithOff(null,bean);
+	}
 
-	public String findOne(Object bean, String key){
+	public String findOne(String schema, Object bean, String key){
 		Class<?> beanClass = bean.getClass();
 		String tableName = getTableName(beanClass);
 //		Field[] fields = getFields(beanClass);
 		return new SQL(){{
 			SELECT("*");
-			FROM(tableName);
+			FROM(schema==null?"public."+tableName:schema+"."+tableName);
 			WHERE(String.format("%s=#{param1.%s}",key,key));
 		}}.toString();
+	}
+	public String findOne(Object bean, String key){
+		return findOne(null, bean, key);
 	}
 
 	/***

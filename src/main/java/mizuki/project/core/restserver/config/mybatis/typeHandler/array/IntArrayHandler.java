@@ -46,7 +46,7 @@ public class IntArrayHandler implements TypeHandler<Collection<Integer>>{
             return new ArrayList<>();
         }
         try {
-            return List.of((Integer[]) s.getArray());
+            return new ArrayList<>(List.of((Integer[]) s.getArray()));
         } catch (SQLException e) {
             logger.error("error: ",e);
             return new ArrayList<>();
