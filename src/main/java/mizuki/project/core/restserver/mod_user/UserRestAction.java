@@ -44,25 +44,25 @@ public class UserRestAction{
 
     protected User latestUser(Model model){
         User user = (User)model.asMap().get("user");
-        user = userMapper.findById(PGBaseSqlProvider.SCHEMA,user.getId());
+        user = userMapper.findById(PGBaseSqlProvider.getSchema(model),user.getId());
         model.addAttribute("user",user);
         return user;
     }
 
     @RequestMapping(value = "/listRoles",method = RequestMethod.POST)
     @ApiOperation(value = "获取角色列表")
-    public RoleListRet listRoles(){
+    public RoleListRet listRoles(Model model){
         RoleListRet ret = new RoleListRet();
-        ret.getData().setRoles(userMapper.listRoles(PGBaseSqlProvider.SCHEMA));
+        ret.getData().setRoles(userMapper.listRoles(PGBaseSqlProvider.getSchema(model)));
         ret.setResult(BasicRet.SUCCESS);
         return ret;
     }
 
     @RequestMapping(value="/listDepartment",method= RequestMethod.POST)
     @ApiOperation(value = "获取部门列表")
-    public DepartmentListRet listDepartment(){
+    public DepartmentListRet listDepartment(Model model){
         DepartmentListRet ret = new DepartmentListRet();
-        ret.getData().setDepartments(departmentMapper.listAll(PGBaseSqlProvider.SCHEMA));
+        ret.getData().setDepartments(departmentMapper.listAll(PGBaseSqlProvider.getSchema(model)));
         ret.setResult(BasicRet.SUCCESS);
         return ret;
     }
@@ -90,7 +90,7 @@ public class UserRestAction{
         LoginUserRet ret=new LoginUserRet();
         phone = phone.trim();
         String passwd = CodeUtil.md5(pwd);
-        User user = userMapper.loginByPhone(PGBaseSqlProvider.SCHEMA,phone,passwd);
+        User user = userMapper.loginByPhone(PGBaseSqlProvider.getSchema(model),phone,passwd);
         return loginHandle(user,ret,model);
 	}
 
@@ -104,7 +104,7 @@ public class UserRestAction{
         LoginUserRet ret=new LoginUserRet();
         username = username.trim();
         String passwd = CodeUtil.md5(pwd);
-        User user = userMapper.loginByUsername(PGBaseSqlProvider.SCHEMA,username,passwd);
+        User user = userMapper.loginByUsername(PGBaseSqlProvider.getSchema(model),username,passwd);
         return loginHandle(user,ret,model);
     }
 
@@ -146,7 +146,7 @@ public class UserRestAction{
         if(!sms.equals(smsMapper.findSmsCode(phone))){
             throw new RestMainException("验证码错误");
         }
-        User user = userMapper.findUserByPhone(PGBaseSqlProvider.SCHEMA,phone);
+        User user = userMapper.findUserByPhone(PGBaseSqlProvider.getSchema(model),phone);
         return loginHandle(user,ret,model);
     }
 
@@ -200,7 +200,7 @@ public class UserRestAction{
             throw new RestMainException("密码错误");
         }
         user.setPwd(CodeUtil.md5(newPwd));
-        userMapper.updateUser(PGBaseSqlProvider.SCHEMA,user);
+        userMapper.updateUser(PGBaseSqlProvider.getSchema(model),user);
         userCenter.add(user);
         sessionService.checkAndUpdateSession(session,model,"user");
         return new BasicRet(BasicRet.SUCCESS);
@@ -234,7 +234,7 @@ public class UserRestAction{
         }
         if(gender!=0) user.setGender(gender);
         if(address!=null) user.setAddress(address);
-        userMapper.updateUser(PGBaseSqlProvider.SCHEMA,user);
+        userMapper.updateUser(PGBaseSqlProvider.getSchema(model),user);
         userCenter.add(user);
         sessionService.checkAndUpdateSession(session,model,"user");
         return new BasicRet(BasicRet.SUCCESS);
@@ -243,6 +243,7 @@ public class UserRestAction{
     @RequestMapping(value="/resetPassword",method = RequestMethod.POST)
     @ApiOperation(value = "重置密码")
     public BasicRet resetPassword(
+            Model model,
             @RequestParam String sms,
             @RequestParam String phone,
             @RequestParam String newPwd
@@ -250,12 +251,12 @@ public class UserRestAction{
         if(!sms.equals(smsMapper.findSmsCode(phone))){
             throw new RestMainException("验证码错误");
         }
-        User user = userMapper.findUserByPhone(PGBaseSqlProvider.SCHEMA,phone);
+        User user = userMapper.findUserByPhone(PGBaseSqlProvider.getSchema(model),phone);
         if(user==null){
             throw new RestMainException("用户不存在");
         }
         user.setPwd(CodeUtil.md5(newPwd));
-        userMapper.updateUser(PGBaseSqlProvider.SCHEMA,user);
+        userMapper.updateUser(PGBaseSqlProvider.getSchema(model),user);
         userCenter.add(user);
         return new BasicRet(BasicRet.SUCCESS);
     }

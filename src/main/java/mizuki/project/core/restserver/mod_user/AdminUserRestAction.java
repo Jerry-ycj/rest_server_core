@@ -42,9 +42,9 @@ public class AdminUserRestAction{
     @RequestMapping(value = "/listUsers",method = RequestMethod.POST)
     @ApiOperation(value = "用户列表-系统组")
 //    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_LIST+ "')")
-    public UserListRet listUsers(){
+    public UserListRet listUsers(Model model){
         UserListRet ret = new UserListRet();
-        List<User> users = userMapper.listFromRootDepart(PGBaseSqlProvider.SCHEMA,0);
+        List<User> users = userMapper.listFromRootDepart(PGBaseSqlProvider.getSchema(model),0);
         ret.getData().setList(users);
         ret.setResult(BasicRet.SUCCESS);
         return ret;
@@ -54,19 +54,20 @@ public class AdminUserRestAction{
     @ApiOperation(value = "添加用户")
     @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
     public BasicRet addUser(
+            Model model,
             @RequestParam String username,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String phone,
             @RequestParam String pwd,
             @RequestParam int role
     )throws RestMainException {
-        if(userMapper.findUserByUsername(PGBaseSqlProvider.SCHEMA,username)!=null){
+        if(userMapper.findUserByUsername(PGBaseSqlProvider.getSchema(model),username)!=null){
             throw new RestMainException("用户名已经存在");
         }
-        if(phone!=null && userMapper.findUserByPhone(PGBaseSqlProvider.SCHEMA,phone)!=null){
+        if(phone!=null && userMapper.findUserByPhone(PGBaseSqlProvider.getSchema(model),phone)!=null){
             throw new RestMainException("手机号已经存在");
         }
-        Role r = userMapper.findRole(PGBaseSqlProvider.SCHEMA,role);
+        Role r = userMapper.findRole(PGBaseSqlProvider.getSchema(model),role);
         // role=0 不能设置
         if(r==null || role==0){
             throw new RestMainException("role不存在");
@@ -74,7 +75,7 @@ public class AdminUserRestAction{
         User user = new User().setRole(r)
                 .setName(name).setUsername(username)
                 .setPhone(phone).setPwd(CodeUtil.md5(pwd));
-        userMapper.saveUser(PGBaseSqlProvider.SCHEMA,user);
+        userMapper.saveUser(PGBaseSqlProvider.getSchema(model),user);
         return new BasicRet(BasicRet.SUCCESS);
     }
 
@@ -91,7 +92,7 @@ public class AdminUserRestAction{
         if(uid==null){
             ret.getData().setUser(user);
         }else{
-            User target = userMapper.findById(PGBaseSqlProvider.SCHEMA,uid);
+            User target = userMapper.findById(PGBaseSqlProvider.getSchema(model),uid);
             if(target==null){
                 return (UserRet) ret.setResult(BasicRet.ERR).setMessage("无此用户");
             }
@@ -115,16 +116,16 @@ public class AdminUserRestAction{
         if(user.getId()==uid){
             throw new RestMainException("不能设置自己");
         }
-        User target = userMapper.findById(PGBaseSqlProvider.SCHEMA,uid);
+        User target = userMapper.findById(PGBaseSqlProvider.getSchema(model),uid);
         if(target.getRole().getId()==0){
             throw new RestMainException("该用户不能设置");
         }
         if(off){
-            userMapper.offUser(PGBaseSqlProvider.SCHEMA,target.getId(),User.OFF_FREEZE);
+            userMapper.offUser(PGBaseSqlProvider.getSchema(model),target.getId(),User.OFF_FREEZE);
             target.setOff(User.OFF_FREEZE);
             userCenter.add(target);
         }else{
-            userMapper.offUser(PGBaseSqlProvider.SCHEMA,target.getId(),User.OFF_OK);
+            userMapper.offUser(PGBaseSqlProvider.getSchema(model),target.getId(),User.OFF_OK);
             target.setOff(User.OFF_OK);
             userCenter.add(target);
         }
@@ -135,6 +136,7 @@ public class AdminUserRestAction{
     @ApiOperation(value = "更新用户信息")
     @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
     public BasicRet updateUserInfo(
+            Model model,
             @RequestParam int id,
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String name,
@@ -144,7 +146,7 @@ public class AdminUserRestAction{
             @RequestParam(required = false)String pwd,
             @RequestParam(required = false,defaultValue = "0") int role
     ) throws RestMainException {
-        User user = userMapper.findById(PGBaseSqlProvider.SCHEMA,id);
+        User user = userMapper.findById(PGBaseSqlProvider.getSchema(model),id);
         if(user==null){
             throw new RestMainException("用户不存在");
         }
@@ -155,14 +157,14 @@ public class AdminUserRestAction{
             user.setPhone(phone);
         }
         if(username!=null && !username.equals(user.getUsername())){
-            if(userMapper.findUserByUsername(PGBaseSqlProvider.SCHEMA,username)!=null){
+            if(userMapper.findUserByUsername(PGBaseSqlProvider.getSchema(model),username)!=null){
                 throw new RestMainException("该用户名已被使用");
             }else{
                 user.setUsername(username);
             }
         }
         if(role>0 && role!=user.getRole().getId()){
-            Role r = userMapper.findRole(PGBaseSqlProvider.SCHEMA,role);
+            Role r = userMapper.findRole(PGBaseSqlProvider.getSchema(model),role);
             if(r==null){
                 throw new RestMainException("role不存在");
             }
@@ -172,7 +174,7 @@ public class AdminUserRestAction{
         if(name!=null) user.setName(name);
         if(gender!=0) user.setGender(gender);
         if(address!=null) user.setAddress(address);
-        userMapper.updateUser(PGBaseSqlProvider.SCHEMA,user);
+        userMapper.updateUser(PGBaseSqlProvider.getSchema(model),user);
         userCenter.add(user);
         return new BasicRet(BasicRet.SUCCESS);
     }

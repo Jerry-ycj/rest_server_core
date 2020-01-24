@@ -2,6 +2,7 @@ package mizuki.project.core.restserver.config.mybatis.provider;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.ibatis.jdbc.SQL;
+import org.springframework.ui.Model;
 
 import javax.persistence.*;
 import java.lang.reflect.Field;
@@ -22,16 +23,16 @@ public class PGBaseSqlProvider {
     public static final String METHOD_DELETE_OFF="deleteWithOff";
     public static final String METHOD_FIND_ONE = "findOne";
 
-//	public static final String METHOD_INSERT_BY_SCHEMA="insertBySchema";
-//	public static final String METHOD_UPDATE_BY_SCHEMA="updateAllBySchema";
-//	public static final String METHOD_DELETE_BY_SCHEMA="deleteBySchema";
-//	public static final String METHOD_DELETE_OFF_BY_SCHEMA="deleteWithOffBySchema";
-//	public static final String METHOD_FIND_ONE_BY_SCHEMA = "findOneBySchema";
+	public static final String METHOD_INSERT_BY_SCHEMA="insertBySchema";
+	public static final String METHOD_UPDATE_BY_SCHEMA="updateAllBySchema";
+	public static final String METHOD_DELETE_BY_SCHEMA="deleteBySchema";
+	public static final String METHOD_DELETE_OFF_BY_SCHEMA="deleteWithOffBySchema";
+	public static final String METHOD_FIND_ONE_BY_SCHEMA = "findOneBySchema";
 
 	public String insert(Object bean) throws IllegalAccessException {
-		return insert(null, bean);
+		return insertBySchema(null, bean);
 	}
-	public String insert(String schema, Object bean) throws IllegalAccessException {
+	public String insertBySchema(String schema, Object bean) throws IllegalAccessException {
 		Class<?> beanClass = bean.getClass();
 		String tableName = getTableName(beanClass);
 		Field[] fields = getFields(beanClass);
@@ -49,7 +50,7 @@ public class PGBaseSqlProvider {
 	}
 
 	/** update all by id */
-	public String updateAll(String schema, Object bean) throws IllegalAccessException {
+	public String updateAllBySchema(String schema, Object bean) throws IllegalAccessException {
 		Class<?> beanClass = bean.getClass();
 		String tableName = getTableName(beanClass);
 		Field[] fields = getFields(beanClass);
@@ -74,10 +75,10 @@ public class PGBaseSqlProvider {
 		}}.toString();
 	}
 	public String updateAll(Object bean) throws IllegalAccessException {
-		return updateAll(null, bean);
+		return updateAllBySchema(null, bean);
 	}
 
-	public String delete(String schema, Object bean) throws IllegalAccessException {
+	public String deleteBySchema(String schema, Object bean) throws IllegalAccessException {
 		Class<?> beanClass = bean.getClass();
 		String tableName = getTableName(beanClass);
 		Field[] fields = getFields(beanClass);
@@ -95,10 +96,10 @@ public class PGBaseSqlProvider {
 		}}.toString();
 	}
 	public String delete(Object bean) throws IllegalAccessException {
-		return delete(null, bean);
+		return deleteBySchema(null, bean);
 	}
 
-	public String deleteWithOff(String schema, Object bean) throws IllegalAccessException {
+	public String deleteWithOffBySchema(String schema, Object bean) throws IllegalAccessException {
 		Class<?> beanClass = bean.getClass();
 		String tableName = getTableName(beanClass);
 		Field[] fields = getFields(beanClass);
@@ -117,10 +118,10 @@ public class PGBaseSqlProvider {
 		}}.toString();
 	}
 	public String deleteWithOff(Object bean) throws IllegalAccessException {
-		return deleteWithOff(null,bean);
+		return deleteWithOffBySchema(null,bean);
 	}
 
-	public String findOne(String schema, Object bean, String key){
+	public String findOneBySchema(String schema, Object bean, String key){
 		Class<?> beanClass = bean.getClass();
 		String tableName = getTableName(beanClass);
 //		Field[] fields = getFields(beanClass);
@@ -131,7 +132,7 @@ public class PGBaseSqlProvider {
 		}}.toString();
 	}
 	public String findOne(Object bean, String key){
-		return findOne(null, bean, key);
+		return findOneBySchema(null, bean, key);
 	}
 
 	/***
@@ -217,6 +218,10 @@ public class PGBaseSqlProvider {
 				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list),"id"));
 		System.out.println(System.currentTimeMillis());
 
+	}
+
+	public static String getSchema(Model model){
+		return (String) model.asMap().getOrDefault("schema", SCHEMA);
 	}
 
 }
