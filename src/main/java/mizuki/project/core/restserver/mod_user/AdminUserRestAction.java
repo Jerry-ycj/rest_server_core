@@ -28,7 +28,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest/admin/user")
-@SessionAttributes({"user"})
+@SessionAttributes({"user","schema"})
 @Transactional(rollbackFor = Exception.class)
 @Api(tags = "管理员模块-用户管理")
 public class AdminUserRestAction{

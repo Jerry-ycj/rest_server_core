@@ -23,7 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/rest/admin/user/role")
-@SessionAttributes({"user"})
+@SessionAttributes({"user","schema"})
 @Transactional(rollbackFor = Exception.class)
 @Api(tags = "管理员模块-角色管理")
 public class AdminRoleRestAction {

@@ -25,7 +25,7 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping(value = "/rest/user")
-@SessionAttributes({"user","sessionId"})
+@SessionAttributes({"user","sessionId","schema"})
 @Transactional(rollbackFor = Exception.class)
 @Api(tags = "系统用户模块")
 public class UserRestAction{
@@ -85,13 +85,14 @@ public class UserRestAction{
 	public LoginUserRet userLogin(
             @RequestParam String phone,
             @RequestParam String pwd,
+            @RequestParam(required = false, defaultValue = "public")String schema,
             Model model
     ) throws RestMainException {
         LoginUserRet ret=new LoginUserRet();
         phone = phone.trim();
         String passwd = CodeUtil.md5(pwd);
         User user = userMapper.loginByPhone(PGBaseSqlProvider.getSchema(model),phone,passwd);
-        return loginHandle(user,ret,model);
+        return loginHandle(schema,user,ret,model);
 	}
 
     @RequestMapping(value = "/loginByUsername",method = RequestMethod.POST)
@@ -99,13 +100,14 @@ public class UserRestAction{
     public LoginUserRet login(
             Model model,
             @RequestParam String username,
-            @RequestParam String pwd
+            @RequestParam String pwd,
+            @RequestParam(required = false, defaultValue = "public")String schema
     ) throws RestMainException{
         LoginUserRet ret=new LoginUserRet();
         username = username.trim();
         String passwd = CodeUtil.md5(pwd);
         User user = userMapper.loginByUsername(PGBaseSqlProvider.getSchema(model),username,passwd);
-        return loginHandle(user,ret,model);
+        return loginHandle(schema,user,ret,model);
     }
 
 //    @RequestMapping(value = "/loginWithWxCode",method = RequestMethod.POST)
@@ -139,6 +141,7 @@ public class UserRestAction{
     public LoginUserRet userLoginSms(
             @RequestParam String phone,
             @RequestParam String sms,
+            @RequestParam(required = false, defaultValue = "public")String schema,
             Model model
     ) throws RestMainException {
         LoginUserRet ret=new LoginUserRet();
@@ -147,7 +150,7 @@ public class UserRestAction{
             throw new RestMainException("验证码错误");
         }
         User user = userMapper.findUserByPhone(PGBaseSqlProvider.getSchema(model),phone);
-        return loginHandle(user,ret,model);
+        return loginHandle(schema,user,ret,model);
     }
 
 //    protected LoginUserRet loginHandle4Wx(User user,LoginUserRet ret,Model model,String code) throws RestMainException{
@@ -162,7 +165,7 @@ public class UserRestAction{
     /***
      * 登录时  获取user 和 systems
      */
-    protected LoginUserRet loginHandle(User user,LoginUserRet ret,Model model) throws RestMainException {
+    protected LoginUserRet loginHandle(String schema, User user,LoginUserRet ret,Model model) throws RestMainException {
         if(user==null)
             throw new RestMainException("用户名或密码错误");
         if(user.getOff()==User.OFF_FREEZE){
@@ -178,6 +181,7 @@ public class UserRestAction{
 //            userMapper.updateRestToken(user.getId(), token);
 //        }
         model.addAttribute("user",user);
+        model.addAttribute("schema", schema);
         userCenter.add(user);
         ret.setToken(token);
         ret.setUser(user);

@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/rest/oss")
-@SessionAttributes({"user"})
+@SessionAttributes({"user","schema"})
 @Api(tags = "ali oss模块")
 public class CommonOssRestAction {
 
