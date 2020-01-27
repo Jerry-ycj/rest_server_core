@@ -10,13 +10,13 @@ import java.util.List;
 @Mapper
 public interface DepartmentMapper {
     @InsertProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_INSERT_BY_SCHEMA)
-    void save(String schema, Department department);
+    void save(@Param("schema") String schema, @Param("bean") Department department);
 
     @UpdateProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_UPDATE_BY_SCHEMA)
-    void update(String schema, Department department);
+    void update(@Param("schema") String schema, @Param("bean") Department department);
 
     @DeleteProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_DELETE_BY_SCHEMA)
-    void del(String schema, Department department);
+    void del(@Param("schema") String schema, @Param("bean") Department department);
 
     @Select("select '${schema}' as schema , * from ${schema}.department where id=#{id}")
     @Results({

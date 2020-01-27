@@ -39,7 +39,7 @@ public class PGBaseSqlProvider {
 		Map<String,String> kvs = new HashMap<>();
 		for (Field field : fields) {
 			if(annotationExist(field,Id.class) && annotationExist(field, GeneratedValue.class)) continue;
-			genKvs(bean, kvs, field);
+			genKvs(schema,bean, kvs, field);
 		}
 		return new SQL(){{
 			INSERT_INTO(schema==null?"public."+tableName:schema+"."+tableName);
@@ -58,10 +58,10 @@ public class PGBaseSqlProvider {
 		Map<String,String> idKvs = new HashMap<>();
 		for(Field field:fields){
 			if(annotationExist(field,Id.class)){
-				genKvs(bean,idKvs,field);
+				genKvs(schema,bean,idKvs,field);
 				continue;
 			}
-			genKvs(bean, kvs, field);
+			genKvs(schema,bean, kvs, field);
 		}
 		return new SQL(){{
 			UPDATE(schema==null?"public."+tableName:schema+"."+tableName);
@@ -85,7 +85,7 @@ public class PGBaseSqlProvider {
 		Map<String,String> idKvs = new HashMap<>();
 		for(Field field:fields){
 			if(annotationExist(field,Id.class)){
-				genKvs(bean,idKvs,field);
+				genKvs(schema,bean,idKvs,field);
 			}
 		}
 		return new SQL(){{
@@ -106,7 +106,7 @@ public class PGBaseSqlProvider {
 		Map<String,String> idKvs = new HashMap<>();
 		for(Field field:fields){
 			if(annotationExist(field,Id.class)){
-				genKvs(bean,idKvs,field);
+				genKvs(schema,bean,idKvs,field);
 			}
 		}
 		return new SQL(){{
@@ -128,7 +128,7 @@ public class PGBaseSqlProvider {
 		return new SQL(){{
 			SELECT("*");
 			FROM(schema==null?"public."+tableName:schema+"."+tableName);
-			WHERE(String.format("%s=#{param1.%s}",key,key));
+			WHERE(String.format(schema==null?"%s=#{param1.%s}":"%s=#{param2.%s}",key,key));
 		}}.toString();
 	}
 	public String findOne(Object bean, String key){
@@ -161,13 +161,13 @@ public class PGBaseSqlProvider {
 		return field.getAnnotation(clz)!=null;
 	}
 
-	private void genKvs(Object bean, Map<String, String> kvs, Field field) throws IllegalAccessException {
+	private void genKvs(String schema,Object bean, Map<String, String> kvs, Field field) throws IllegalAccessException {
 		if(annotationExist(field,Transient.class)) return;
 		field.setAccessible(true);
 		Object object = field.get(bean);
 		if(object==null) return;
 		String key = field.getName();
-		String val = "#{"+field.getName()+"}";
+		String val = "#{"+(schema==null?"":"param2.")+field.getName()+"}";
 
 		// 通常column
 		Column column = field.getAnnotation(Column.class);
@@ -177,25 +177,25 @@ public class PGBaseSqlProvider {
 			JoinColumn joinColumn = field.getAnnotation(JoinColumn.class);
 			if(joinColumn!=null){
 				key = joinColumn.name();
-				val = "#{"+field.getName()+"."+joinColumn.referencedColumnName()+"}";
+				val = "#{"+(schema==null?"":"param2.")+field.getName()+"."+joinColumn.referencedColumnName()+"}";
 			}else{
-				val = "#{"+field.getName()+".id}";
+				val = "#{"+(schema==null?"":"param2.")+field.getName()+".id}";
 			}
 		}
 
 		// jsonb
 		if(object instanceof Map){
-			val = "#{"+field.getName()+",typeHandler=mizuki.project.core.restserver.config.mybatis.typeHandler.jsonb.JsonbHandler}";
+			val = "#{"+(schema==null?"":"param2.")+field.getName()+",typeHandler=mizuki.project.core.restserver.config.mybatis.typeHandler.jsonb.JsonbHandler}";
 		}
 		// array todo
 		if(object instanceof Collection){
 			if(field.getGenericType().getTypeName().contains("java.util.Map")){
 				// list<Map> 看待为 jsonb
-				val = "#{"+field.getName()+",typeHandler=mizuki.project.core.restserver.config.mybatis.typeHandler.jsonb.JsonbHandler}";
+				val = "#{"+(schema==null?"":"param2.")+field.getName()+",typeHandler=mizuki.project.core.restserver.config.mybatis.typeHandler.jsonb.JsonbHandler}";
 			} else if(field.getGenericType().getTypeName().contains("<java.lang.String>")){
-				val = "#{"+field.getName()+",typeHandler=mizuki.project.core.restserver.config.mybatis.typeHandler.array.StringArrayHandler}";
+				val = "#{"+(schema==null?"":"param2.")+field.getName()+",typeHandler=mizuki.project.core.restserver.config.mybatis.typeHandler.array.StringArrayHandler}";
 			}else if(field.getGenericType().getTypeName().contains("<java.lang.Integer>")){
-				val = "#{"+field.getName()+",typeHandler=mizuki.project.core.restserver.config.mybatis.typeHandler.array.IntArrayHandler}";
+				val = "#{"+(schema==null?"":"param2.")+field.getName()+",typeHandler=mizuki.project.core.restserver.config.mybatis.typeHandler.array.IntArrayHandler}";
 			}
 		}
 		kvs.put(key,val);
@@ -208,14 +208,14 @@ public class PGBaseSqlProvider {
 		List<String> list = new ArrayList<>();
 		list.add("12");list.add("23");
 		System.out.println(System.currentTimeMillis());
-		System.out.println(new PGBaseSqlProvider().insert(new Test().setName("'sss'")
+		System.out.println(new PGBaseSqlProvider().insertBySchema("abc",new Test().setName("'sss'")
 				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
-		System.out.println(new PGBaseSqlProvider().updateAll(new Test()
-				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
-		System.out.println(new PGBaseSqlProvider().updateAll(new Test()
-				.setName("abc").setRole(new Test().setId(111)).setList(list)));
-		System.out.println(new PGBaseSqlProvider().findOne(new Test()
-				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list),"id"));
+//		System.out.println(new PGBaseSqlProvider().updateAll(new Test()
+//				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list)));
+//		System.out.println(new PGBaseSqlProvider().updateAll(new Test()
+//				.setName("abc").setRole(new Test().setId(111)).setList(list)));
+//		System.out.println(new PGBaseSqlProvider().findOne(new Test()
+//				.setName("abc").setRole(new Test().setId(111)).setMap(map).setList(list),"id"));
 		System.out.println(System.currentTimeMillis());
 
 	}

@@ -38,10 +38,10 @@ public interface UserMapper {
     Role findRole(@Param("schema") String schema, @Param("id") int id);
 
     @InsertProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_INSERT_BY_SCHEMA)
-    void saveRole(String schema, Role role);
+    void saveRole(@Param("schema") String schema, @Param("bean") Role role);
 
     @UpdateProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_UPDATE_BY_SCHEMA)
-    void updateRole(String schema, Role role);
+    void updateRole(@Param("schema") String schema, @Param("bean") Role role);
 
     @Delete("delete from ${schema}.role where id=#{param3} and id>0")
     void delRole(@Param("schema") String schema, int id);
@@ -57,7 +57,7 @@ public interface UserMapper {
 
     // 从department的树状遍历
     @Select("select '${schema}' as schema, * from ${schema}.role where id>0 and department in (" +
-            " with recursive t(id) as( values(#{param3}) union all select d.id from ${schema}.department d, t where t.id=d.parent) select id from t" +
+            " with recursive t(id) as( values(#{param2}) union all select d.id from ${schema}.department d, t where t.id=d.parent) select id from t" +
             ") order by id")
     @Results({
             @Result(property = "privileges", column = "privileges", typeHandler = StringArrayHandler.class),
@@ -102,14 +102,14 @@ public interface UserMapper {
 
     @Select("select '${schema}' as schema, * from ${schema}.admin_user where extend->>'openid'=#{param2} and off=0 limit 1")
     @ResultMap("user_all")
-    User loginByOpenid(String openid);
+    User loginByOpenid(@Param("schema") String schema, String openid);
 
     @InsertProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_INSERT_BY_SCHEMA)
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    void saveUser(String schema, User user);
+    void saveUser(@Param("schema") String schema, @Param("bean") User user);
 
     @UpdateProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_UPDATE_BY_SCHEMA)
-    void updateUser(String schema, User user);
+    void updateUser(@Param("schema") String schema, @Param("bean") User user);
 
 //    @Select("select * from ${schema}.admin_user where off=0 and role>0 order by role,id")
 //    @Results({
