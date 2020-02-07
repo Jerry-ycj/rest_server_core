@@ -1,5 +1,8 @@
 package mizuki.project.core.restserver.util;
 
+import mizuki.project.core.restserver.config.exception.RestMainException;
+
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -28,5 +31,14 @@ public class OtherUtil {
 
     public static boolean isNilString(String str){
         return str==null || "".equals(str.trim());
+    }
+
+    public static Map<String,Object> getExtendJson(String extendJson) throws RestMainException {
+        Map<String,Object> extend=null;
+        if(extendJson!=null) {
+            extend = JsonUtil.toMap(extendJson);
+            if(extend==null) throw new RestMainException("extend参数解析错误");
+        }
+        return extend;
     }
 }

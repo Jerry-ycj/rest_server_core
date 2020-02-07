@@ -2,6 +2,7 @@ package mizuki.project.core.restserver.mod_user;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import mizuki.project.core.restserver.config.BasicRet;
 import mizuki.project.core.restserver.config.exception.RestMainException;
 import mizuki.project.core.restserver.config.mybatis.provider.PGBaseSqlProvider;
@@ -14,6 +15,7 @@ import mizuki.project.core.restserver.mod_user.dao.SmsMapper;
 import mizuki.project.core.restserver.mod_user.dao.UserMapper;
 import mizuki.project.core.restserver.modules.session.SpringSessionService;
 import mizuki.project.core.restserver.util.CodeUtil;
+import mizuki.project.core.restserver.util.OtherUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,9 +53,17 @@ public class UserRestAction{
 
     @RequestMapping(value = "/listRoles",method = RequestMethod.POST)
     @ApiOperation(value = "获取角色列表")
-    public RoleListRet listRoles(Model model){
+    public RoleListRet listRoles(
+            Model model,
+            @ApiParam(value = "指定根department")
+            @RequestParam(required = false) Integer root
+    ){
         RoleListRet ret = new RoleListRet();
-        ret.getData().setRoles(userMapper.listRoles(PGBaseSqlProvider.getSchema(model)));
+        if(root!=null){
+            ret.getData().setRoles(userMapper.listRolesFromRootDepart(PGBaseSqlProvider.getSchema(model),root));
+        }else{
+            ret.getData().setRoles(userMapper.listRoles(PGBaseSqlProvider.getSchema(model)));
+        }
         ret.setResult(BasicRet.SUCCESS);
         return ret;
     }
@@ -63,6 +73,17 @@ public class UserRestAction{
     public DepartmentListRet listDepartment(Model model){
         DepartmentListRet ret = new DepartmentListRet();
         ret.getData().setDepartments(departmentMapper.listAll(PGBaseSqlProvider.getSchema(model)));
+        ret.setResult(BasicRet.SUCCESS);
+        return ret;
+    }
+
+    @RequestMapping(value="/info",method={RequestMethod.POST})
+    @ApiOperation(value = "获取当前信息")
+    public LoginUserRet info(Model model){
+        LoginUserRet ret=new LoginUserRet();
+        String token = (String)model.asMap().get("sessionId");
+        ret.getData().setUser((User)model.asMap().get("user"));
+        ret.getData().setToken(token);
         ret.setResult(BasicRet.SUCCESS);
         return ret;
     }
@@ -162,9 +183,6 @@ public class UserRestAction{
 //        return ret;
 //    }
 
-    /***
-     * 登录时  获取user 和 systems
-     */
     protected LoginUserRet loginHandle(String schema, User user,LoginUserRet ret,Model model) throws RestMainException {
         if(user==null)
             throw new RestMainException("用户名或密码错误");
@@ -218,16 +236,20 @@ public class UserRestAction{
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String phone,
             @RequestParam(required = false,defaultValue = "0")int gender,
-            @RequestParam(required = false)String address,
-            @RequestParam(required = false)String sms
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) String sms,
+            @RequestParam(required = false) String extendJson
     ) throws RestMainException {
         User user = (User)model.asMap().get("user");
-        if(phone!=null && !phone.equals(user.getPhone()) && sms==null){
-            throw new RestMainException("修改手机需要验证码");
-        }
+//        if(phone!=null && !phone.equals(user.getPhone()) && sms==null){
+//            throw new RestMainException("修改手机需要验证码");
+//        }
         if(sms!=null && phone!=null && !phone.equals(user.getPhone())
                 && !sms.equals(smsMapper.findSmsCode(phone))){
             throw new RestMainException("验证码错误");
+        }
+        if(phone!=null && !"".equals(phone.trim()) && !phone.equals(user.getPhone()) && userMapper.findUserByPhone(PGBaseSqlProvider.getSchema(model),phone)!=null){
+            throw new RestMainException("手机号已经存在");
         }
         if(name!=null){
             name = name.trim();
@@ -238,6 +260,8 @@ public class UserRestAction{
         }
         if(gender!=0) user.setGender(gender);
         if(address!=null) user.setAddress(address);
+        var extend = OtherUtil.getExtendJson(extendJson);
+        if(extend!=null) user.getExtend().putAll(extend);
         userMapper.updateUser(PGBaseSqlProvider.getSchema(model),user);
         userCenter.add(user);
         sessionService.checkAndUpdateSession(session,model,"user");
