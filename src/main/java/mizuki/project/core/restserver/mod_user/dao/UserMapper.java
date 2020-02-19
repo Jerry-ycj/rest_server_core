@@ -22,7 +22,7 @@ public interface UserMapper {
      */
 
     @Select("select '${schema}' as schema, * from ${schema}.role where id>0 and department>=0 order by id")
-    @Results({
+    @Results(id = "role_all", value = {
             @Result(property = "privileges", column = "privileges", typeHandler = StringArrayHandler.class),
             @Result(property = "department", column = "id=department, schema=schema", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.DepartmentMapper.findById")),
             @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class),
@@ -30,11 +30,7 @@ public interface UserMapper {
     List<Role> listRoles(@Param("schema") String schema);
 
     @Select("select '${schema}' as schema, * from ${schema}.role where id=#{id}")
-    @Results({
-            @Result(property = "privileges", column = "privileges", typeHandler = StringArrayHandler.class),
-            @Result(property = "department", column = "id=department, schema=schema", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.DepartmentMapper.findById")),
-            @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class),
-    })
+    @ResultMap("role_all")
     Role findRole(@Param("schema") String schema, @Param("id") int id);
 
     @InsertProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_INSERT_BY_SCHEMA)
@@ -59,11 +55,7 @@ public interface UserMapper {
     @Select("select '${schema}' as schema, * from ${schema}.role where id>0 and department in (" +
             " with recursive t(id) as( values(#{param2}) union all select d.id from ${schema}.department d, t where t.id=d.parent) select id from t" +
             ") order by id")
-    @Results({
-            @Result(property = "privileges", column = "privileges", typeHandler = StringArrayHandler.class),
-            @Result(property = "department", column = "id=department, schema=schema", one = @One(select = "mizuki.project.core.restserver.mod_user.dao.DepartmentMapper.findById")),
-            @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class),
-    })
+    @ResultMap("role_all")
     List<Role> listRolesFromRootDepart(@Param("schema") String schema, int id);
 
     /**
@@ -126,6 +118,14 @@ public interface UserMapper {
             ") order by name,id")
     @ResultMap("user_all")
     List<User> listFromRootDepart(@Param("schema") String schema, int departId);
+
+    @Select("select '${schema}' as schema, * from ${schema}.admin_user where off=0 and role>0 and role in(" +
+            " select id from ${schema}.role where department in (" +
+            "  with recursive t(id) as( values(#{param2}) union all select d.id from ${schema}.department d, t where t.id=d.parent) select id from t" +
+            " )" +
+            ") order by name,id")
+    @ResultMap("user_all")
+    List<User> list4SelectFromRootDepart(@Param("schema") String schema, int departId);
 
     /** 用户冻结等等 */
     @Update("update ${schema}.admin_user set off=#{param3} where id=#{param2}")

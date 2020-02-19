@@ -75,6 +75,7 @@ public class AdminUserRestAction{
             @RequestParam String username,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String phone,
+            @RequestParam(required = false,defaultValue = "0")int gender,
             @RequestParam String pwd,
             @RequestParam int role,
             @RequestParam(required = false) String extendJson
@@ -91,6 +92,7 @@ public class AdminUserRestAction{
             throw new RestMainException("role不存在");
         }
         User user = new User().setRole(r)
+                .setGender(gender)
                 .setName(name).setUsername(username)
                 .setPhone(phone).setPwd(CodeUtil.md5(pwd));
         var extend = OtherUtil.getExtendJson(extendJson);
