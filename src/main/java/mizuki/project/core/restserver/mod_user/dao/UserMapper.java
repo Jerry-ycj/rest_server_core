@@ -39,13 +39,13 @@ public interface UserMapper {
     @UpdateProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_UPDATE_BY_SCHEMA)
     void updateRole(@Param("schema") String schema, @Param("bean") Role role);
 
-    @Delete("delete from ${schema}.role where id=#{param3} and id>0")
+    @Delete("delete from ${schema}.role where id=#{param2} and id>0")
     void delRole(@Param("schema") String schema, int id);
 
     @Select("select * from ${schema}.privilege_constant where type<>'dev' order by sort")
     List<PrivilegeConstantBean> listPrivileges(@Param("schema") String schema);
 
-    @Select("select * from ${schema}.role where id>0 and department=#{param3} order by id")
+    @Select("select * from ${schema}.role where id>0 and department=#{param2} order by id")
     @Results({
             @Result(property = "extend",column = "extend",typeHandler = JsonbHandler.class)
     })
@@ -97,7 +97,7 @@ public interface UserMapper {
     User loginByOpenid(@Param("schema") String schema, String openid);
 
     @InsertProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_INSERT_BY_SCHEMA)
-    @Options(useGeneratedKeys = true, keyProperty = "id")
+    @Options(useGeneratedKeys = true, keyProperty = "bean.id")
     void saveUser(@Param("schema") String schema, @Param("bean") User user);
 
     @UpdateProvider(type = PGBaseSqlProvider.class,method = PGBaseSqlProvider.METHOD_UPDATE_BY_SCHEMA)
@@ -128,7 +128,7 @@ public interface UserMapper {
     List<User> list4SelectFromRootDepart(@Param("schema") String schema, int departId);
 
     /** 用户冻结等等 */
-    @Update("update ${schema}.admin_user set off=#{param3} where id=#{param2}")
+    @Update("update ${schema}.admin_user set off=#{param2} where id=#{param1}")
     void offUser(@Param("schema") String schema, int uid, int off);
 
     @Update("update ${schema}.admin_user set username=null, phone=null where id=#{param2}")
