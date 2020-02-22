@@ -128,7 +128,7 @@ public interface UserMapper {
     List<User> list4SelectFromRootDepart(@Param("schema") String schema, int departId);
 
     /** 用户冻结等等 */
-    @Update("update ${schema}.admin_user set off=#{param2} where id=#{param1}")
+    @Update("update ${schema}.admin_user set off=#{param3} where id=#{param2}")
     void offUser(@Param("schema") String schema, int uid, int off);
 
     @Update("update ${schema}.admin_user set username=null, phone=null where id=#{param2}")
