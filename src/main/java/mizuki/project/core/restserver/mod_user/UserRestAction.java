@@ -217,6 +217,7 @@ public class UserRestAction{
             @RequestParam String oldPwd,
             @RequestParam String newPwd
     ) throws RestMainException {
+        if(OtherUtil.isNilString(newPwd)) throw new RestMainException("密码不能为空");
         User user = latestUser(model);
         if(!user.getPwd().equals(CodeUtil.md5(oldPwd))){
             throw new RestMainException("密码错误");
@@ -276,6 +277,7 @@ public class UserRestAction{
             @RequestParam String phone,
             @RequestParam String newPwd
     ) throws RestMainException {
+        if(OtherUtil.isNilString(newPwd)) throw new RestMainException("密码不能为空");
         if(!sms.equals(smsMapper.findSmsCode(phone))){
             throw new RestMainException("验证码错误");
         }

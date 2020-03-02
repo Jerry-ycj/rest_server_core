@@ -8,6 +8,7 @@ import mizuki.project.core.restserver.mod_user.bean.Role;
 import mizuki.project.core.restserver.mod_user.bean.User;
 import org.apache.ibatis.annotations.*;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -126,6 +127,10 @@ public interface UserMapper {
             ") order by name,id")
     @ResultMap("user_all")
     List<User> list4SelectFromRootDepart(@Param("schema") String schema, int departId);
+
+    @Select("select '${schema}' as schema, * from ${schema}.admin_user where off>=0 and id in (select unnest(#{ids,typeHandler=mizuki.project.core.restserver.config.mybatis.typeHandler.array.IntArrayHandler}))")
+    @ResultMap("user_all")
+    List<User> listByIds(@Param("schema") String schema,@Param("ids")Collection<Integer> ids);
 
     /** 用户冻结等等 */
     @Update("update ${schema}.admin_user set off=#{param3} where id=#{param2}")

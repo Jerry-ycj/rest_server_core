@@ -80,6 +80,7 @@ public class AdminUserRestAction{
             @RequestParam int role,
             @RequestParam(required = false) String extendJson
     )throws RestMainException {
+        if(OtherUtil.isNilString(pwd)) throw new RestMainException("密码不能为空");
         if(userMapper.findUserByUsername(PGBaseSqlProvider.getSchema(model),username)!=null){
             throw new RestMainException("用户名已经存在");
         }
@@ -212,10 +213,10 @@ public class AdminUserRestAction{
         if(phone!=null && !phone.equals(user.getPhone())){
             user.setPhone(phone);
         }
-        if(pwd!=null) user.setPwd(CodeUtil.md5(pwd));
-        if(name!=null) user.setName(name.trim());
+        if(!OtherUtil.isNilString(pwd)) user.setPwd(CodeUtil.md5(pwd));
+        if(!OtherUtil.isNilString(name)) user.setName(name.trim());
         if(gender!=0) user.setGender(gender);
-        if(address!=null) user.setAddress(address);
+        if(!OtherUtil.isNilString(address)) user.setAddress(address);
         var extend = OtherUtil.getExtendJson(extendJson);
         if(extend!=null) user.getExtend().putAll(extend);
         userMapper.updateUser(PGBaseSqlProvider.getSchema(model),user);
