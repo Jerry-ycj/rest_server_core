@@ -112,7 +112,7 @@ public class UserRestAction{
         LoginUserRet ret=new LoginUserRet();
         phone = phone.trim();
         String passwd = CodeUtil.md5(pwd);
-        User user = userMapper.loginByPhone(PGBaseSqlProvider.getSchema(model),phone,passwd);
+        User user = userMapper.loginByPhone(schema,phone,passwd);
         return loginHandle(schema,user,ret,model);
 	}
 
@@ -127,7 +127,7 @@ public class UserRestAction{
         LoginUserRet ret=new LoginUserRet();
         username = username.trim();
         String passwd = CodeUtil.md5(pwd);
-        User user = userMapper.loginByUsername(PGBaseSqlProvider.getSchema(model),username,passwd);
+        User user = userMapper.loginByUsername(schema,username,passwd);
         return loginHandle(schema,user,ret,model);
     }
 
@@ -170,7 +170,7 @@ public class UserRestAction{
         if(!sms.equals(smsMapper.findSmsCode(phone))){
             throw new RestMainException("验证码错误");
         }
-        User user = userMapper.findUserByPhone(PGBaseSqlProvider.getSchema(model),phone);
+        User user = userMapper.findUserByPhone(schema,phone);
         return loginHandle(schema,user,ret,model);
     }
 
