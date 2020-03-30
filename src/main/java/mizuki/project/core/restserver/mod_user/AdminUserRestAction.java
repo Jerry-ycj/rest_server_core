@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -69,7 +70,7 @@ public class AdminUserRestAction{
 
     @RequestMapping(value = "/addUser",method = RequestMethod.POST)
     @ApiOperation(value = "添加用户")
-    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
+//    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
     public BasicRet addUser(
             Model model,
             @RequestParam String username,
@@ -93,6 +94,7 @@ public class AdminUserRestAction{
             throw new RestMainException("role不存在");
         }
         User user = new User().setRole(r)
+                .setCreateDt(new Timestamp(System.currentTimeMillis()))
                 .setGender(gender)
                 .setName(name).setUsername(username)
                 .setPhone(phone).setPwd(CodeUtil.md5(pwd));
@@ -129,7 +131,7 @@ public class AdminUserRestAction{
 
     @RequestMapping(value="/offUser",method= RequestMethod.POST)
     @ApiOperation(value = "冻结或激活用户")
-    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
+//    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
     public BasicRet offUser(
             Model model,
             @RequestParam int uid,
@@ -173,7 +175,7 @@ public class AdminUserRestAction{
 
     @RequestMapping(value="/updateUser",method = RequestMethod.POST)
     @ApiOperation(value = "更新用户信息")
-    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
+//    @PreAuthorize("hasAuthority('" + PrivilegeConstantDefault.USER_MNG+ "')")
     public BasicRet updateUserInfo(
             Model model,
             @RequestParam int id,

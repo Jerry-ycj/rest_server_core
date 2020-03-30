@@ -6,7 +6,7 @@ plugins {
 apply from: "./configs.gradle"
 
 group "mizuki.project.rest.core"
-version "0.8.6"
+version "0.8.8"
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'

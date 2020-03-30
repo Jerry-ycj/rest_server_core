@@ -28,7 +28,8 @@ public class SpringSessionConfig {
     public CookieSerializer httpSessionIdResolver(){
         DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
         // 使跨域能携带cookies（post）
-        cookieSerializer.setSameSite(null);
+        cookieSerializer.setSameSite("None");
+        cookieSerializer.setUseSecureCookie(true);
         return cookieSerializer;
     }
 
